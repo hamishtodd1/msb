@@ -1,0 +1,65 @@
+<html>
+	<head>
+		<title>Murder, She Bet</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				margin: 0px;
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body>
+		<script src="/socket.io/socket.io.js"></script>
+		
+		<script src="lib/three.min.js"></script>
+
+		<script src="variables.js"></script>
+		<script src="miscFunctions.js"></script>
+
+		<script src="mouse.js"></script>
+
+		<script src="camera.js"></script>
+
+		<script src="rectangle.js"></script>
+		
+		<script src="windowResize.js"></script>
+
+		<script src="socketStuffAndPageInitialization.js"></script>
+
+		<script>
+			async function init(socket, ourID) {
+				renderer = new THREE.WebGLRenderer({ antialias: true });
+				renderer.setPixelRatio(window.devicePixelRatio);
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				document.body.appendChild(renderer.domElement);
+
+				let updateMouse = initMouse()
+
+				await initCamera()
+
+				initWindowResize()
+
+				function loop() {
+					let clockDelta = clock.getDelta()
+					frameDelta = clockDelta < .1 ? clockDelta : .1 //clamped because debugger pauses create weirdness
+
+					mouse.updateFromAsync()
+
+					updateFunctions.forEach((uf) => uf())
+
+					++frameCount
+
+					renderer.render(scene, camera)
+					setTimeout(() => {
+						requestAnimationFrame(loop)
+					}, 1000. / 60.);
+				}
+
+				loop()
+			}
+		</script>
+		
+	</body>
+</html>
