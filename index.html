@@ -1,3 +1,7 @@
+<!-- 
+	
+ -->
+
 <html>
 	<head>
 		<title>Murder, She Bet</title>
@@ -13,7 +17,8 @@
 	<body>
 		<script src="/socket.io/socket.io.js"></script>
 		
-		<script src="lib/three.min.js"></script>
+		<script src="three.min.js"></script>
+		<script src="instancedMesh.js"></script>
 
 		<script src="variables.js"></script>
 		<script src="miscFunctions.js"></script>
@@ -21,22 +26,37 @@
 		<script src="mouse.js"></script>
 
 		<script src="camera.js"></script>
+		<script src="board.js"></script>
 
 		<script src="rectangle.js"></script>
+
+		<script src="measuringRects.js"></script>
 		
 		<script src="windowResize.js"></script>
+
+		<script src="text.js"></script>
+
+		<script src="buttons.js"></script>
 
 		<script src="socketStuffAndPageInitialization.js"></script>
 
 		<script>
 			async function init(socket, ourID) {
+				initInstancedMesh()
+				initRectangles()
+
 				renderer = new THREE.WebGLRenderer({ antialias: true });
 				renderer.setPixelRatio(window.devicePixelRatio);
 				renderer.setSize(window.innerWidth, window.innerHeight);
+				renderer.setClearColor(bgColor)
 				document.body.appendChild(renderer.domElement);
+
+				initButtons()
 
 				let updateMouse = initMouse()
 
+				await initMeasuringRects()
+				initBoard()
 				await initCamera()
 
 				initWindowResize()

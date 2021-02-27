@@ -40,35 +40,63 @@ async function initCamera() {
         visible:false,
         x: 0., y: 0., w: 8., h: 8., z: 5.
     })
-    screenRect.mesh.visible = false
+    screenRect.visible = false
+    updateFunctions.push(()=>{
+        let dimension = Math.min(camera.top * 2., camera.right * 2.,)
+        screenRect.scale.set(dimension,dimension,1.)
+    })
 
-    const newSuspectButton = Rectangle({
-        x: -4., y: -4.,
-        w: 2., h: 2.,
-        onClick: () => {
-            screenRect.mesh.visible = true
-            // flipToOtherCameraButton.mesh.visible = true
-            takePictureButton.mesh.visible = true
+    newSuspectButton = Rectangle({
+        label: "new suspect",
+        haveIntendedPosition: true
+    })
+
+    newSuspectButton.onClick = () => {
+        screenRect.visible = true
+        // flipToOtherCameraButton.visible = true
+        takePictureButton.visible = true
+    }
+
+    updateFunctions.push(()=>{
+        newSuspectButton.intendedPosition.x = getPanelPositionX( suspects.length )
+
+        newSuspectButton.intendedPosition.x += 
+            suspects.length * (suspectPanelDimensionsMr.offset.x)
+
+        newSuspectButton.scale.x = suspectPanelDimensionsMr.offset.x
+        newSuspectButton.scale.y = suspectPanelDimensionsMr.offset.x
+
+        if(frameCount === 0) {
+            newSuspectButton.position.x = newSuspectButton.intendedPosition.x
+            newSuspectButton.position.y = newSuspectButton.intendedPosition.y
         }
     })
 
-    // const flipToOtherCameraButton = Rectangle({
-    //     x: 5., y: -3, w: 3., h: 1., z: 6.,
-    //     col: 0x00FFFF,
-    //     visible: false,
-    //     onClick: () => {
-    //         alert("sorry, don't know how to do this yet")
-    //     }
-    // })
+    /**
+     * The plan is: you have a function getTweakable("variableName")
+     * The tweakables are all shown in a ui, you can change them
+     * 
+     * Possibly better would be hidable rects that you can grab in place and resize
+     */
+
+    const flipToOtherCameraButton = Rectangle({
+        x: 0., y: -5, w: 3., h: 1., z: 6.,
+        col: 0x00FFFF,
+        visible: false,
+        onClick: () => {
+            alert("sorry, don't know how to do this yet")
+        }
+    })
 
     const takePictureButton = Rectangle({
         x: -0., y: -3, w: 3., h: 1., z: 6.,
+        label: "take picture",
         col: 0x00FF00,
         visible: false,
         onClick: () => {
-            screenRect.mesh.visible = false
-            // flipToOtherCameraButton.mesh.visible = false
-            takePictureButton.mesh.visible = false
+            screenRect.visible = false
+            flipToOtherCameraButton.visible = false
+            takePictureButton.visible = false
 
             const canvas = document.createElement('canvas')
             canvas.width  = video.videoWidth
@@ -76,18 +104,16 @@ async function initCamera() {
             const ctx = canvas.getContext('2d')
             ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
 
-            Rectangle({
+            const portrait = Rectangle({
                 map: new THREE.CanvasTexture(canvas),
-                x: screenRect.position.x, 
+                x: screenRect.position.x,
                 y: screenRect.position.y,
                 w: screenRect.scale.x,
                 h: screenRect.scale.y,
-
-                intendedPosition: new THREE.Vector3().copy(newSuspectButton.position),
-                intendedScale: new THREE.Vector3().copy(newSuspectButton.scale)
+                hasFrame: true
             })
 
-            newSuspectButton.position.x += 4.
+            Suspect(portrait)
         }
     })
 }

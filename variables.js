@@ -29,3 +29,7 @@ const v5 = new THREE.Vector3()
 
 let unitSquareGeo = new THREE.PlaneBufferGeometry()
 const rectangles = []
+
+const suspects = []
+
+const bgColor = 0x666666
