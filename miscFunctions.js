@@ -1,3 +1,17 @@
+function getMax(array,functionToMaximize) {
+	let elementWithHighest = null
+	let highestValueSoFar = -Infinity
+	array.forEach((element,i)=>{
+		let value = functionToMaximize(element,i)
+		if( value !== undefined && value > highestValueSoFar) {
+			highestValueSoFar = value
+			elementWithHighest = element
+		}
+	})
+
+	return elementWithHighest
+}
+
 const copyToClipboard = str => {
 	const el = document.createElement('textarea');
 	el.value = str;

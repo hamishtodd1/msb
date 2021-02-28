@@ -25,7 +25,7 @@ function initMouse()
 			let highestZ = -Infinity
 			for(let i = 0; i < rectangles.length; ++i) {
 				let r = rectangles[i]
-				if (r.mouseInside() && r.visible && r.position.z > highestZ) {
+				if (r.onClick !== undefined && r.mouseInside() && r.visible && r.position.z > highestZ) {
 					highestR = r
 					highestZ = r.position.z
 				}

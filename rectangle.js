@@ -19,6 +19,11 @@ function initRectangles() {
                 target.x += this.scale.x * .5 * (edge === "l" ? -1. : 1.)
         }
 
+        rect.goToIntendedPosition = () => {
+            rect.position.x = rect.intendedPosition.x
+            rect.position.y = rect.intendedPosition.y
+        }
+
         rect.getCorner = function (corner, target) {
             target.x = this.position.x
             target.y = this.position.y
@@ -28,6 +33,14 @@ function initRectangles() {
         }
         //the bets are all the same length as the money they're worth
 
+        rect.setPositionFromEdge = function (edge,x,y) {
+            rect.position.x = 0
+            rect.position.y = 0
+            rect.getEdgeCenter(edge, v0)
+
+            rect.position.x = x - v0.x
+            rect.position.y = y - v0.y
+        }
         rect.setPositionFromCorner = function (corner, x, y) {
 
             let xAddition = (corner[1] === "l" ? 1. : -1.) * this.scale.x / 2.
