@@ -1,12 +1,99 @@
 <!-- 
-Send to chris makler
-Julia Galef (so you think you're good at boardgames)	
-wsb, hacker news
+    SFX for stuff being sucked up
+        https://freesound.org/people/LloydEvans09/sounds/221495/
+        https://freesound.org/people/LloydEvans09/sounds/321806/
+        https://freesound.org/people/_bepis/sounds/415198/
+        https://freesound.org/people/Julalvr/sounds/429873/
+        https://freesound.org/people/Quistard/sounds/231953/
+        https://freesound.org/people/LloydEvans09/sounds/321807/
+        https://freesound.org/people/Mrthenoronha/sounds/369776/
+        https://freesound.org/people/Mrthenoronha/sounds/369916/
+
+    you are a lot more likely to make progress in academia than on politics
+
+	Other games/shows to prediction-market-ize
+		Mafia
+		First Dates
+		Top scorer in football
+		Me debating someone else about whether prediction markets are a good idea
+
+    Script for "murder mystery", sock puppets:
+        Ahh help I'm being murdered
+            BUT WHO COULD HAVE DONE THIS??
+        Hello, I'm his estranged wife, and I must admit I really grew to dislike him
+        I'm his Butler. I really liked him but it must be said that I had motive to 
+        pause
+        Didn't he say something about readjusting his will tomorrow?
+
+        Hello. Well, I'm a Butler. But I certainly didn't do it
+        AND I... AM... a random passer by, I don't know who that is at all
+        Really? I could swear I've seen you around
+        Nope, honestly never been here before. Are you sure you didn't do it?
+        Well, ok, to be honest I did do it, I just couldn't stand him any more
+        Alright I guess that clears that up
+        OR DOES IT?
+        No, yes, it's cleared up, it was definitely me
+        THE END
+
+        Oh alright, it was me actually
+
+        Me: This man has been killed! But who was it?
+        A: Well, I never liked him anyway
+        B: I liked him a lot, although I do wish he would keep away from my poisonous frog collection
+        Hmm, there is also his ex wife, who appears to have absconded to the bahamas
+        Oh, it turns out it was me
+
+    Do a game with
+        Chia
+        Devon
+        Florian, Jacob
+        Whatsisname, young guy in edinburgh
+
+    Could also do this with:
+        Who's going to end up with whom in a rom com
+        Who will win football
+        
+    TODO
+        Removing suspects (iff no bets)
+        Marking winner
+        Sfx
+            cha ching https://freesound.org/people/Lucish_/sounds/554841/
+            "Dumf, no money"]
+		"Lobbyist mode"
+			when some new suspect is introduced, a random player gets assigned:
+			Twice/thrice the cash of anyone else
+
+    Send to
+        r/wsb
+        Friends:
+			Chao, Chigozie, Devon, Florian and Jacob
+            Facebook friends, every night
+            Edindies friends
+			Andrew Mathers
+			Chris makler
+			Vitalik Buterin
+			Other people on those panels, that harvard lady
+			Lex Friedman
+			wsb, hacker news
+		Rationalist
+			r/ssc
+			lesswrong
+			London rationalish
+			Annie Duke
+			Julia Galef (so you think you're good at whodunnits...)	
+			Jeffrey Ladish
+			rob wiblin, katja grace, Carl Shulman whoever that is
+
+    one might get things like the radiolab "Buy and then immediately sell when you see the price"
+    different name: "the hansonian betting board". Bet on anything you like
+    advantage this might have over board game: you don't have to look down and check whether
+        you've got bets on a character you've lost faith in being guilty,
+        you can just immediately go over and decrease your bet
  -->
 
 <html>
 	<head>
-		<title>Murder, She Bet</title>
+		<title>Murder, She Bet [BETA]</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -28,7 +115,15 @@ wsb, hacker news
 		<script src="mouse.js"></script>
 
 		<script src="camera.js"></script>
+		<script src="cashBits.js"></script>
+		<script src="bets.js"></script>
+		<script src="suspects.js"></script>
 		<script src="board.js"></script>
+
+		<script>
+			const module = { exports: {} }
+		</script>
+		<script src="shared.js"></script>
 
 		<script src="rectangle.js"></script>
 
@@ -47,6 +142,8 @@ wsb, hacker news
 				initInstancedMesh()
 				initRectangles()
 
+				log(pm.betsPerSuspect)
+
 				renderer = new THREE.WebGLRenderer({ antialias: true });
 				renderer.setPixelRatio(window.devicePixelRatio);
 				renderer.setSize(window.innerWidth, window.innerHeight);
@@ -62,6 +159,8 @@ wsb, hacker news
 				await initCamera()
 
 				initWindowResize()
+
+				socket.emit("ready for suspect portraits")
 
 				function loop() {
 					let clockDelta = clock.getDelta()

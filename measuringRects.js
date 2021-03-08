@@ -1,6 +1,6 @@
 function initMeasuringRects() {
     const measuringRectOffset = 
-        { "test": { "x": 4.231738035264483, "y": 3.375314861460957 }, "panelPadding": { "x": 2.216624685138539, "y": 1.7128463476070532 }, "bet slot": { "x": 3.6474164133738602, "y": 0.182370820668693 }, "suspectPanelDimensions": { "x": 4.55919395465995, "y": 18. } }
+        { "test": { "x": 4.231738035264483, "y": 3.375314861460957 }, "panelPadding": { "x": 0.604982206405694, "y": 1.8861209964412815 }, "bet slot": { "x": 3.6474164133738602, "y": 0.182370820668693 }, "suspectPanelDimensions": { "x": 4.55919395465995, "y": 18 } }
 
     const mrs = []
 
@@ -18,7 +18,7 @@ function initMeasuringRects() {
             label: name,
             opacity: .2,
             z: 8.,
-            // visible: false,
+            visible: false,
             onClick: () => {
                 grabbed = true
             }

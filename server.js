@@ -1,131 +1,283 @@
 //--------------Bringing in libraries
-var express = require('express');
-var app = express();
+const express = require("express");
+const app = express();
 app.use(express.static(__dirname ));
 
-//Sends files when requested
-app.get('/', function(req, res)
-{
-	res.sendFile(__dirname + '/index.html');
+//Sends files
+app.get("/", function(req, res) {
+	res.sendFile(__dirname + "/index.html");
 });
 
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+const http = require("http").Server(app);
+const io = require("socket.io")(http);
 
-//-------------Below here is our stuff
-var rooms = {};
-function beginRoom(pdbWebAddress, id)
-{
-	rooms[id] = {};
-	rooms[id].pdbWebAddress = "data/NUDT7A-x1203.pdb";
-	rooms[id].participants = [];
+http.listen(9090, () => {
+	log("\nServer is listening");
+
+	let os = require('os');
+
+	let interfaces = os.networkInterfaces();
+	console.log("\nPossible IP addresses:")
+	for (let k in interfaces) {
+		for (let k2 in interfaces[k]) {
+			let address = interfaces[k][k2];
+			if (address.family === 'IPv4' && !address.internal) {
+				console.log(address.address)
+			}
+		}
+	}
+})
+
+////////////////////
+// INFRASTRUCTURE //
+////////////////////
+
+const log = console.log
+
+const pm = require("./shared.js")
+
+const rooms = {}
+
+function beginRoom(id) {
+	let room = {}
+	rooms[id] = room
+
+	room.sockets = []
+	room.suspects = []
+
+	room.broadcastState = () => {
+		room.sockets.forEach( (socket)=>{
+			let msg = {
+				staticCash: socket.staticCash,
+				suspects: []
+			}
+			room.suspects.forEach((suspect, i) => {
+				msg.suspects[i] = {
+					cashBits: suspect.cashBits,
+					bets: suspect.bets
+				}
+			})
+
+			socket.emit("room update", msg)
+		})
+		//various translations needed
+	}
 }
+
 //Default room
-beginRoom("data/NUDT7A-x1203.pdb", "oo");
+beginRoom("oo");
 
-io.on('connection', function(socket)
-{
-	console.log("potential user connected: ", socket.id);
+io.on("connection", (socket) => {
 
-	socket.emit('serverConnected');
+	let self = socket
 
-	socket.on( 'logThisMessage', function(msg)
-	{
-		console.log(msg);
-	});
+	log("potential user connected: ", socket.id);
 
-	var roomKey = "";
+	socket.emit("serverConnected");
 
-	socket.on('roomInitializationRequest', function(pdbWebAddress)
+	socket.on("roomInitializationRequest", function(pdbWebAddress)
 	{
 		roomKey = (Math.random()+1).toString(36).substr(2,2);
-		console.log( "starting room: ", roomKey)
+		log( "starting room: ", roomKey)
 		if( rooms[roomKey] )
-		{
-			console.log("Tried to start a room that already exists?")
-		}
+			log("Tried to start a room that already exists?")
 
 		beginRoom(pdbWebAddress, roomKey)
 
-		bringIntoAllocatedRoom();
+		bringIntoRoom(rooms[roomKey])
 	});
 
-	socket.on('roomEntryRequest', function(requestedRoomKey)
+	socket.on("roomEntryRequest", function(requestedRoomKey)
 	{
-		if( !rooms[requestedRoomKey] )
-		{
-			console.log( "didn't find room ", requestedRoomKey, ", all we have is ", rooms)
-			socket.emit('logThisMessage', "room not found");
+		if( !rooms[requestedRoomKey] ) {
+			log( "didn't find room ", requestedRoomKey, ", all we have is ", rooms)
+			socket.emit("logThisMessage", "room not found");
 		}
-		else
-		{
+		else {
 			roomKey = requestedRoomKey;
-			bringIntoAllocatedRoom();
+			bringIntoRoom(rooms[roomKey])
 		}
 	});
 
-	function bringIntoAllocatedRoom()
-	{
-		socket.emit('roomInvitation', {
-			roomKey:roomKey,
-			pdbWebAddress:rooms[roomKey].pdbWebAddress,
-			ourID:socket.id
+	function bringIntoRoom(room) {
+
+		self.emit("roomInvitation", {
+			roomKey,
+			ourID: self.id
 		} );
 
-		rooms[roomKey].participants.push(socket);
+		room.sockets.push(self);
 
-		console.log( "\nallocating ", socket.id, " to room ", roomKey, "\ncurrent number of participants: ", rooms[roomKey].participants.length);
+		log( "\nallocating ", self.id, " to room ", roomKey, "\ncurrent number of sockets: ", room.sockets.length);
 
-		//---------------the below is everything that goes beyond entry
-		function emitToAllOthersInRoom(messageString,content)
-		{
-			for(var i = 0; i < rooms[roomKey].participants.length; i++)
-			{
-				if( rooms[roomKey].participants[i] !== socket )
-				{
-					rooms[roomKey].participants[i].emit(messageString,content);
+		self.on("disconnect", () => {
+			room.sockets.splice(room.sockets.indexOf(self),1);
+
+			if( roomKey !== "oo" && room.sockets.length === 0)
+				delete room;
+		})
+
+		////////////////////////
+		// THE IMPORTANT PART //
+		////////////////////////
+
+		let entireColumnPrice = 0.
+		for (let i = 0.; i < pm.betsPerSuspect; ++i)
+			entireColumnPrice += pm.betPrices[i]
+		let arbitraryValueChosenByRobinHanson = .6
+		self.staticCash = entireColumnPrice * arbitraryValueChosenByRobinHanson // STARTING CASH
+
+		getTotalCash = (socket) => {
+			return socket.staticCash + pm.getLooseCash(socket.id, room.suspects)
+		}
+
+		const suspects = room.suspects
+
+		Suspect = (msg) => {
+			let suspect = {
+				cashBits: Array(pm.betsPerSuspect),
+				bets: Array(pm.betsPerSuspect),
+				portraitImageSrc: msg.portraitImageSrc
+			}
+
+			suspects.push(suspect)
+			log("adding suspect, number: " + suspects.indexOf(suspect))
+			//or possibly you want to replace what was in there, this code does that
+			// for(let i = 0; i <= suspects.length; ++i) {
+			// 	if (suspects[i] === undefined) {
+			// 		suspects[i] = suspect
+			// 		break
+			// 	}
+			// }
+			
+			for(let i = 0; i < pm.betsPerSuspect; ++i) {
+				suspect.cashBits[i] = {
+					associatedPlayer: pm.NO_OWNERSHIP,
+					value: pm.betPrices[i]
+				}
+
+				suspect.bets[i] = { owner: pm.BOARD_OWNERSHIP }
+			}
+
+			room.sockets.forEach( (particularSocket) => {
+				emitSuspect(suspect, particularSocket)
+			})
+		}
+		self.on("new suspect", Suspect )
+
+		function emitSuspect(suspect,particularSocket) {
+			log("sending suspect " + suspects.indexOf(suspect))
+			particularSocket.emit("new suspect", {
+				index: suspects.indexOf(suspect),
+				portraitImageSrc: suspect.portraitImageSrc
+			})
+		}
+
+		socket.on( "ready for suspect portraits", ()=>{
+			room.suspects.forEach((suspect, i) => {
+				if (suspect !== undefined)
+					emitSuspect(suspect,socket)
+			})
+			room.broadcastState()
+		})
+
+		// self.on("delete",(msg)=>{
+		// 	delete suspects[msg.suspect]
+		// })
+
+		self.on("sell", (msg) => {
+			let suspect = suspects[msg.suspect]
+			log("total cash", getTotalCash(self))
+
+			let betToSell = suspect.bets.find( bet => bet.owner === self.id )
+			if (betToSell === undefined)
+				self.emit("unsuccessful sell")
+			else {
+				let numInBoard = pm.getNumBoardBets(suspect)
+				let slotIndex = pm.betsPerSuspect - numInBoard - 1
+
+				let cb = suspect.cashBits[slotIndex]
+				let currentOwner = pm.getCashBitOwnership(suspect, cb)
+
+				if (currentOwner !== pm.NO_OWNERSHIP)
+					currentOwner.staticCash += pm.betPrices[slotIndex]
+
+				cb.associatedPlayer = self.id
+
+				betToSell.owner = pm.BOARD_OWNERSHIP
+				
+				log("total cash", getTotalCash(self))
+
+				room.broadcastState()
+			}
+		})
+
+		//you have 10 staticCash
+		//you buy a bet worth 1
+		//you now have 9 staticCash
+		//Also, a cashbit worth 1 is associated with you
+
+		self.on("buy", (msg) => {
+			let suspect = suspects[msg.suspect]
+			log("total cash", getTotalCash(self))
+
+			let betToBuy = suspect.bets.find(bet => bet.owner === pm.BOARD_OWNERSHIP)
+			if (betToBuy === undefined)
+				self.emit("unsuccessful buy") //no bets left
+			else {
+				let numInBoard = pm.getNumBoardBets(suspect)
+				let slotIndex = pm.betsPerSuspect - numInBoard
+
+				if (pm.betPrices[slotIndex] > getTotalCash(self))
+					self.emit("unsuccessful buy") //too expensive
+				else {
+					let cb = suspect.cashBits[slotIndex]
+					let currentOwner = pm.getCashBitOwnership(suspect, cb)
+
+					if (currentOwner !== self.id) { //you were the last to sell to this slot
+						if (currentOwner !== pm.NO_OWNERSHIP )
+							currentOwner.staticCash += pm.betPrices[slotIndex]
+
+						cb.associatedPlayer = self.id
+						self.staticCash -= pm.betPrices[slotIndex]
+					}
+
+					betToBuy.owner = self.id
+					
+					log("total cash", getTotalCash(self))
+
+					mergeOwnedCashBitsIntoStaticCashIfNecessary()
+					room.broadcastState()
 				}
 			}
+		})
+
+		self.associateCashBit = function( suspect, slotIndex ) {
+			let cashBitToAssociate = suspect.cashBits[slotIndex]
+			
+			let currentOwner = pm.getCashBitOwnership(suspect,cashBitToAssociate)
+			if( currentOwner !== pm.NO_OWNERSHIP)
+				currentOwner.staticCash += cashBitToAssociate.value
+
+			cashBitToAssociate.associatedPlayer = self.id
+			self.staticCash -= cashBitToAssociate.value
+			//this is NOT the thing that TAKES the cash. It's just changing visual depiction
+
+			mergeOwnedCashBitsIntoStaticCashIfNecessary()
 		}
 
-		function markMessageAsSimplyRebroadcasted(messageString)
-		{
-			socket.on(messageString, function(content)
-			{
-				emitToAllOthersInRoom(messageString,content)
-			});
-		}
-		markMessageAsSimplyRebroadcasted('userUpdate');
-		markMessageAsSimplyRebroadcasted('poiUpdate');
-		markMessageAsSimplyRebroadcasted('masterCommand');
-
-		socket.on('disconnect', function ()
-		{
-			rooms[roomKey].participants.splice(rooms[roomKey].participants.indexOf(socket),1);
-
-			if( roomKey !== "oo" && rooms[roomKey].participants.length === 0)
-			{
-				delete rooms[roomKey];
+		function mergeOwnedCashBitsIntoStaticCashIfNecessary() {
+			//could only do some of them
+			if (self.staticCash < 0.) {
+				suspects.forEach((sus) => {
+					sus.cashBits.forEach( (cb, i) => {
+						if (pm.getCashBitOwnership(sus, cb) === self.id) {
+							cb.associatedPlayer = pm.NO_OWNERSHIP
+							self.staticCash += cb.value
+						}
+					})
+				})
 			}
-		});
-	}
-
-});
-
-http.listen(9090, function() //Might need a sudo
-{
-	console.log('\nServer is listening on port 9090, go there in a browser');
-
-	var os = require('os');
-
-	var interfaces = os.networkInterfaces();
-	console.log("\nPossible IP addresses:")
-	for (var k in interfaces) {
-	    for (var k2 in interfaces[k]) {
-	        var address = interfaces[k][k2];
-	        if (address.family === 'IPv4' && !address.internal) {
-	            console.log(address.address)
-	        }
-	    }
+		}
 	}
 });
