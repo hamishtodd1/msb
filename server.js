@@ -75,17 +75,17 @@ io.on("connection", (socket) => {
 
 	socket.emit("serverConnected");
 
-	socket.on("roomInitializationRequest", function(pdbWebAddress)
-	{
-		roomKey = (Math.random()+1).toString(36).substr(2,2);
-		log( "starting room: ", roomKey)
-		if( rooms[roomKey] )
-			log("Tried to start a room that already exists?")
+	// socket.on("roomInitializationRequest", () => {
 
-		beginRoom(pdbWebAddress, roomKey)
+	// 	roomKey = (Math.random()+1).toString(36).substr(2,2);
+	// 	log( "starting room: ", roomKey)
+	// 	if( rooms[roomKey] )
+	// 		log("Tried to start a room that already exists?")
 
-		bringIntoRoom(rooms[roomKey])
-	});
+	// 	beginRoom( roomKey)
+
+	// 	bringIntoRoom(roomKey)
+	// });
 
 	socket.on("roomEntryRequest", function(requestedRoomKey)
 	{
@@ -95,23 +95,32 @@ io.on("connection", (socket) => {
 		}
 		else {
 			roomKey = requestedRoomKey;
-			bringIntoRoom(rooms[roomKey])
+			bringIntoRoom(roomKey)
 		}
 	});
 
-	function bringIntoRoom(room) {
+	function bringIntoRoom(roomKey) {
+		log(roomKey)
+
+		const room = rooms[roomKey]
 
 		self.emit("roomInvitation", {
 			roomKey,
-			ourID: self.id
+			socketId: self.id
 		} );
 
 		room.sockets.push(self);
 
 		log( "\nallocating ", self.id, " to room ", roomKey, "\ncurrent number of sockets: ", room.sockets.length);
 
+		//possibly this isn't always triggering
 		self.on("disconnect", () => {
+			startJudgementModeIfBeingRequestedByAll()
+			//hmm, make sure we know the socket's bets etc before they go forever otherwise no conclusion
+
 			room.sockets.splice(room.sockets.indexOf(self),1);
+
+			log("player disconnected")
 
 			if( roomKey !== "oo" && room.sockets.length === 0)
 				delete room;
@@ -126,6 +135,8 @@ io.on("connection", (socket) => {
 			entireColumnPrice += pm.betPrices[i]
 		let arbitraryValueChosenByRobinHanson = .6
 		self.staticCash = entireColumnPrice * arbitraryValueChosenByRobinHanson // STARTING CASH
+		//Hey, maybe you should be able to buy the entire board.
+		//It's only meant to be about whether these things will make extra money for you
 
 		getTotalCash = (socket) => {
 			return socket.staticCash + pm.getLooseCash(socket.id, room.suspects)
@@ -216,6 +227,32 @@ io.on("connection", (socket) => {
 		//you buy a bet worth 1
 		//you now have 9 staticCash
 		//Also, a cashbit worth 1 is associated with you
+
+		function startJudgementModeIfBeingRequestedByAll() {
+			let startJudgementMode = true
+			room.sockets.forEach((sock, i) => {
+				log(i, sock.jugementModeBeingRequested)
+				if (sock.jugementModeBeingRequested === false)
+					startJudgementMode = false
+			})
+
+			if (startJudgementMode) {
+				room.sockets.forEach((sock) => {
+					sock.emit("judgement mode confirmed")
+				})
+			}
+		}
+
+		self.jugementModeBeingRequested = false
+		self.on("judgement mode requested",()=>{
+			self.jugementModeBeingRequested = true
+
+			startJudgementModeIfBeingRequestedByAll()
+		})
+		self.on("judgement mode request cancelled",()=>{
+			self.jugementModeBeingRequested = false
+		})
+		//another easy thing is showing the room id
 
 		self.on("buy", (msg) => {
 			let suspect = suspects[msg.suspect]

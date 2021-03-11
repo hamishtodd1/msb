@@ -35,3 +35,7 @@ const suspects = []
 const bgColor = 0x666666
 
 const socket = io();
+
+const OVERLAY_Z = 7.
+
+let judgementMode = false

@@ -1,4 +1,8 @@
 <!-- 
+	Send to Casey, "colleague of Caplan's".
+	"Acquire nice thing" sfx when you buy a bet
+	Have a test game with pontus and chig
+
     SFX for stuff being sucked up
         https://freesound.org/people/LloydEvans09/sounds/221495/
         https://freesound.org/people/LloydEvans09/sounds/321806/
@@ -11,13 +15,7 @@
 
     you are a lot more likely to make progress in academia than on politics
 
-	Other games/shows to prediction-market-ize
-		Mafia
-		First Dates
-		Top scorer in football
-		Me debating someone else about whether prediction markets are a good idea
-
-    Script for "murder mystery", sock puppets:
+	Script for "murder mystery", sock puppets:
         Ahh help I'm being murdered
             BUT WHO COULD HAVE DONE THIS??
         Hello, I'm his estranged wife, and I must admit I really grew to dislike him
@@ -43,12 +41,6 @@
         Hmm, there is also his ex wife, who appears to have absconded to the bahamas
         Oh, it turns out it was me
 
-    Do a game with
-        Chia
-        Devon
-        Florian, Jacob
-        Whatsisname, young guy in edinburgh
-
     Could also do this with:
         Who's going to end up with whom in a rom com
         Who will win football
@@ -66,6 +58,13 @@
     Send to
         r/wsb
         Friends:
+			Martin Todd, Diana
+			Mike Munger
+			Martin Berger
+			Edinburgh SSC
+				Whatsisname, young guy
+				Marian
+				Both the dudes
 			Chao, Chigozie, Devon, Florian and Jacob
             Facebook friends, every night
             Edindies friends
@@ -120,6 +119,8 @@
 		<script src="suspects.js"></script>
 		<script src="board.js"></script>
 
+		<script src="judgement.js"></script>
+
 		<script>
 			const module = { exports: {} }
 		</script>
@@ -138,7 +139,7 @@
 		<script src="socketStuffAndPageInitialization.js"></script>
 
 		<script>
-			async function init(socket, ourID) {
+			async function init(socket, socketId, roomKey) {
 				initInstancedMesh()
 				initRectangles()
 
@@ -154,11 +155,25 @@
 
 				let updateMouse = initMouse()
 
+				initSuspects()
+
 				await initMeasuringRects()
 				initBoard()
 				await initCamera()
 
 				initWindowResize()
+
+				initJudgement()
+
+				let idBoxDimension = 3.
+				const idBox = Rectangle({
+					label:"Room ID: " + roomKey,
+					w: idBoxDimension, h: idBoxDimension,
+					getPosition:(target) => {
+						target.x = camera.right - idBoxDimension / 2.
+						target.y = 0.
+					}
+				})
 
 				socket.emit("ready for suspect portraits")
 

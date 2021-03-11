@@ -1,8 +1,10 @@
 # What is this?
 Robin Hanson's "Murder She Bet", turned from boardgame to video game. Robin's post on the boardgame is [here](https://www.overcomingbias.com/2018/08/my-board-board-game.html), and see [here](http://mason.gmu.edu/~rhanson/futarchy.pdf) and [here](https://mason.gmu.edu/~rhanson/gamble.html) for the philosophy behind it.
 
+There is a [subreddit](https://www.reddit.com/r/MurderSheBet/)
+
 # Why did you make this?
-Originally, mostly because I was interested in the difference between physical activities / board games and virtual activities / video games. Murder, She Bet exists as a board game; I wanted to compare it with what it's like as a video game. I originally started this project during my PhD, which was in part focussed on the question of whether [Dynamicland](dynamicland.org) will turn out to be a good idea.
+Originally, mostly because I was interested in the difference between physical activities / board games and virtual activities / video games. Murder, She Bet exists as a board game; I wanted to compare it with what it's like as a video game. I originally started this project during my PhD, which was in part focussed on the related question of whether [Dynamicland](dynamicland.org) will turn out to be a good idea.
 
 ![Boardgame](./assets/board.jpg)
 
@@ -40,12 +42,18 @@ If you'd like to fork this and change the prices, the key values are:
 # Can I contact you?
 Please do, I'm @hamish_todd on twitter. My email is my first name, then my surname, then the numeral 1, at gmail.
 
-# SFX Credits
+# Credits
 Camera click: Kwahmah https://freesound.org/people/kwahmah_02/sounds/260138/
 
 Cash register: kiddpark https://freesound.org/people/kiddpark/sounds/201159/
 
 Kick: soneproject https://freesound.org/people/soneproject/sounds/332362/
+
+Take picture icon: https://icon-library.com/icon/take-picture-icon-10.html
+
+Gavel: https://freesound.org/people/odditonic/sounds/187705/
+
+The colorblindness-friendly color scheme for the bets is, of course, viridis, most badass of all color schemes, created by Nathaniel Smith and Stéfan van der Walt.
 
 # License
 MIT

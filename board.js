@@ -35,8 +35,14 @@ function initBoard() {
             mat: cashMat,
             h: betHeight,
             w: 999999999.,
-            x: 0.,
-            y: camera.bottom + .5
+            haveIntendedPosition:true,
+            y: camera.bottom + .5,
+            x: 0.
+        })
+        updateFunctions.push(()=>{
+            staticCash.intendedPosition.y = camera.bottom + .5
+            let totalCashWidth = getTotalCash() * cashWidth
+            staticCash.intendedPosition.x = -(totalCashWidth / 2. - staticCash.scale.x / 2.)
         })
     }
 

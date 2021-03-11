@@ -1,17 +1,12 @@
 const pm = {}
 
 pm.maxSuspects = 6
-
 pm.betsPerSuspect = 16
+let cheapestBet = 1. / 16. //the value of a bet if you win is 1.
+
 pm.betPrices = Array(pm.betsPerSuspect)
-{
-    //the value of a bet if you win is 1.
-    let cheapestBet = 1. / 16.
-    let betPriceStepDown = Math.pow(cheapestBet, 1. / pm.betsPerSuspect)
-    
-    for (let i = 0.; i < pm.betsPerSuspect; ++i)
-        pm.betPrices[i] = Math.pow(betPriceStepDown, pm.betsPerSuspect - i)
-}
+for (let i = 0.; i < pm.betsPerSuspect; ++i)
+    pm.betPrices[i] = Math.pow(cheapestBet, (pm.betsPerSuspect - i) / pm.betsPerSuspect)
 
 pm.BOARD_OWNERSHIP = -1
 pm.NO_OWNERSHIP = -2 //urgh, or "no association"? bit of a mess

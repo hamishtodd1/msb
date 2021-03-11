@@ -9,7 +9,19 @@
 	
 	socket.on("serverConnected", function()
 	{
-		var defaultTextBoxContent = "Delete this text then enter one of the following:\n1. Session ID number (if someone has already set up a room)\n2. oo to get into the test room\n\nThen press enter";
+		var defaultTextBoxContent = `
+		Delete this text then enter one of the following:
+			1. Session ID number (if someone has already set up a room)
+			2. oo to get into the test room
+			
+		Then press enter.
+		
+		1. At any time, any player can say "New suspect", and the show MUST be paused for a picture to be taken
+		2. When, and ONLY WHEN, the credits roll, guilty suspects shall have their colors turned green
+		3. That done, the player who owns the most green is the winner
+
+		The World's Shortest Murder Mystery (use this as a practice)`
+		// [embed a video of a game]
 
 		var textBox = document.createElement("TEXTAREA");
 		textBox.cols = 100;
@@ -57,7 +69,7 @@
 				window.location.reload()
 			});
 
-			init(socket, roomInformation.ourID);
+			init(socket, roomInformation.socketId, roomInformation.roomKey);
 		});
 	});
 })();

@@ -1,7 +1,7 @@
 function initRectangles() {
     let blackMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 })
     let tblr = "tblr"
-
+    
     Rectangle = function(params) {
         if (params === undefined)
             params = {}
@@ -28,8 +28,8 @@ function initRectangles() {
             target.x = this.position.x
             target.y = this.position.y
 
-            target.y += this.scale.y * 2. * (corner[0] === "t" ? 1. : -1.)
-            target.x += this.scale.x * 2. * (corner[1] === "l" ? -1. : 1.)
+            target.y += this.scale.y / 2. * (corner[0] === "t" ? 1. : -1.)
+            target.x += this.scale.x / 2. * (corner[1] === "l" ? -1. : 1.)
         }
         //the bets are all the same length as the money they're worth
 
@@ -63,19 +63,27 @@ function initRectangles() {
                 new THREE.MeshBasicMaterial()
 
             if (params.label) {
-                let textMesh = text(params.label, false)
-                rect.textMesh = textMesh
-                scene.add(textMesh)
+                let labelLines = typeof params.label === "string" ? [params.label] : params.label
+
+                rect.textMeshes = Array(labelLines.length)
+                labelLines.forEach((line,i)=>{
+                    rect.textMeshes[i] = text(line, false)
+                    scene.add(rect.textMeshes[i])
+                })
+                
                 updateFunctions.push(() => {
-                    textMesh.position.x = rect.position.x
-                    textMesh.position.y = rect.position.y
-                    textMesh.position.z = rect.position.z + .05
-
-                    textMesh.visible = rect.visible
-
+                    const widestWidth = (getMax(rect.textMeshes, (tm)=>{return tm.scale.x})).scale.x
                     const intendedWidth = rect.scale.x
-                    const scaleMultiple = intendedWidth / textMesh.scale.x
-                    textMesh.scale.multiplyScalar(scaleMultiple)
+                    const scaleMultiple = intendedWidth / widestWidth
+                    rect.textMeshes.forEach((tm,i) => {
+                        tm.position.x = rect.position.x
+                        tm.position.y = rect.position.y + tm.scale.y * -(i-(rect.textMeshes.length-1.)/2.)
+                        tm.position.z = rect.position.z + .05
+
+                        tm.visible = rect.visible
+
+                        tm.scale.multiplyScalar(scaleMultiple)
+                    })
                 })
             }
 
@@ -116,13 +124,13 @@ function initRectangles() {
                 rect.toggleVisibility = () => {
                     let newVal = !rect.visible
                     rect.visible = newVal
-                    if (rect.textMesh !== undefined)
-                        rect.textMesh.visible = newVal
+                    if (rect.textMeshes !== undefined)
+                        rect.textMeshes.forEach((tm)=>{t.visible = newVal})
                 }
             }
         }
 
-        if (params.frameThickness || params.hasFrame) {
+        if (params.frameThickness || params.haveFrame) {
             let thickness = params.frameThickness || .05
             rect.edges = Array(4)
             for(let i = 0; i < 4; ++i) {
@@ -135,6 +143,7 @@ function initRectangles() {
                 updateFunctions.push(()=>{
                     rect.getEdgeCenter(edge,frameR.position)
 
+                    frameR.position.z = rect.position.z
                     if (edge === "l" || edge === "r") {
                         frameR.position.x += thickness * .5 * (edge === "l" ? -1. : 1.)
                         frameR.scale.x = thickness

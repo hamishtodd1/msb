@@ -1,3 +1,7 @@
+//shaking
+//sfx
+//judgement picture
+
 function getMax(array,functionToMaximize) {
 	let elementWithHighest = null
 	let highestValueSoFar = -Infinity

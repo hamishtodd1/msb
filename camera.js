@@ -49,9 +49,9 @@ async function initCamera() {
     })
 
     newSuspectButton = Rectangle({
-        label: "new suspect",
+        label: ["new", "suspect"],
         haveIntendedPosition: true,
-        hasFrame: true,
+        haveFrame: true,
         frameOnly: true,
         z: -5.,
         getScale:(target) => {
@@ -59,10 +59,7 @@ async function initCamera() {
             target.y = suspectPanelDimensionsMr.offset.y
         },
         onClick: () => {
-            // flipToOtherCameraButton.visible = true
-            cameraFeedRect.visible = true
-            takePictureButton.visible = true
-            newSuspectButton.visible = false
+            setVisibility(true)
         }
     })
 
@@ -87,10 +84,7 @@ async function initCamera() {
     // })
 
     function takePicture() {
-        // flipToOtherCameraButton.visible = false
-        cameraFeedRect.visible = false
-        takePictureButton.visible = false
-        newSuspectButton.visible = true
+        setVisibility(false)
 
         //no fucking idea why but this shit needs to be in here!
         const videoCaptureCanvas = document.createElement('canvas')
@@ -105,16 +99,43 @@ async function initCamera() {
         socket.emit("new suspect", msg )
     }
 
-    const takePictureButton = Rectangle({
-        x: -0., y: -3, w: 3., h: 1., z: 6.,
-        label: "take picture",
-        col: 0x00FF00,
-        visible: false,
-        onClick: takePicture
+    let takePictureButton = null
+    new THREE.TextureLoader().load("assets/takePicture.png", (map) => {
+        log("Y")
+        takePictureButton = Rectangle({
+            x: -0., y: -8., w: 3., h: 3., z: 6.,
+            map,
+            col:0xFF0000,
+            visible: false,
+            onClick: takePicture
+        })
     })
 
-    // updateFunctions.push(() => {
-    //     if (frameCount === 20 && suspects.length === 0)
-    //         socket.emit("new suspect", {})
-    // })
+    function setVisibility(val) {
+        // flipToOtherCameraButton.visible = val
+        cameraFeedRect.visible = val
+        takePictureButton.visible = val
+        closeButton.visible = val
+        newSuspectButton.visible = !val
+    }
+
+    let closeButton = null
+    {
+        let cbDimension = 2.
+        new THREE.TextureLoader().load("assets/close.png", (map) => {
+            closeButton = Rectangle({
+                w: cbDimension, h: cbDimension, z: 6.,
+                map,
+                visible: false,
+                getPosition: (target) => {
+                    cameraFeedRect.getCorner("tr", target)
+                    target.x -= cbDimension / 2.
+                    target.y -= cbDimension / 2.
+                },
+                onClick: () => {
+                    setVisibility(false)
+                }
+            })
+        })
+    }
 }
