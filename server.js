@@ -45,16 +45,36 @@ function beginRoom(id) {
 	room.sockets = []
 	room.suspects = []
 
+	let msg = {
+		staticCashes: {},
+		suspects: []
+	}
+
 	room.broadcastState = () => {
+		room.sockets.forEach( (socket) => {
+			msg.staticCashes[socket.id] = socket.staticCash
+		})
+
 		room.sockets.forEach( (socket)=>{
-			let msg = {
-				staticCash: socket.staticCash,
-				suspects: []
-			}
 			room.suspects.forEach((suspect, i) => {
-				msg.suspects[i] = {
-					cashBits: suspect.cashBits,
-					bets: suspect.bets
+				if(suspect === undefined)
+					msg.suspects[i] = null
+				else {
+					if(msg.suspects[i] === undefined) {
+						msg.suspects[i] = {
+							cashBits: Array(pm.betsPerSuspect),
+							bets: Array(pm.betsPerSuspect)
+						}
+						for(let j = 0; j < pm.betsPerSuspect; ++j)
+							msg.suspects[i].cashBits[j] = { associatedPlayer: pm.NO_OWNERSHIP }
+						for(let j = 0; j < pm.betsPerSuspect; ++j)
+							msg.suspects[i].bets[j] = { owner: pm.BOARD_OWNERSHIP }
+					}
+
+					for (let j = 0; j < pm.betsPerSuspect; ++j)
+						msg.suspects[i].cashBits[j].associatedPlayer = room.suspects[i].cashBits[j].associatedPlayer
+					for (let j = 0; j < pm.betsPerSuspect; ++j)
+						msg.suspects[i].bets[j].owner = room.suspects[i].bets[j].owner
 				}
 			})
 

@@ -98,7 +98,7 @@ function initBoard() {
     socket.on("room update", (msg) => {
         console.assert(msg.suspects.length === suspects.length)
 
-        staticCash.scale.x = msg.staticCash * cashWidth
+        staticCash.scale.x = msg.staticCashes[socket.id] * cashWidth
 
         suspects.forEach((suspect, i) => {
             suspect.bets.forEach((bet, j) => {

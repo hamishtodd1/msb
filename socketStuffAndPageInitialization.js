@@ -70,6 +70,7 @@
 			});
 
 			init(socket, roomInformation.socketId, roomInformation.roomKey);
+			//you don't need to give socketId, it has that!
 		});
 	});
 })();

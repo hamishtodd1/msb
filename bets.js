@@ -31,6 +31,8 @@ function bestowBets(suspect) {
         betsAccountedFor[bets.indexOf(closestBet)] = true
     }
 
+    // Haven't proven that this system works tbh
+
     const betsAccountedFor = Array(pm.betsPerSuspect)
     updateFunctions.push(() => {
 

@@ -29,7 +29,7 @@ Aside from the board game vs video game thing:
 
     3. Prediction markets may or may not be a good idea. But at the very least we can agree that the modern academic system, which is in the background of much of science, is just awful (especially for something that's supposed to, and sometimes does, produce great things). It's so sickening that we should consider any alternative whatsoever to be something worthy of serious consideration.
 
-    4. Probably I want to signal tribal allegiance with rationalists, plus intelligence! For more on this, see Robin's book The Elephant In The Brain ;D
+    4. Probably I want to signal tribal allegiance with rationalists, plus intelligence! For more on this, see Robin's book The Elephant In The Brain! One piece of evidence for this is that I always thought of my interest in games-as-communication as being mostly about level design, but Murder She bet has no level design.
 
 # Specific pricing
 I've tweaked the rewards a bit from the original, where the prices of contracts had to be multiples of 5. There's good reason to do this. One problem with discrete jumps, that the boardgame had is how the second smallest bet is TWICE as costly as the smallest bet. This is a bad discontinuity that many experienced game designers (at least those at Edinburgh Independent Game Developers) know to avoid!

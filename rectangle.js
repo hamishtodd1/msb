@@ -70,7 +70,7 @@ function initRectangles() {
                     rect.textMeshes[i] = text(line, false)
                     scene.add(rect.textMeshes[i])
                 })
-                
+
                 updateFunctions.push(() => {
                     const widestWidth = (getMax(rect.textMeshes, (tm)=>{return tm.scale.x})).scale.x
                     const intendedWidth = rect.scale.x
@@ -83,7 +83,14 @@ function initRectangles() {
                         tm.visible = rect.visible
 
                         tm.scale.multiplyScalar(scaleMultiple)
+
+                        tm.position.z = rect.position.z
                     })
+
+                    if(params.getScaleFromLabel ) {
+                        console.assert(rect.textMeshes.length === 1)
+                        rect.scale.x = rect.textMeshes[0].material.getAspect() * rect.scale.y
+                    }
                 })
             }
 
