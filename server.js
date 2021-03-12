@@ -11,7 +11,7 @@ app.get("/", function(req, res) {
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 
-http.listen(9090, () => {
+http.listen(443, () => {
 	log("\nServer is listening");
 
 	let os = require('os');

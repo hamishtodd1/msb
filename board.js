@@ -18,7 +18,7 @@ function initBoard() {
         const slotMr = MeasuringRect("bet slot", false)
         cashWidth = 2.2
         betHeight = Math.abs(slotMr.offset.y)
-        slotFrameThickness = .04
+        slotFrameThickness = .08
 
         cashMat = new THREE.MeshBasicMaterial()
 

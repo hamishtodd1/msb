@@ -11,6 +11,7 @@ async function initCamera() {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia(mediaConfig).then(function (stream) {
                 video.srcObject = stream;
+                log(stream)
             });
         }
         /* Legacy code below! */
@@ -92,15 +93,13 @@ async function initCamera() {
         const ctx = videoCaptureCanvas.getContext('2d')
         ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
 
-        let msg = {
+        socket.emit("new suspect", {
             portraitImageSrc: videoCaptureCanvas.toDataURL("image/png")
-        }
-        socket.emit("new suspect", msg )
+        } )
     }
 
     let takePictureButton = null
     new THREE.TextureLoader().load("assets/takePicture.png", (map) => {
-        log("Y")
         takePictureButton = Rectangle({
             x: -0., y: -8., w: 3., h: 3., z: 6.,
             map,
@@ -116,6 +115,7 @@ async function initCamera() {
         takePictureButton.visible = val
         closeButton.visible = val
         newSuspectButton.visible = !val
+
         if(val)
             video.play()
         else
