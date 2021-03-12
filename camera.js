@@ -2,7 +2,7 @@ async function initCamera() {
 
     const video = document.createElement('video');
     {
-        video.autoplay = true
+        video.autoplay = false
         const mediaConfig = { video: true, facingMode: "environment" };
         const errBack = function (e) {
             console.log('An error has occurred!', e)
@@ -11,7 +11,6 @@ async function initCamera() {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia(mediaConfig).then(function (stream) {
                 video.srcObject = stream;
-                video.play();
             });
         }
         /* Legacy code below! */
@@ -117,6 +116,10 @@ async function initCamera() {
         takePictureButton.visible = val
         closeButton.visible = val
         newSuspectButton.visible = !val
+        if(val)
+            video.play()
+        else
+            video.pause()
     }
 
     let closeButton = null
