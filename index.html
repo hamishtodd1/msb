@@ -140,7 +140,7 @@
 		<script src="socketStuffAndPageInitialization.js"></script>
 
 		<script>
-			async function init(socket, socketId, roomKey) {
+			async function init(socket, roomId) {
 				initInstancedMesh()
 				initRectangles()
 
@@ -168,7 +168,7 @@
 
 				let idBoxDimension = 3.
 				const idBox = Rectangle({
-					label:"Room ID: " + roomKey,
+					label:"Game ID: " + roomId,
 					w: idBoxDimension, h: idBoxDimension,
 					getPosition:(target) => {
 						target.x = camera.right - idBoxDimension / 2.

@@ -11,21 +11,10 @@ app.get("/", function(req, res) {
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 
-http.listen(443, () => {
-	log("\nServer is listening");
+const port = process.env.PORT || 443
 
-	let os = require('os');
-
-	let interfaces = os.networkInterfaces();
-	console.log("\nPossible IP addresses:")
-	for (let k in interfaces) {
-		for (let k2 in interfaces[k]) {
-			let address = interfaces[k][k2];
-			if (address.family === 'IPv4' && !address.internal) {
-				console.log(address.address)
-			}
-		}
-	}
+http.listen(port, () => {
+	log("\nServer is listening on port ", port);
 })
 
 ////////////////////
@@ -97,14 +86,14 @@ io.on("connection", (socket) => {
 
 	// socket.on("roomInitializationRequest", () => {
 
-	// 	roomKey = (Math.random()+1).toString(36).substr(2,2);
-	// 	log( "starting room: ", roomKey)
-	// 	if( rooms[roomKey] )
+	// 	roomId = (Math.random()+1).toString(36).substr(2,2);
+	// 	log( "starting room: ", roomId)
+	// 	if( rooms[roomId] )
 	// 		log("Tried to start a room that already exists?")
 
-	// 	beginRoom( roomKey)
+	// 	beginRoom( roomId)
 
-	// 	bringIntoRoom(roomKey)
+	// 	bringIntoRoom(roomId)
 	// });
 
 	socket.on("roomEntryRequest", function(requestedRoomKey)
@@ -114,24 +103,23 @@ io.on("connection", (socket) => {
 			socket.emit("logThisMessage", "room not found");
 		}
 		else {
-			roomKey = requestedRoomKey;
-			bringIntoRoom(roomKey)
+			roomId = requestedRoomKey;
+			bringIntoRoom(roomId)
 		}
 	});
 
-	function bringIntoRoom(roomKey) {
-		log(roomKey)
+	function bringIntoRoom(roomId) {
+		log(roomId)
 
-		const room = rooms[roomKey]
+		const room = rooms[roomId]
 
 		self.emit("roomInvitation", {
-			roomKey,
-			socketId: self.id
+			roomId
 		} );
 
 		room.sockets.push(self);
 
-		log( "\nallocating ", self.id, " to room ", roomKey, "\ncurrent number of sockets: ", room.sockets.length);
+		log( "\nallocating ", self.id, " to room ", roomId, "\ncurrent number of sockets: ", room.sockets.length);
 
 		//possibly this isn't always triggering
 		self.on("disconnect", () => {
@@ -142,7 +130,7 @@ io.on("connection", (socket) => {
 
 			log("player disconnected")
 
-			if( roomKey !== "oo" && room.sockets.length === 0)
+			if( roomId !== "oo" && room.sockets.length === 0)
 				delete room;
 		})
 

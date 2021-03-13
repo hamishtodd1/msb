@@ -69,7 +69,7 @@
 				window.location.reload()
 			});
 
-			init(socket, roomInformation.socketId, roomInformation.roomKey);
+			init(socket, roomInformation.roomId);
 			//you don't need to give socketId, it has that!
 		});
 	});
