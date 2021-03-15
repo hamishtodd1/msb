@@ -25,23 +25,23 @@ As a video game, Murder She Bet is:
 * Is able to have a leaderboard at the end rather than a simple win/loss, so people's skill is more accurately and proportionately reported. This, I think, combats a problem pointed out by [Zvi Moshowitz](https://www.lesswrong.com/posts/fs2ozRQ4osJr9Wbfu/on-robin-hanson-s-board-game) that in the boardgame, that the endgame has distorted incentives that point away from buy bets that reflect your belief about the probability of a suspect's guilt.
 
 Aside from the board game vs video game thing:
-    1. Visualizing mathematics is interesting. This is especially true of statistics. Statistics, as a field, is abstract and dry - but much as I love geometry, statistics is probably the most important area of mathematics, because almost all human thought is statistical, though people foolishly pretend it isn't.
+* Visualizing mathematics is interesting. This is especially true of statistics. Statistics, as a field, is abstract and dry - but much as I love geometry, statistics is probably the most important area of mathematics, because almost all human thought is statistical, though people foolishly pretend it isn't.
 
-    2. Using games to express sophisticated ideas is generally very interesting to me. Games are certainly good for expressing ideas when, as here, the idea is a system.
+* Using games to express sophisticated ideas is generally very interesting to me. Games are certainly good for expressing ideas when, as here, the idea is a system.
 
-    3. Prediction markets may or may not be a good idea. But at the very least we can agree that the modern academic system, which is in the background of much of science, is just awful (especially for something that's supposed to, and sometimes does, produce great things). It's so sickening that we should consider any alternative whatsoever to be something worthy of serious consideration.
+* Prediction markets may or may not be a good idea. But at the very least we can agree that the modern academic system, which is in the background of much of science, is just awful (especially for something that's supposed to, and sometimes does, produce great things). It's so sickening that we should consider any alternative whatsoever to be something worthy of serious consideration.
 
-    4. Probably I want to signal tribal allegiance with rationalists, plus intelligence! For more on this, see Robin's book The Elephant In The Brain! One piece of evidence for this is that I always thought of my interest in games-as-communication as being mostly about level design, but Murder She bet has no level design.
+* Probably I want to signal tribal allegiance with rationalists, plus intelligence! For more on this, see Robin's book The Elephant In The Brain! One piece of evidence for this is that I always thought of my interest in games-as-communication as being mostly about level design, but Murder She bet has no level design.
 
 # Specific pricing
 I've tweaked the rewards a bit from the original, where the prices of contracts had to be multiples of 5. There's good reason to do this. One problem with discrete jumps, that the boardgame had is how the second smallest bet is TWICE as costly as the smallest bet. This is a bad discontinuity that many experienced game designers (at least those at Edinburgh Independent Game Developers) know to avoid!
 
 If you'd like to fork this and change the prices, the key values are:
-    1. pm.betsPerSuspect. In the original game this was *10*. I drastically increased this, which I think is a pure win: you can have more fine-grain control over your bets, which becomes possible because betting is so much faster than the board game.
+* pm.betsPerSuspect. In the original game this was *10*. I drastically increased this, which I think is a pure win: you can have more fine-grain control over your bets, which becomes possible because betting is so much faster than the board game.
 
-    2. cheapestBet, which is measured as a proportion of the money that a successful bet wins. Set this to *0.09* to get bet values similar to the original game.
+* cheapestBet, which is measured as a proportion of the money that a successful bet wins. Set this to *0.09* to get bet values similar to the original game.
     
-    3. startingCash, which is measured as a proportion of the total price of 1 full column's worth of contracts. In the original game this is about *0.6*. Although possibly it should be measured as a proportion of the price per winning bet. I currently feel I have very little of idea what this "should" be. I think at least it should be uncommon, but not unheard of, for people to buy the most expensive bets before the endgame. Also, it should probably be impossible for someone to buy all the bets in a column at the beginning of a game and then just leave it at that. I suppose people in general should also have enough money to make any bet that they think will be worth it (a microcosm of the real world I guess!).
+* startingCash, which is measured as a proportion of the total price of 1 full column's worth of contracts. In the original game this is about *0.6*. Although possibly it should be measured as a proportion of the price per winning bet. I currently feel I have very little of idea what this "should" be. I think at least it should be uncommon, but not unheard of, for people to buy the most expensive bets before the endgame. Also, it should probably be impossible for someone to buy all the bets in a column at the beginning of a game and then just leave it at that. I suppose people in general should also have enough money to make any bet that they think will be worth it (a microcosm of the real world I guess!).
 
 # Can I contact you?
 Please do, I'm @hamish_todd on twitter. My email is my first name, then my surname, then the numeral 1, at gmail.
