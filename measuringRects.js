@@ -56,7 +56,7 @@ function initMeasuringRects() {
                 r.scale.y = .0001
 
             if(anchorToBottomLeft) {
-                r.anchor.set(-camera.right, -camera.top)
+                r.anchor.set(-camera.getRight(), -camera.getTop())
             }
         })
 

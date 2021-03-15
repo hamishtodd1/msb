@@ -132,7 +132,7 @@ function initRectangles() {
                     let newVal = !rect.visible
                     rect.visible = newVal
                     if (rect.textMeshes !== undefined)
-                        rect.textMeshes.forEach((tm)=>{t.visible = newVal})
+                        rect.textMeshes.forEach((tm)=>{tm.visible = newVal})
                 }
             }
         }

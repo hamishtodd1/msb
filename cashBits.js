@@ -32,12 +32,20 @@ function bestowCashBits(suspect,) {
         cashBits.push(cashBit)
     }
 
+    let previousOwners = Array(pm.betsPerSuspect)
     updateFunctions.push(() => {
         let tail = v0
         staticCash.getEdgeCenter("r", v0)
 
         cashBits.forEach((cashBit, i) => {
             let owner = pm.getCashBitOwnership(suspect, cashBit)
+            if(owner !== previousOwners[i]) {
+                if(owner === socket.id)
+                    playSound("gotMoney")
+                else if(owner !== pm.NO_OWNERSHIP)
+                    playSound("someoneElseGotMoney")
+                previousOwners[i] = owner
+            }
 
             if (owner === pm.NO_OWNERSHIP) {
                 cashBit.intendedPosition.x = cashBit.slot.position.x

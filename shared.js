@@ -1,8 +1,8 @@
 const pm = {}
 
 pm.maxSuspects = 6
-pm.betsPerSuspect = 16
-let cheapestBet = 1. / 16. //the value of a bet if you win is 1.
+pm.betsPerSuspect = 24
+let cheapestBet = 1. / 12. //the value of a bet if you win is 1.
 
 pm.betPrices = Array(pm.betsPerSuspect)
 for (let i = 0.; i < pm.betsPerSuspect; ++i)
@@ -34,7 +34,7 @@ pm.isCashBitOnBoard = (suspect,index) => {
 
 pm.getCashBitOwnership = (suspect,cashBit) => {
     if (pm.isCashBitOnBoard(suspect,suspect.cashBits.indexOf(cashBit)))
-        return pm.NO_OWNERSHIP
+        return pm.NO_OWNERSHIP //more like board ownership
     else
         return cashBit.associatedPlayer
 }

@@ -22,7 +22,7 @@ function initJudgement() {
 
     let waitingMessage = Rectangle({
         h: 16., w: 16.,
-        label: ["Waiting for other", "players to press", "jugement button..."],
+        label: ["Waiting for other", "players to press", "judgement button..."],
         col,
         visible: false
     })
@@ -37,6 +37,7 @@ function initJudgement() {
     })
 
     socket.on("judgement mode confirmed",()=>{
+        playSound("judgement")
         judgementMode = true
         waitingMessage.visible = false
     })
@@ -60,7 +61,7 @@ function initJudgement() {
             }
             else {
                 target.y = finalCashes[socket.id].position.y
-                target.x = camera.right - youSign.scale.x / 2.
+                target.x = camera.getRight() - youSign.scale.x / 2.
             }
         }
     })
@@ -124,8 +125,8 @@ function initJudgement() {
             haveFrame: true,
             w: jbDimension, h: jbDimension,
             getPosition: (target) => {
-                target.x = camera.right - jbDimension / 2. - panelPaddingMr.offset.x
-                target.y = camera.top   - jbDimension / 2. - panelPaddingMr.offset.x
+                target.x = camera.getRight() - jbDimension / 2. - panelPaddingMr.offset.x
+                target.y = camera.getTop() - jbDimension / 2. - panelPaddingMr.offset.x
             }
         })
 
@@ -144,7 +145,7 @@ function initJudgement() {
                 if (sus === undefined)
                     return
 
-                target.x = camera.right * 2. - panelPaddingMr.offset.x * 2.
+                target.x = camera.getRight() * 2. - panelPaddingMr.offset.x * 2.
                 target.y = sus.frame.scale.y - sus.frame.scale.x
             },
             getPosition: (target) =>{
@@ -188,7 +189,7 @@ function initJudgement() {
                     gameHasActuallyBeenPlayedABit = true
             })
 
-            judgementButton.visible = !judgementMode && !waitingMessage.visible && gameHasActuallyBeenPlayedABit
+            judgementButton.visible = false//!judgementMode && !waitingMessage.visible && gameHasActuallyBeenPlayedABit
         })
     })
 }

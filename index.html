@@ -1,19 +1,10 @@
 <!-- 
-	Send to Casey, "colleague of Caplan's".
-	"Acquire nice thing" sfx when you buy a bet
-	Have a test game with pontus and chig
+	Deleting suspects
+	Rear facing camera
+	fix judgement mode
+	Different rooms
+	Rotate and it looks ok
 
-    SFX for stuff being sucked up
-        https://freesound.org/people/LloydEvans09/sounds/221495/
-        https://freesound.org/people/LloydEvans09/sounds/321806/
-        https://freesound.org/people/_bepis/sounds/415198/
-        https://freesound.org/people/Julalvr/sounds/429873/
-        https://freesound.org/people/Quistard/sounds/231953/
-        https://freesound.org/people/LloydEvans09/sounds/321807/
-        https://freesound.org/people/Mrthenoronha/sounds/369776/
-        https://freesound.org/people/Mrthenoronha/sounds/369916/
-
-    you are a lot more likely to make progress in academia than on politics
 
 	Script for "murder mystery", sock puppets:
         Ahh help I'm being murdered
@@ -56,32 +47,37 @@
 			Twice/thrice the cash of anyone else
 
     Send to
-        r/wsb
-        Friends:
-			Martin Todd, Diana
+        Testing Groups:
+			EE slack: Pontus, Nicky, Chris Makler
+			Martin Todd, Diana, Lal, mum and dad
+			Eleanor, Stephane, Rachel, Rory and Joel
+			Chigozie, Devon, Florian and Jacob
+			Ivan, Ivan, Nina, Katya
+			Edindies: Norgg, Portponkey
+			London rationalish: Jason Sackey, Noah Siegel, Phil Hazelden, Maciej
+			->Then ask them about, facebook rationalists: Vladyslav, Jeffrey Ladish
+			York philosophy: Simon Newey, Seb, Dan, Joe Peach
+			Casey, Jon Blow "colleague of Caplan's".
+			Ben Cerveney, Richard Lemarchand
+			Chao, Senthuran
+		Odds and ends
+			Eric Stansifer
 			Mike Munger
 			Martin Berger
-			Edinburgh SSC
-				Whatsisname, young guy
-				Marian
-				Both the dudes
-			Chao, Chigozie, Devon, Florian and Jacob
-            Facebook friends, every night
-            Edindies friends
 			Andrew Mathers
-			Chris makler
+			Other people on those panels on youtube
+			that chinese harvard lady
+		Publicity
 			Vitalik Buterin
-			Other people on those panels, that harvard lady
 			Lex Friedman
 			wsb, hacker news
-		Rationalist
+			r/wsb
 			r/ssc
+			r/prediction markets must exist
 			lesswrong
-			London rationalish
 			Annie Duke
 			Noahpinion
 			Julia Galef (so you think you're good at whodunnits...)	
-			Jeffrey Ladish
 			rob wiblin, katja grace, Carl Shulman whoever that is
 
     one might get things like the radiolab "Buy and then immediately sell when you see the price"
@@ -120,6 +116,8 @@
 		<script src="suspects.js"></script>
 		<script src="board.js"></script>
 
+		<script src="sound.js"></script>
+
 		<script src="judgement.js"></script>
 
 		<script>
@@ -141,7 +139,9 @@
 
 		<script>
 			async function init(socket, roomId) {
-				initInstancedMesh()
+				initSound()
+
+				// initInstancedMesh()
 				initRectangles()
 
 				log(pm.betsPerSuspect)
@@ -171,7 +171,7 @@
 					label:"Game ID: " + roomId,
 					w: idBoxDimension, h: idBoxDimension,
 					getPosition:(target) => {
-						target.x = camera.right - idBoxDimension / 2.
+						target.x = camera.getRight() - idBoxDimension / 2.
 						target.y = 0.
 					}
 				})

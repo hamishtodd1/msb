@@ -36,6 +36,9 @@ function initMouse()
 		}
 	}
 
+	let a = new THREE.Mesh(new THREE.SphereGeometry(.5))
+	scene.add(a)
+
 	//We assume that you are looking directly at the xy plane, and that the renderer is the view dimensions
 	asynchronous.updateFromClientCoordinates = function(rawX,rawY)
 	{
@@ -46,12 +49,21 @@ function initMouse()
 		//scale
 		asynchronous.position.x /= window.innerWidth / 2;
 		asynchronous.position.y /= window.innerHeight / 2;
+
+		if (camera.rotation.z !== 0.) {
+			let temp = asynchronous.position.y
+			asynchronous.position.y = asynchronous.position.x
+			asynchronous.position.x = -temp
+		}
 		
-		var centerToFrameVertical = (camera.top - camera.bottom) / 2;
+		var centerToFrameVertical = (camera.getTop() - camera.getBottom()) / 2;
 		var centerToFrameHorizontal = centerToFrameVertical * camera.aspect;
 		
 		asynchronous.position.x *= centerToFrameHorizontal;
 		asynchronous.position.y *= centerToFrameVertical;
+
+		a.position.copy(asynchronous.position)
+		a.position.z = 0.
 
 		// log(asynchronous.position)
 	}

@@ -17,14 +17,14 @@ function initBoard() {
     {
         const slotMr = MeasuringRect("bet slot", false)
         cashWidth = 2.2
-        betHeight = Math.abs(slotMr.offset.y)
-        slotFrameThickness = .08
+        betHeight = .14
+        slotFrameThickness = betHeight / 2.
 
         cashMat = new THREE.MeshBasicMaterial()
 
-        EVERYONE_ELSE_VERTICAL_POSITION = camera.top * 1.3
+        EVERYONE_ELSE_VERTICAL_POSITION = camera.getTop() * 1.3
         updateFunctions.push(() => {
-            EVERYONE_ELSE_VERTICAL_POSITION = camera.top * 1.3
+            EVERYONE_ELSE_VERTICAL_POSITION = camera.getTop() * 1.3
         })
 
         getTotalCash = () => {
@@ -36,11 +36,11 @@ function initBoard() {
             h: betHeight,
             w: 999999999.,
             haveIntendedPosition:true,
-            y: camera.bottom + .5,
+            y: camera.getBottom() + .5,
             x: 0.
         })
         updateFunctions.push(()=>{
-            staticCash.intendedPosition.y = camera.bottom + .5
+            staticCash.intendedPosition.y = camera.getBottom() + .5
             let totalCashWidth = getTotalCash() * cashWidth
             staticCash.intendedPosition.x = -(totalCashWidth / 2. - staticCash.scale.x / 2.)
         })
@@ -91,8 +91,10 @@ function initBoard() {
     socket.on("new suspect", Suspect)
 
     socket.on("unsuccessful buy", () => {
-        log("unsuccessful buy!")
-        //sfx for someone buying a bet is suction
+        playSound("exchangeFailure")
+    })
+    socket.on("unsuccessful sell", () => {
+        playSound("exchangeFailure")
     })
     
     socket.on("room update", (msg) => {

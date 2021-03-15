@@ -34,13 +34,21 @@ function bestowBets(suspect) {
     // Haven't proven that this system works tbh
 
     const betsAccountedFor = Array(pm.betsPerSuspect)
+    const previousOwners = Array(pm.betsPerSuspect)
     updateFunctions.push(() => {
-
         let numInBoard = pm.getNumBoardBets(suspect)
         let numInHand = 0
-        suspect.bets.forEach((bet)=>{
+        suspect.bets.forEach((bet,i)=>{
             if(bet.owner === socket.id)
                 ++numInHand
+
+            if (bet.owner !== previousOwners[i]) {
+                if (bet.owner === socket.id)
+                    playSound("gotBet")
+                else if (bet.owner !== pm.BOARD_OWNERSHIP)
+                    playSound("someoneElseGotBet")
+                previousOwners[i] = bet.owner
+            }
         })
 
         for (let i = 0; i < pm.betsPerSuspect; ++i)

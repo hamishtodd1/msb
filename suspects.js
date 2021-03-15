@@ -7,8 +7,15 @@ function initSuspects() {
 
     let confirmMat = text("Confirm: ",true)
 
+    const suspectSlipPadding = .25
+
+    let portraitHeight = 1.
+    updateFunctions.push(() => {
+        portraitHeight = suspectPanelDimensionsMr.offset.x - suspectSlipPadding * 2.
+    })
+
     Suspect = (msg) => {
-        const suspectSlipPadding = .25
+        playSound("newSuspect")
 
         let suspect = {}
         suspects[msg.index] = suspect
@@ -39,7 +46,7 @@ function initSuspects() {
 
                 target.x += suspect.frame.scale.x * .35
 
-                // target.y = camera.top - tbDimension / 2. - panelPaddingMr.offset.x
+                // target.y = camera.getTop() - tbDimension / 2. - panelPaddingMr.offset.x
             }
             const tick = Rectangle({
                 mat: tickMat,
@@ -119,30 +126,50 @@ function initSuspects() {
                 target.x = suspectPanelDimensionsMr.offset.x - suspectSlipPadding * 2.
                 target.y = clickableBoxHeight
             }
+            updateFunctions.push(()=>{
+                boardMat.opacity -= frameDelta
+                handMat.opacity -= frameDelta
+            })
+            let boardMat = new THREE.MeshBasicMaterial({
+                color:0xFFFFFF,
+                transparent:true,
+                opacity:0.
+            })
             suspect.boardFrame = Rectangle({
                 onClick: () => {
                     socket.emit("buy", { suspect: suspects.indexOf(suspect) })
+                    boardMat.opacity = .6
                 },
-                frameOnly: true,
+                mat: boardMat,
                 z: -4.,
                 haveFrame: true,
                 getScale: getFrameScale,
                 getPosition: (target) => {
                     suspect.frame.getEdgeCenter("t", target)
                     target.y -= suspectSlipPadding * 2. + portraitHeight + suspect.boardFrame.scale.y / 2.
+
+                    target.x += Math.max(boardMat.opacity,0.) * Math.sin(frameCount * .7) * .2
                 }
+            })
+            let handMat = new THREE.MeshBasicMaterial({ 
+                color: 0xFFFFFF ,
+                transparent:true,
+                opacity:0.
             })
             suspect.handFrame = Rectangle({
                 onClick: () => {
                     socket.emit("sell", { suspect: suspects.indexOf(suspect) })
+                    handMat.opacity = .6
                 },
-                frameOnly: true,
+                mat: handMat,
                 z: -4.,
                 haveFrame: true,
                 getScale: getFrameScale,
                 getPosition: (target) => {
                     suspect.frame.getEdgeCenter("b", target)
                     target.y += suspectSlipPadding * 1. + suspect.handFrame.scale.y / 2.
+
+                    target.x += Math.max(handMat.opacity,0.) * Math.sin(frameCount * .7) * .2
                 }
             })
         }
@@ -173,12 +200,11 @@ function initSuspects() {
                     target.y -= portraitHeight / 2. + suspectSlipPadding
                 }
             })
-        }
 
-        let portraitHeight = 1.
-        updateFunctions.push(() => {
-            portraitHeight = suspectPanelDimensionsMr.offset.x - suspectSlipPadding * 2.
-        })
+            updateFunctions.push(() => {
+                portrait.mesh.rotation.z = camera.rotation.z
+            })
+        }
 
         return {}
     }

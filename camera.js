@@ -42,7 +42,7 @@ async function initCamera() {
         w: video.videoWidth, 
         h: video.videoHeight,
         getScale: (target) => {
-            let dimension = Math.min(camera.top * 2., camera.right * 2.,)
+            let dimension = Math.min(camera.getTop() * 2., camera.getRight() * 2.,)
             target.x = dimension
             target.y = dimension
         }

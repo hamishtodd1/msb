@@ -22,6 +22,8 @@ As a video game, Murder She Bet is:
 
 -Easier to associate characters with columns of bets, because you can delete people with a single button press
 
+-Is able to have a leaderboard at the end rather than a simple win/loss, so people's skill is more accurately and proportionately reported. This, I think, combats a problem pointed out by [Zvi Moshowitz](https://www.lesswrong.com/posts/fs2ozRQ4osJr9Wbfu/on-robin-hanson-s-board-game) that in the boardgame, that the endgame has distorted incentives that point away from buy bets that reflect your belief about the probability of a suspect's guilt.
+
 Aside from the board game vs video game thing:
     1. Visualizing mathematics is interesting. This is especially true of statistics. Statistics, as a field, is abstract and dry - but much as I love geometry, statistics is probably the most important area of mathematics, because almost all human thought is statistical, though people foolishly pretend it isn't.
 
@@ -52,6 +54,16 @@ Kick: soneproject https://freesound.org/people/soneproject/sounds/332362/
 Take picture icon: https://icon-library.com/icon/take-picture-icon-10.html
 
 Gavel: https://freesound.org/people/odditonic/sounds/187705/
+
+Pop: LloydEvans09 https://freesound.org/people/LloydEvans09/sounds/321807/
+
+Money: wobesound https://freesound.org/people/wobesound/sounds/488399/
+
+Get Item: mrthenoronha https://freesound.org/people/Mrthenoronha/sounds/516824/
+
+Yoink: fupicat https://freesound.org/people/Fupicat/sounds/538148/
+
+Announcing sound: FoolBoyMedia https://freesound.org/people/FoolBoyMedia/sounds/234525/
 
 The colorblindness-friendly color scheme for the bets is, of course, viridis, most badass of all color schemes, created by Nathaniel Smith and Stéfan van der Walt.
 
