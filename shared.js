@@ -1,8 +1,8 @@
 const pm = {}
 
 pm.maxSuspects = 6
-pm.betsPerSuspect = 24
-let cheapestBet = 1. / 12. //the value of a bet if you win is 1.
+pm.betsPerSuspect = 13
+let cheapestBet = 1. / 10. //the value of a bet if you win is 1.
 
 pm.betPrices = Array(pm.betsPerSuspect)
 for (let i = 0.; i < pm.betsPerSuspect; ++i)

@@ -49,66 +49,6 @@ function initJudgement() {
         })
     })
 
-    const youSign = Rectangle({
-        label:"← You",
-        h: rowHeight,
-        getScaleFromLabel: true,
-        z: OVERLAY_Z + 2.,
-        getPosition:(target)=>{
-            if (finalCashes[socket.id] === undefined) {
-                target.x = 0. 
-                target.y = 0.
-            }
-            else {
-                target.y = finalCashes[socket.id].position.y
-                target.x = camera.getRight() - youSign.scale.x / 2.
-            }
-        }
-    })
-
-    const finalCashes = {}
-    updateFunctions.push(()=>{
-        if(!judgementMode) 
-            return
-
-        const ids = Object.keys(staticCashesValues)
-
-        Object.keys(staticCashesValues).forEach((id) => {
-            if (finalCashes[id] === undefined) {
-                finalCashes[id] = Rectangle({
-                    mat: cashMat,
-                    h: betHeight,
-                    w: 999999999.,
-                    z: OVERLAY_Z + 1.,
-                    haveIntendedPosition: true,
-                    x: 0.
-                })
-            }
-        })
-
-        const finalCashesValues = Array(ids.length)
-        ids.forEach((id,i) => {
-            finalCashesValues[i] = staticCashesValues[id]
-
-            suspects.forEach((sus) => {
-                if(!sus.confirmed)
-                    return
-                sus.bets.forEach((bet) => {
-                    if(bet.owner === id)
-                        ++finalCashesValues
-                })
-            })
-        })
-        ids.sort((idA,idB)=>{
-            return finalCashesValues[idA] - finalCashesValues[idB]
-        })
-
-        ids.forEach( (id,i) => {
-            finalCashes[id].intendedPosition.y = rowHeight * i - rowHeight * (ids.length-1) / 2.
-            finalCashes[id].scale.x = cashWidth * finalCashesValues[id]
-        })
-    })
-
     new THREE.TextureLoader().load("assets/judgement.png",(map)=>{
         let mat = new THREE.MeshBasicMaterial({map,color:bgColor})
 
@@ -178,6 +118,25 @@ function initJudgement() {
         //     })
         // })
 
+        const youSign = Rectangle({
+            label: "← You",
+            h: rowHeight,
+            getScaleFromLabel: true,
+            z: OVERLAY_Z + 2.,
+            getPosition: (target) => {
+                if (finalCashes[socket.playerId] === undefined) {
+                    target.x = 0.
+                    target.y = 0.
+                }
+                else {
+                    hider.getEdgeCenter("r", target)
+                    target.x -= youSign.scale.x / 2. + .5
+
+                    target.y = finalCashes[socket.playerId].position.y
+                }
+            }
+        })
+
         updateFunctions.push( () => {
             // closeButton.visible = judgementMode
             hider.visible = judgementMode
@@ -189,7 +148,54 @@ function initJudgement() {
                     gameHasActuallyBeenPlayedABit = true
             })
 
-            judgementButton.visible = false//!judgementMode && !waitingMessage.visible && gameHasActuallyBeenPlayedABit
+            judgementButton.visible = !judgementMode && !waitingMessage.visible && gameHasActuallyBeenPlayedABit
+        })
+
+        const finalCashes = {}
+        updateFunctions.push(() => {
+            if (!judgementMode)
+                return
+
+            const ids = Object.keys(staticCashesValues)
+
+            Object.keys(staticCashesValues).forEach((id) => {
+                if (finalCashes[id] === undefined) {
+                    finalCashes[id] = Rectangle({
+                        mat: cashMat,
+                        h: betHeight,
+                        w: 999999999.,
+                        z: OVERLAY_Z + 1.,
+                        haveIntendedPosition: true,
+                        x: 0.
+                    })
+                }
+            })
+
+            let max = -Infinity
+            let min = Infinity
+            ids.forEach((id, i) => {
+                finalCashes[id].scale.x = 0.
+                finalCashes[id].scale.x += cashWidth * staticCashesValues[id]
+
+                suspects.forEach((sus) => {
+                    if (!sus.confirmed)
+                        return
+                    sus.bets.forEach((bet) => {
+                        if (bet.owner === id)
+                            finalCashes[id].scale.x += cashWidth
+                    })
+                })
+
+                max = Math.max(max, finalCashes[id].scale.x)
+                min = Math.min(min, finalCashes[id].scale.x)
+            })
+
+            let top = hider.getEdgeCenter("t", v0).y - 2.
+            let bottom = hider.getEdgeCenter("b", v0).y + 1.
+            ids.forEach((id) => {
+                let ranking = (finalCashes[id].scale.x - min) / (max - min)
+                finalCashes[id].intendedPosition.y = bottom + (top - bottom) * ranking
+            })
         })
     })
 }

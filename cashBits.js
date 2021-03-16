@@ -40,7 +40,7 @@ function bestowCashBits(suspect,) {
         cashBits.forEach((cashBit, i) => {
             let owner = pm.getCashBitOwnership(suspect, cashBit)
             if(owner !== previousOwners[i]) {
-                if(owner === socket.id)
+                if(owner === socket.playerId)
                     playSound("gotMoney")
                 else if(owner !== pm.NO_OWNERSHIP)
                     playSound("someoneElseGotMoney")
@@ -51,7 +51,7 @@ function bestowCashBits(suspect,) {
                 cashBit.intendedPosition.x = cashBit.slot.position.x
                 cashBit.intendedPosition.y = cashBit.slot.position.y
             }
-            else if (owner === socket.id) {
+            else if (owner === socket.playerId) {
                 cashBit.intendedPosition.x = tail.x + cashBit.scale.x / 2.
                 cashBit.intendedPosition.y = tail.y
 

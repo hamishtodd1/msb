@@ -3,7 +3,7 @@ async function initCamera() {
     const video = document.createElement('video');
     {
         video.autoplay = false
-        const mediaConfig = { video: true, facingMode: "environment" };
+        const mediaConfig = { video: { facingMode: "environment" } };
         const errBack = function (e) {
             console.log('An error has occurred!', e)
         };
@@ -39,7 +39,7 @@ async function initCamera() {
         map: videoTexture,
         visible: false,
         x: 0., y: 0., z: 5.,
-        w: video.videoWidth, 
+        w: video.videoWidth,
         h: video.videoHeight,
         getScale: (target) => {
             let dimension = Math.min(camera.getTop() * 2., camera.getRight() * 2.,)
@@ -54,7 +54,7 @@ async function initCamera() {
         haveFrame: true,
         frameOnly: true,
         z: -5.,
-        getScale:(target) => {
+        getScale: (target) => {
             target.x = suspectPanelDimensionsMr.offset.x
             target.y = suspectPanelDimensionsMr.offset.y
         },
@@ -63,25 +63,16 @@ async function initCamera() {
         }
     })
 
-    updateFunctions.push(()=>{
-        newSuspectButton.intendedPosition.x = getPanelPositionX( suspects.length )
+    updateFunctions.push(() => {
+        newSuspectButton.intendedPosition.x = getPanelPositionX(suspects.length)
 
         let totalSuspects = 0
-        suspects.forEach((s)=>{totalSuspects += s === undefined ? 0 : 1})
+        suspects.forEach((s) => { totalSuspects += s === undefined ? 0 : 1 })
         newSuspectButton.visible = cameraFeedRect.visible === false && totalSuspects < pm.maxSuspects
 
-        if(frameCount === 0)
+        if (frameCount === 0)
             newSuspectButton.goToIntendedPosition()
     })
-
-    // const flipToOtherCameraButton = Rectangle({
-    //     x: 0., y: -5, w: 3., h: 1., z: 6.,
-    //     col: 0x00FFFF,
-    //     visible: false,
-    //     onClick: () => {
-    //         alert("sorry, don't know how to do this yet")
-    //     }
-    // })
 
     function takePicture() {
         setVisibility(false)
@@ -95,7 +86,7 @@ async function initCamera() {
 
         socket.emit("new suspect", {
             portraitImageSrc: videoCaptureCanvas.toDataURL("image/png")
-        } )
+        })
     }
 
     let takePictureButton = null
@@ -103,20 +94,19 @@ async function initCamera() {
         takePictureButton = Rectangle({
             x: -0., y: -8., w: 3., h: 3., z: 6.,
             map,
-            col:0xFF0000,
+            col: 0xFF0000,
             visible: false,
             onClick: takePicture
         })
     })
 
     function setVisibility(val) {
-        // flipToOtherCameraButton.visible = val
         cameraFeedRect.visible = val
         takePictureButton.visible = val
         closeButton.visible = val
         newSuspectButton.visible = !val
 
-        if(val)
+        if (val)
             video.play()
         else
             video.pause()

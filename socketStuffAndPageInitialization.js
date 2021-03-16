@@ -39,11 +39,15 @@
 			if(event.keyCode !== 13)
 				return;
 
-			var request = textBox.value.replace(/\s/g, "");
-			request.toLowerCase()
+			var requestedRoomKey = textBox.value.replace(/\s/g, "");
+			requestedRoomKey.toLowerCase()
 
-			if( request.length === 2 ) {
-				socket.emit("roomEntryRequest", request);
+			if(window.localStorage.playerId === undefined )
+				window.localStorage.playerId = socket.playerId
+			socket.playerId = window.localStorage.playerId
+
+			if( requestedRoomKey.length === 2 ) {
+				socket.emit("roomEntryRequest", { requestedRoomKey, playerId: socket.playerId});
 				//and show something saying "waiting to be let in"
 			}
 			else

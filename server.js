@@ -41,7 +41,7 @@ function beginRoom(id) {
 
 	room.broadcastState = () => {
 		room.sockets.forEach( (socket) => {
-			msg.staticCashes[socket.id] = socket.staticCash
+			msg.staticCashes[socket.playerId] = socket.staticCash
 		})
 
 		room.sockets.forEach( (socket)=>{
@@ -80,7 +80,7 @@ io.on("connection", (socket) => {
 
 	let self = socket
 
-	log("potential user connected: ", socket.id);
+	log("potential user connected: ", socket.playerId);
 
 	socket.emit("serverConnected");
 
@@ -96,14 +96,16 @@ io.on("connection", (socket) => {
 	// 	bringIntoRoom(roomId)
 	// });
 
-	socket.on("roomEntryRequest", function(requestedRoomKey)
+	socket.on("roomEntryRequest", (msg) =>
 	{
-		if( !rooms[requestedRoomKey] ) {
-			log( "didn't find room ", requestedRoomKey, ", all we have is ", rooms)
+		socket.playerId = msg.playerId
+
+		if( !rooms[msg.requestedRoomKey] ) {
+			log( "didn't find room ", msg.requestedRoomKey, ", all we have is ", rooms)
 			socket.emit("logThisMessage", "room not found");
 		}
 		else {
-			roomId = requestedRoomKey;
+			roomId = msg.requestedRoomKey;
 			bringIntoRoom(roomId)
 		}
 	});
@@ -119,11 +121,11 @@ io.on("connection", (socket) => {
 
 		room.sockets.push(self);
 
-		log( "\nallocating ", self.id, " to room ", roomId, "\ncurrent number of sockets: ", room.sockets.length);
+		log( "\nallocating ", self.playerId, " to room ", roomId, "\ncurrent number of sockets: ", room.sockets.length);
 
 		//possibly this isn't always triggering
 		self.on("disconnect", () => {
-			startJudgementModeIfBeingRequestedByAll()
+			potentiallyStartJudgementMode()
 			//hmm, make sure we know the socket's bets etc before they go forever otherwise no conclusion
 
 			room.sockets.splice(room.sockets.indexOf(self),1);
@@ -147,7 +149,7 @@ io.on("connection", (socket) => {
 		//It's only meant to be about whether these things will make extra money for you
 
 		getTotalCash = (socket) => {
-			return socket.staticCash + pm.getLooseCash(socket.id, room.suspects)
+			return socket.staticCash + pm.getLooseCash(socket.playerId, room.suspects)
 		}
 
 		const suspects = room.suspects
@@ -208,7 +210,7 @@ io.on("connection", (socket) => {
 			let suspect = suspects[msg.suspect]
 			log("total cash", getTotalCash(self))
 
-			let betToSell = suspect.bets.find( bet => bet.owner === self.id )
+			let betToSell = suspect.bets.find( bet => bet.owner === self.playerId )
 			if (betToSell === undefined)
 				self.emit("unsuccessful sell")
 			else {
@@ -221,7 +223,7 @@ io.on("connection", (socket) => {
 				if (currentOwner !== pm.NO_OWNERSHIP)
 					currentOwner.staticCash += pm.betPrices[slotIndex]
 
-				cb.associatedPlayer = self.id
+				cb.associatedPlayer = self.playerId
 
 				betToSell.owner = pm.BOARD_OWNERSHIP
 				
@@ -236,15 +238,14 @@ io.on("connection", (socket) => {
 		//you now have 9 staticCash
 		//Also, a cashbit worth 1 is associated with you
 
-		function startJudgementModeIfBeingRequestedByAll() {
-			let startJudgementMode = true
+		function potentiallyStartJudgementMode() {
+			let numRequests = 0
 			room.sockets.forEach((sock, i) => {
-				log(i, sock.jugementModeBeingRequested)
 				if (sock.jugementModeBeingRequested === false)
-					startJudgementMode = false
+					++numRequests
 			})
 
-			if (startJudgementMode) {
+			if (numRequests >= 2) {
 				room.sockets.forEach((sock) => {
 					sock.emit("judgement mode confirmed")
 				})
@@ -255,7 +256,7 @@ io.on("connection", (socket) => {
 		self.on("judgement mode requested",()=>{
 			self.jugementModeBeingRequested = true
 
-			startJudgementModeIfBeingRequestedByAll()
+			potentiallyStartJudgementMode()
 		})
 		self.on("judgement mode request cancelled",()=>{
 			self.jugementModeBeingRequested = false
@@ -279,15 +280,15 @@ io.on("connection", (socket) => {
 					let cb = suspect.cashBits[slotIndex]
 					let currentOwner = pm.getCashBitOwnership(suspect, cb)
 
-					if (currentOwner !== self.id) { //you were the last to sell to this slot
+					if (currentOwner !== self.playerId) { //you were the last to sell to this slot
 						if (currentOwner !== pm.NO_OWNERSHIP )
 							currentOwner.staticCash += pm.betPrices[slotIndex]
 
-						cb.associatedPlayer = self.id
+						cb.associatedPlayer = self.playerId
 						self.staticCash -= pm.betPrices[slotIndex]
 					}
 
-					betToBuy.owner = self.id
+					betToBuy.owner = self.playerId
 					
 					log("total cash", getTotalCash(self))
 
@@ -304,7 +305,7 @@ io.on("connection", (socket) => {
 			if( currentOwner !== pm.NO_OWNERSHIP)
 				currentOwner.staticCash += cashBitToAssociate.value
 
-			cashBitToAssociate.associatedPlayer = self.id
+			cashBitToAssociate.associatedPlayer = self.playerId
 			self.staticCash -= cashBitToAssociate.value
 			//this is NOT the thing that TAKES the cash. It's just changing visual depiction
 
@@ -316,7 +317,7 @@ io.on("connection", (socket) => {
 			if (self.staticCash < 0.) {
 				suspects.forEach((sus) => {
 					sus.cashBits.forEach( (cb, i) => {
-						if (pm.getCashBitOwnership(sus, cb) === self.id) {
+						if (pm.getCashBitOwnership(sus, cb) === self.playerId) {
 							cb.associatedPlayer = pm.NO_OWNERSHIP
 							self.staticCash += cb.value
 						}

@@ -17,7 +17,7 @@ function initBoard() {
     {
         const slotMr = MeasuringRect("bet slot", false)
         cashWidth = 2.2
-        betHeight = .14
+        betHeight = 3.2 / pm.betsPerSuspect
         slotFrameThickness = betHeight / 2.
 
         cashMat = new THREE.MeshBasicMaterial()
@@ -28,7 +28,7 @@ function initBoard() {
         })
 
         getTotalCash = () => {
-            return staticCash.scale.x / cashWidth + pm.getLooseCash(socket.id,suspects)
+            return staticCash.scale.x / cashWidth + pm.getLooseCash(socket.playerId,suspects)
         }
 
         staticCash = Rectangle({
@@ -100,7 +100,7 @@ function initBoard() {
     socket.on("room update", (msg) => {
         console.assert(msg.suspects.length === suspects.length)
 
-        staticCash.scale.x = msg.staticCashes[socket.id] * cashWidth
+        staticCash.scale.x = msg.staticCashes[socket.playerId] * cashWidth
 
         suspects.forEach((suspect, i) => {
             suspect.bets.forEach((bet, j) => {
@@ -127,7 +127,7 @@ function initBoard() {
 
                     let startP = null
                     if(ownership === pm.NO_OWNERSHIP) {
-                        if(cashBit.associatedPlayer === socket.id)
+                        if(cashBit.associatedPlayer === socket.playerId)
                             startP = staticCash.position
                         else if(cashBit.associatedPlayer !== pm.NO_OWNERSHIP)
                             startP = v0

@@ -17,6 +17,8 @@ function initRectangles() {
             target.x = this.position.x
             if (edge === "l" || edge === "r")
                 target.x += this.scale.x * .5 * (edge === "l" ? -1. : 1.)
+
+            return target
         }
 
         rect.goToIntendedPosition = () => {

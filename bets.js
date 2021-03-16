@@ -39,11 +39,11 @@ function bestowBets(suspect) {
         let numInBoard = pm.getNumBoardBets(suspect)
         let numInHand = 0
         suspect.bets.forEach((bet,i)=>{
-            if(bet.owner === socket.id)
+            if(bet.owner === socket.playerId)
                 ++numInHand
 
             if (bet.owner !== previousOwners[i]) {
-                if (bet.owner === socket.id)
+                if (bet.owner === socket.playerId)
                     playSound("gotBet")
                 else if (bet.owner !== pm.BOARD_OWNERSHIP)
                     playSound("someoneElseGotBet")
