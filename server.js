@@ -98,7 +98,7 @@ io.on("connection", (socket) => {
 
 	socket.on("roomEntryRequest", (msg) =>
 	{
-		socket.playerId = msg.playerId
+		socket.playerId = msg.storedId || socket.id
 
 		if( !rooms[msg.requestedRoomKey] ) {
 			log( "didn't find room ", msg.requestedRoomKey, ", all we have is ", rooms)
@@ -116,7 +116,8 @@ io.on("connection", (socket) => {
 		const room = rooms[roomId]
 
 		self.emit("roomInvitation", {
-			roomId
+			roomId,
+			playerId: socket.playerId
 		} );
 
 		room.sockets.push(self);
@@ -125,9 +126,6 @@ io.on("connection", (socket) => {
 
 		//possibly this isn't always triggering
 		self.on("disconnect", () => {
-			potentiallyStartJudgementMode()
-			//hmm, make sure we know the socket's bets etc before they go forever otherwise no conclusion
-
 			room.sockets.splice(room.sockets.indexOf(self),1);
 
 			log("player disconnected")
@@ -233,15 +231,10 @@ io.on("connection", (socket) => {
 			}
 		})
 
-		//you have 10 staticCash
-		//you buy a bet worth 1
-		//you now have 9 staticCash
-		//Also, a cashbit worth 1 is associated with you
-
 		function potentiallyStartJudgementMode() {
 			let numRequests = 0
 			room.sockets.forEach((sock, i) => {
-				if (sock.jugementModeBeingRequested === false)
+				if (sock.jugementModeBeingRequested )
 					++numRequests
 			})
 

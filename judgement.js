@@ -190,8 +190,8 @@ function initJudgement() {
                 min = Math.min(min, finalCashes[id].scale.x)
             })
 
-            let top = hider.getEdgeCenter("t", v0).y - 2.
-            let bottom = hider.getEdgeCenter("b", v0).y + 1.
+            let top = hider.getEdgeCenter("t", v0).y - 3.
+            let bottom = hider.getEdgeCenter("b", v0).y + 2.
             ids.forEach((id) => {
                 let ranking = (finalCashes[id].scale.x - min) / (max - min)
                 finalCashes[id].intendedPosition.y = bottom + (top - bottom) * ranking

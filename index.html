@@ -1,14 +1,8 @@
 <!-- 
+	Game ids and intro page
 	Deleting suspects
-	Rear facing camera
-	fix judgement mode
-	Different rooms
-	Rotate and it looks ok
-
-	"sign in as existing player"
-	you may well sell with nothing on board if you jusst accidentally bought
-
-	Use ip address as socket id
+	"World's shortest mrder mystery"
+	judgement mode emits confirmations
 
 	Script for "murder mystery", sock puppets:
         Ahh help I'm being murdered
@@ -82,6 +76,8 @@
 			lesswrong
 			SSC open thread
 			Annie Duke
+			Andy should see it
+			Zvi
 			Noahpinion
 			Julia Galef (so you think you're good at whodunnits...)	
 			rob wiblin, katja grace, Carl Shulman whoever that is
@@ -94,17 +90,55 @@
  -->
 
 <html>
-	<head>
+	<html>
+	<head><meta
+		charset="utf-8"><meta
+		name="viewport" content="width=device-width, initial-scale=1">
+
 		<title>Murder, She Bet [BETA]</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<style>
-			body {
-				margin: 0px;
-				overflow: hidden;
-			}
-		</style>
+
+		<link href="generalStyle.css" rel="stylesheet" type="text/css">
 	</head>
+
+	<body>
+
+	<header>
+	<h1><center>Murder, She Bet</center></h1>
+	</header>
+
+	<br></br>
+	
+	<center><button type="button" onclick="alert('Enter oo below')">Start a new game!</button></center>
+	
+	<p>
+		<center>Or join one:</center>
+		<center><textarea id="gameIdBox" name="gameIdBox" rows="1" cols="50">
+			oo
+		</textarea></center>
+	</p>
+	
+	<br></br>
+
+	<h3>The rules:</h3>
+	<ol>
+		<li>You will watch a Murder Mystery, with several suspects, all of whom may be <em>guilty</em>.</li>
+		<li>Any player can raise suspicion of a new suspect they would like to bet on.</li>
+		<li>The guilt of the suspects is determined when, and ONLY WHEN, the credits roll.</li>
+		<li>With guilt determined, bets on guilty suspects are worth money, bets on innocents are worthless.</li>
+	</ol>
+
+	<center><iframe width="100%" height="56.25%" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0"
+		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+		allowfullscreen="false"></iframe></center>
+
+	<br></br>
+
+	<center>For practice: The World's Shortest Murder Mystery!</center>
+
+	<center><iframe width="100%" height="56.25%" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0"
+		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+		allowfullscreen="false"></iframe></center>
+
 	<body>
 		<script src="/socket.io/socket.io.js"></script>
 		

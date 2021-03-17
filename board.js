@@ -16,7 +16,7 @@ function initBoard() {
     //globals
     {
         const slotMr = MeasuringRect("bet slot", false)
-        cashWidth = 2.2
+        cashWidth = 2.6
         betHeight = 3.2 / pm.betsPerSuspect
         slotFrameThickness = betHeight / 2.
 
