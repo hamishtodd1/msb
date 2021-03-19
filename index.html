@@ -1,9 +1,13 @@
-<!-- 
-	Game ids and intro page
+<!--
 	Deleting suspects
-	"World's shortest mrder mystery"
+	Everyone gets suspects simultaneously
+		Send new suspect picture
+		confirm all have received them
+		Then they appear
+	Just a video where you explain it
 	judgement mode emits confirmations
 
+	"World's shortest mrder mystery"
 	Script for "murder mystery", sock puppets:
         Ahh help I'm being murdered
             BUT WHO COULD HAVE DONE THIS??
@@ -81,12 +85,6 @@
 			Noahpinion
 			Julia Galef (so you think you're good at whodunnits...)	
 			rob wiblin, katja grace, Carl Shulman whoever that is
-
-    one might get things like the radiolab "Buy and then immediately sell when you see the price"
-    different name: "the hansonian betting board". Bet on anything you like
-    advantage this might have over board game: you don't have to look down and check whether
-        you've got bets on a character you've lost faith in being guilty,
-        you can just immediately go over and decrease your bet
  -->
 
 <html>
@@ -105,15 +103,13 @@
 	<header>
 	<h1><center>Murder, She Bet</center></h1>
 	</header>
-
-	<br></br>
 	
-	<center><button type="button" onclick="alert('Enter oo below')">Start a new game!</button></center>
+	<center><button type="button" id="newGameButton">Start a new game!</button></center>
 	
 	<p>
-		<center>Or join one:</center>
-		<center><textarea id="gameIdBox" name="gameIdBox" rows="1" cols="50">
-			oo
+		<center>Or:</center>
+		<center><textarea id="gameIdBox" name="gameIdBox" rows="1" cols="74">
+			type gameId then press enter
 		</textarea></center>
 	</p>
 	
@@ -178,7 +174,7 @@
 		<script src="socketStuffAndPageInitialization.js"></script>
 
 		<script>
-			async function init(socket, roomId) {
+			async function init(socket, gameId) {
 				initSound()
 
 				// initInstancedMesh()
@@ -208,7 +204,7 @@
 
 				let idBoxDimension = 3.
 				const idBox = Rectangle({
-					label:"Game ID: " + roomId,
+					label:"Game ID: " + gameId,
 					w: idBoxDimension, h: idBoxDimension,
 					getPosition:(target) => {
 						target.x = camera.getRight() - idBoxDimension / 2.

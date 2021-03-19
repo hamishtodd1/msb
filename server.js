@@ -25,27 +25,29 @@ const log = console.log
 
 const pm = require("./shared.js")
 
-const rooms = {}
+const games = {}
 
-function beginRoom(id) {
-	let room = {}
-	rooms[id] = room
+function beginGame(id) {
+	log("starting game: ", id)
 
-	room.sockets = []
-	room.suspects = []
+	let game = {}
+	games[id] = game
+
+	game.sockets = []
+	game.suspects = []
 
 	let msg = {
 		staticCashes: {},
 		suspects: []
 	}
 
-	room.broadcastState = () => {
-		room.sockets.forEach( (socket) => {
+	game.broadcastState = () => {
+		game.sockets.forEach( (socket) => {
 			msg.staticCashes[socket.playerId] = socket.staticCash
 		})
 
-		room.sockets.forEach( (socket)=>{
-			room.suspects.forEach((suspect, i) => {
+		game.sockets.forEach( (socket)=>{
+			game.suspects.forEach((suspect, i) => {
 				if(suspect === undefined)
 					msg.suspects[i] = null
 				else {
@@ -61,77 +63,73 @@ function beginRoom(id) {
 					}
 
 					for (let j = 0; j < pm.betsPerSuspect; ++j)
-						msg.suspects[i].cashBits[j].associatedPlayer = room.suspects[i].cashBits[j].associatedPlayer
+						msg.suspects[i].cashBits[j].associatedPlayer = game.suspects[i].cashBits[j].associatedPlayer
 					for (let j = 0; j < pm.betsPerSuspect; ++j)
-						msg.suspects[i].bets[j].owner = room.suspects[i].bets[j].owner
+						msg.suspects[i].bets[j].owner = game.suspects[i].bets[j].owner
 				}
 			})
 
-			socket.emit("room update", msg)
+			socket.emit("game update", msg)
 		})
 		//various translations needed
 	}
 }
 
-//Default room
-beginRoom("oo");
+//Default game
+beginGame(0);
 
 io.on("connection", (socket) => {
 
 	let self = socket
+	var gameId = ""
 
-	log("potential user connected: ", socket.playerId);
+	log("potential user connected")
 
-	socket.emit("serverConnected");
+	socket.emit("serverConnected")
 
-	// socket.on("roomInitializationRequest", () => {
-
-	// 	roomId = (Math.random()+1).toString(36).substr(2,2);
-	// 	log( "starting room: ", roomId)
-	// 	if( rooms[roomId] )
-	// 		log("Tried to start a room that already exists?")
-
-	// 	beginRoom( roomId)
-
-	// 	bringIntoRoom(roomId)
-	// });
-
-	socket.on("roomEntryRequest", (msg) =>
-	{
+	socket.on("gameInitializationRequest", (msg) => {
 		socket.playerId = msg.storedId || socket.id
 
-		if( !rooms[msg.requestedRoomKey] ) {
-			log( "didn't find room ", msg.requestedRoomKey, ", all we have is ", rooms)
-			socket.emit("logThisMessage", "room not found");
+		gameId = Object.keys(games).length
+		
+		beginGame( gameId )
+
+		bringIntoGame(gameId)
+	});
+
+	socket.on("gameEntryRequest", (msg) => {
+		socket.playerId = msg.storedId || socket.id
+
+		if( games[msg.requestedGameKey] === undefined ) {
+			log( "didn't find game ", msg.requestedGameKey, ", all we have is ", games)
+			socket.emit("logThisMessage", "game not found");
 		}
 		else {
-			roomId = msg.requestedRoomKey;
-			bringIntoRoom(roomId)
+			gameId = msg.requestedGameKey;
+			bringIntoGame(gameId)
 		}
 	});
 
-	function bringIntoRoom(roomId) {
-		log(roomId)
+	function bringIntoGame(gameId) {
+		const game = games[gameId]
 
-		const room = rooms[roomId]
-
-		self.emit("roomInvitation", {
-			roomId,
+		self.emit("gameInvitation", {
+			gameId,
 			playerId: socket.playerId
 		} );
 
-		room.sockets.push(self);
+		game.sockets.push(self);
 
-		log( "\nallocating ", self.playerId, " to room ", roomId, "\ncurrent number of sockets: ", room.sockets.length);
+		log( "\nallocating ", self.playerId, " to game ", gameId, "\ncurrent number of sockets: ", game.sockets.length);
 
 		//possibly this isn't always triggering
 		self.on("disconnect", () => {
-			room.sockets.splice(room.sockets.indexOf(self),1);
+			game.sockets.splice(game.sockets.indexOf(self),1);
 
 			log("player disconnected")
 
-			if( roomId !== "oo" && room.sockets.length === 0)
-				delete room;
+			if( gameId !== "oo" && game.sockets.length === 0)
+				delete game;
 		})
 
 		////////////////////////
@@ -147,10 +145,10 @@ io.on("connection", (socket) => {
 		//It's only meant to be about whether these things will make extra money for you
 
 		getTotalCash = (socket) => {
-			return socket.staticCash + pm.getLooseCash(socket.playerId, room.suspects)
+			return socket.staticCash + pm.getLooseCash(socket.playerId, game.suspects)
 		}
 
-		const suspects = room.suspects
+		const suspects = game.suspects
 
 		Suspect = (msg) => {
 			let suspect = {
@@ -178,7 +176,7 @@ io.on("connection", (socket) => {
 				suspect.bets[i] = { owner: pm.BOARD_OWNERSHIP }
 			}
 
-			room.sockets.forEach( (particularSocket) => {
+			game.sockets.forEach( (particularSocket) => {
 				emitSuspect(suspect, particularSocket)
 			})
 		}
@@ -193,11 +191,11 @@ io.on("connection", (socket) => {
 		}
 
 		socket.on( "ready for suspect portraits", ()=>{
-			room.suspects.forEach((suspect, i) => {
+			game.suspects.forEach((suspect, i) => {
 				if (suspect !== undefined)
 					emitSuspect(suspect,socket)
 			})
-			room.broadcastState()
+			game.broadcastState()
 		})
 
 		// self.on("delete",(msg)=>{
@@ -227,19 +225,19 @@ io.on("connection", (socket) => {
 				
 				log("total cash", getTotalCash(self))
 
-				room.broadcastState()
+				game.broadcastState()
 			}
 		})
 
 		function potentiallyStartJudgementMode() {
 			let numRequests = 0
-			room.sockets.forEach((sock, i) => {
+			game.sockets.forEach((sock, i) => {
 				if (sock.jugementModeBeingRequested )
 					++numRequests
 			})
 
 			if (numRequests >= 2) {
-				room.sockets.forEach((sock) => {
+				game.sockets.forEach((sock) => {
 					sock.emit("judgement mode confirmed")
 				})
 			}
@@ -254,7 +252,7 @@ io.on("connection", (socket) => {
 		self.on("judgement mode request cancelled",()=>{
 			self.jugementModeBeingRequested = false
 		})
-		//another easy thing is showing the room id
+		//another easy thing is showing the game id
 
 		self.on("buy", (msg) => {
 			let suspect = suspects[msg.suspect]
@@ -286,7 +284,7 @@ io.on("connection", (socket) => {
 					log("total cash", getTotalCash(self))
 
 					mergeOwnedCashBitsIntoStaticCashIfNecessary()
-					room.broadcastState()
+					game.broadcastState()
 				}
 			}
 		})

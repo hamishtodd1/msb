@@ -97,7 +97,7 @@ function initBoard() {
         playSound("exchangeFailure")
     })
     
-    socket.on("room update", (msg) => {
+    socket.on("game update", (msg) => {
         console.assert(msg.suspects.length === suspects.length)
 
         staticCash.scale.x = msg.staticCashes[socket.playerId] * cashWidth

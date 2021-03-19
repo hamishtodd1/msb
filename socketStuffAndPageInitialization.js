@@ -11,33 +11,40 @@
 				document.body.removeChild(document.body.children[i]);
 		}
 
-		function onButtonPress(event)
-		{
+		let newGameButton = document.getElementById('newGameButton')
+		newGameButton.onclick = ()=>{
+			socket.emit("gameInitializationRequest", {
+				storedId: window.localStorage.playerId || null
+			})
+		}
+
+		function onButtonPress(event) {
 			if(event.keyCode !== 13)
 				return;
 
-			var requestedRoomKey = textBox.value.replace(/\s/g, "");
-			requestedRoomKey.toLowerCase()
+			log(event.keyCode)
 
-			if( requestedRoomKey.length === 2 ) {
-				socket.emit("roomEntryRequest", { 
-					requestedRoomKey, 
-					storedId: window.localStorage.playerId || null
-				});
-				//and show something saying "waiting to be let in"
-			}
-			else
-				textBox.value = "Sorry, request was not recognized"
+			var requestedGameKey = textBox.value.replace(/\s/g, "");
+			requestedGameKey.toLowerCase()
+
+			socket.emit("gameEntryRequest", {
+				requestedGameKey,
+				storedId: window.localStorage.playerId || null
+			})
 		}
 
-		if( 0 ) {
-			textBox.value = "oo"
+		if( 1 ) {
+			textBox.value = 0
 			onButtonPress({keyCode:13});
 		}
 		else
 			document.addEventListener( "keydown", onButtonPress );
 
-		socket.on("roomInvitation", function (msg) {
+		socket.on("gameInvitation", function (msg) {
+			socket.on("gameInvitation", () => {
+				window.location.reload()
+			});
+
 			document.removeEventListener("keydown", onButtonPress);
 
 			socket.playerId = msg.playerId
@@ -49,12 +56,11 @@
 			document.body.style.padding = 0
 			document.body.style.overflow = "hidden"
 
-			socket.on("roomInvitation", () => {
-				window.location.reload()
-			});
-
-			init(socket, msg.roomId);
+			init(socket, msg.gameId);
 			//you don't need to give socketId, it has that!
 		});
 	});
 })();
+
+//one reason for buggy player identification might be that you have a game that finished
+//but there's still something there in local storage

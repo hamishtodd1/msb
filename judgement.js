@@ -43,7 +43,7 @@ function initJudgement() {
     })
 
     const staticCashesValues = {}
-    socket.on("room update", (msg) => {
+    socket.on("game update", (msg) => {
         Object.keys(msg.staticCashes).forEach((id,i) => {
             staticCashesValues[id] = msg.staticCashes[id]
         })
