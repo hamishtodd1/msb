@@ -33,6 +33,8 @@ function beginGame(id) {
 	let game = {}
 	games[id] = game
 
+	game.lowestUnusedSuspect = 0
+
 	game.sockets = []
 	game.suspects = []
 
@@ -150,41 +152,41 @@ io.on("connection", (socket) => {
 
 		const suspects = game.suspects
 
-		Suspect = (msg) => {
+
+		for(let i = 0; i < pm.maxSuspects; ++i) {
 			let suspect = {
 				cashBits: Array(pm.betsPerSuspect),
 				bets: Array(pm.betsPerSuspect),
-				portraitImageSrc: msg.portraitImageSrc
+				portraitImageSrc: ""
 			}
 
 			suspects.push(suspect)
-			log("adding suspect, number: " + suspects.indexOf(suspect))
-			//or possibly you want to replace what was in there, this code does that
-			// for(let i = 0; i <= suspects.length; ++i) {
-			// 	if (suspects[i] === undefined) {
-			// 		suspects[i] = suspect
-			// 		break
-			// 	}
-			// }
 			
-			for(let i = 0; i < pm.betsPerSuspect; ++i) {
-				suspect.cashBits[i] = {
+			for(let j = 0; j < pm.betsPerSuspect; ++j) {
+				suspect.cashBits[j] = {
 					associatedPlayer: pm.NO_OWNERSHIP,
-					value: pm.betPrices[i]
+					value: pm.betPrices[j]
 				}
 
-				suspect.bets[i] = { owner: pm.BOARD_OWNERSHIP }
+				suspect.bets[j] = { owner: pm.BOARD_OWNERSHIP }
 			}
-
-			game.sockets.forEach( (particularSocket) => {
-				emitSuspect(suspect, particularSocket)
-			})
 		}
-		self.on("new suspect", Suspect )
+		//we're partway through making this into all pre-initialized and then the pics just come along
+			
+		self.on("new suspect portrait", (msg) =>{
+			let suspect = game.suspects[game.lowestUnusedSuspect]
+			suspect.portraitImageSrc = msg.portraitImageSrc
 
-		function emitSuspect(suspect,particularSocket) {
+			game.sockets.forEach((sock) => {
+				emitPortrait(suspect, sock)
+			})
+
+			++game.lowestUnusedSuspect
+		} )
+
+		function emitPortrait(suspect,particularSocket) {
 			log("sending suspect " + suspects.indexOf(suspect))
-			particularSocket.emit("new suspect", {
+			particularSocket.emit("suspect portrait", {
 				index: suspects.indexOf(suspect),
 				portraitImageSrc: suspect.portraitImageSrc
 			})
@@ -192,10 +194,12 @@ io.on("connection", (socket) => {
 
 		socket.on( "ready for suspect portraits", ()=>{
 			game.suspects.forEach((suspect, i) => {
-				if (suspect !== undefined)
-					emitSuspect(suspect,socket)
+				if (suspect.portraitImageSrc !== "")
+					emitPortrait(suspect,socket)
 			})
 			game.broadcastState()
+
+			//note: you might not get all of them if one is added just as you arrive
 		})
 
 		// self.on("delete",(msg)=>{

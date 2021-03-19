@@ -88,8 +88,6 @@ function initBoard() {
     }
     getViridis(pm.maxSuspects+1, cashMat.color)
 
-    socket.on("new suspect", Suspect)
-
     socket.on("unsuccessful buy", () => {
         playSound("exchangeFailure")
     })
@@ -98,7 +96,7 @@ function initBoard() {
     })
     
     socket.on("game update", (msg) => {
-        console.assert(msg.suspects.length === suspects.length)
+        // console.assert(msg.suspects.length === suspects.length)
 
         staticCash.scale.x = msg.staticCashes[socket.playerId] * cashWidth
 

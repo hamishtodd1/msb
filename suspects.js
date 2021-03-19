@@ -14,11 +14,13 @@ function initSuspects() {
         portraitHeight = suspectPanelDimensionsMr.offset.x - suspectSlipPadding * 2.
     })
 
-    Suspect = (msg) => {
+    Suspect = () => {
         playSound("newSuspect")
 
+        setCameraStuffVisibility(false)
+
         let suspect = {}
-        suspects[msg.index] = suspect
+        suspects.push(suspect)
 
         suspect.frame = Rectangle({
             frameOnly: true,
@@ -137,7 +139,8 @@ function initSuspects() {
             })
             suspect.boardFrame = Rectangle({
                 onClick: () => {
-                    if(boardMat.opacity <= 0.) {
+                    // if(boardMat.opacity <= 0.)
+                    {
                         socket.emit("buy", { suspect: suspects.indexOf(suspect) })
                         boardMat.opacity = .6
                     }
@@ -179,6 +182,19 @@ function initSuspects() {
         bestowCashBits(suspect)
         bestowBets(suspect)
 
+        return {}
+    }
+
+    socket.on("suspect portrait", (msg) => {
+        log(msg)
+
+        //THIS PART NEEDS TO GO
+        while(suspects.length <= msg.index)
+            Suspect()
+
+        let suspect = suspects[msg.index]
+        log(msg.index,suspects)
+
         let image = document.createElement("img")
         image.src = msg.portraitImageSrc
         image.onload = () => {
@@ -207,7 +223,5 @@ function initSuspects() {
                 portrait.mesh.rotation.z = camera.rotation.z
             })
         }
-
-        return {}
-    }
+    })
 }

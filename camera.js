@@ -59,7 +59,7 @@ async function initCamera() {
             target.y = suspectPanelDimensionsMr.offset.y
         },
         onClick: () => {
-            setVisibility(true)
+            setCameraStuffVisibility(true)
         }
     })
 
@@ -75,7 +75,7 @@ async function initCamera() {
     })
 
     function takePicture() {
-        setVisibility(false)
+        setCameraStuffVisibility(false)
 
         //no fucking idea why but this shit needs to be in here!
         const videoCaptureCanvas = document.createElement('canvas')
@@ -84,7 +84,7 @@ async function initCamera() {
         const ctx = videoCaptureCanvas.getContext('2d')
         ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
 
-        socket.emit("new suspect", {
+        socket.emit("new suspect portrait", {
             portraitImageSrc: videoCaptureCanvas.toDataURL("image/png")
         })
     }
@@ -100,7 +100,7 @@ async function initCamera() {
         })
     })
 
-    function setVisibility(val) {
+    setCameraStuffVisibility = (val) => {
         cameraFeedRect.visible = val
         takePictureButton.visible = val
         closeButton.visible = val
@@ -126,7 +126,7 @@ async function initCamera() {
                     target.y -= cbDimension / 2.
                 },
                 onClick: () => {
-                    setVisibility(false)
+                    setCameraStuffVisibility(false)
                 }
             })
         })
