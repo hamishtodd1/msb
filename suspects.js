@@ -6,6 +6,7 @@ function initSuspects() {
     })
 
     let confirmMat = text("Confirm: ",true)
+    let deleteMat = text("Delete?", true)
 
     const suspectSlipPadding = .25
 
@@ -14,13 +15,15 @@ function initSuspects() {
         portraitHeight = suspectPanelDimensionsMr.offset.x - suspectSlipPadding * 2.
     })
 
+    socket.on("suspect confirmation",(msg)=>{
+        suspects[msg.index].confirmed = msg.value
+    })
+
     Suspect = () => {
-        playSound("newSuspect")
-
-        setCameraStuffVisibility(false)
-
         let suspect = {}
         suspects.push(suspect)
+
+        suspect.onBoard = false
 
         suspect.frame = Rectangle({
             frameOnly: true,
@@ -33,8 +36,10 @@ function initSuspects() {
             haveIntendedPosition: true
         })
         updateFunctions.push(() => {
-            suspect.frame.intendedPosition.y = 0.
-            suspect.frame.intendedPosition.x = getPanelPositionX(suspects.indexOf(suspect))
+            if (!suspect.onBoard)
+                suspect.frame.intendedPosition.x = camera.getRight() * 2.
+            else
+                suspect.frame.intendedPosition.x = getPanelPositionX(suspects.indexOf(suspect))
         })
 
         {
@@ -59,7 +64,11 @@ function initSuspects() {
             })
             const boxForTick = Rectangle({
                 onClick: () => {
-                    suspect.confirmed = !suspect.confirmed
+                    log("yo")
+                    socket.emit("suspect confirmation", { 
+                        index: suspects.indexOf(suspect),
+                        value: !suspect.confirmed
+                    })
                 },
                 z: OVERLAY_Z + 1.,
                 haveFrame: true,
@@ -179,21 +188,74 @@ function initSuspects() {
             })
         }
 
+        suspect.portrait = Rectangle({
+            map: new THREE.Texture(),
+            x: 0., y: 0., w: 4., h: 4.,
+            haveFrame: true,
+            getScale: (target) => {
+                target.x = suspectPanelDimensionsMr.offset.x - suspectSlipPadding * 2.
+                target.y = portraitHeight
+            },
+            getPosition: (target) => {
+                target.x = suspect.frame.position.x
+                suspect.frame.getEdgeCenter("t", target)
+                target.y -= portraitHeight / 2. + suspectSlipPadding
+            }
+        })
+
+        let deleteSign = Rectangle({
+            onClick: ()=>{
+                socket.emit("delete",{ index: suspects.indexOf(suspect) })
+            },
+            getScale: (target) => {
+                target.x = suspect.portrait.scale.x
+                target.y = suspect.portrait.scale.x / deleteMat.getAspect()
+            },
+            col: 0xFF0000,
+            z: suspect.portrait.position.z + 1.,
+            mat: deleteMat,
+            getPosition: (target) => {
+                suspect.portrait.getEdgeCenter("b",target)
+                target.y += deleteSign.scale.y / 2.
+            }
+        })
+        let deletable = false
+        let hasAtSomePointHadABet = false
+        updateFunctions.push(() => {
+            deletable = hasAtSomePointHadABet
+            suspect.bets.forEach((bet) => {
+                if (bet.owner !== pm.BOARD_OWNERSHIP) {
+                    hasAtSomePointHadABet = true
+                    deletable = false
+                }
+            })
+
+            deleteSign.visible = deletable
+        })
+
+        suspect.putOnBoard = () => {
+            deletable = false
+            hasAtSomePointHadABet = false
+            suspect.onBoard = true
+        }
+
+        updateFunctions.push(() => {
+            suspect.portrait.mesh.rotation.z = camera.rotation.z
+        })
+
         bestowCashBits(suspect)
         bestowBets(suspect)
 
         return {}
     }
 
+    for(let i = 0; i < pm.maxSuspects; ++i)
+        Suspect()
+
     socket.on("suspect portrait", (msg) => {
-        log(msg)
-
-        //THIS PART NEEDS TO GO
-        while(suspects.length <= msg.index)
-            Suspect()
-
+        setCameraStuffVisibility(false) //screw you if you're trying to make one!
+        
         let suspect = suspects[msg.index]
-        log(msg.index,suspects)
 
         let image = document.createElement("img")
         image.src = msg.portraitImageSrc
@@ -204,24 +266,15 @@ function initSuspects() {
             canvasForImage.height = image.height
             canvasForImage.getContext('2d').drawImage(image, 0, 0, image.width, image.height)
 
-            const portrait = Rectangle({
-                map: new THREE.CanvasTexture(canvasForImage),
-                x: 0., y: 0., w: 4., h: 4.,
-                haveFrame: true,
-                getScale: (target) => {
-                    target.x = suspectPanelDimensionsMr.offset.x - suspectSlipPadding * 2.
-                    target.y = portraitHeight
-                },
-                getPosition: (target) => {
-                    target.x = suspect.frame.position.x
-                    suspect.frame.getEdgeCenter("t", target)
-                    target.y -= portraitHeight / 2. + suspectSlipPadding
-                }
-            })
+            suspect.portrait.mesh.material.map = new THREE.CanvasTexture(canvasForImage)
+            suspect.portrait.mesh.material.needsUpdate = true
 
-            updateFunctions.push(() => {
-                portrait.mesh.rotation.z = camera.rotation.z
-            })
+            playSound("newSuspect")
+            suspect.putOnBoard()
         }
+
+        socket.emit("portrait received")
+        //and when server receives this from all it'll make them all appear
+        //also, it'll allow in more new suspects
     })
 }

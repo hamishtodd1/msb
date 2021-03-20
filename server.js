@@ -33,8 +33,6 @@ function beginGame(id) {
 	let game = {}
 	games[id] = game
 
-	game.lowestUnusedSuspect = 0
-
 	game.sockets = []
 	game.suspects = []
 
@@ -48,32 +46,29 @@ function beginGame(id) {
 			msg.staticCashes[socket.playerId] = socket.staticCash
 		})
 
-		game.sockets.forEach( (socket)=>{
-			game.suspects.forEach((suspect, i) => {
-				if(suspect === undefined)
-					msg.suspects[i] = null
-				else {
-					if(msg.suspects[i] === undefined) {
-						msg.suspects[i] = {
-							cashBits: Array(pm.betsPerSuspect),
-							bets: Array(pm.betsPerSuspect)
-						}
-						for(let j = 0; j < pm.betsPerSuspect; ++j)
-							msg.suspects[i].cashBits[j] = { associatedPlayer: pm.NO_OWNERSHIP }
-						for(let j = 0; j < pm.betsPerSuspect; ++j)
-							msg.suspects[i].bets[j] = { owner: pm.BOARD_OWNERSHIP }
-					}
-
-					for (let j = 0; j < pm.betsPerSuspect; ++j)
-						msg.suspects[i].cashBits[j].associatedPlayer = game.suspects[i].cashBits[j].associatedPlayer
-					for (let j = 0; j < pm.betsPerSuspect; ++j)
-						msg.suspects[i].bets[j].owner = game.suspects[i].bets[j].owner
+		game.suspects.forEach((suspect, i) => {
+			if(msg.suspects[i] === undefined) {
+				msg.suspects[i] = {
+					cashBits: Array(pm.betsPerSuspect),
+					bets: Array(pm.betsPerSuspect),
+					onBoard: game.suspects[i].onBoard
 				}
-			})
+				for(let j = 0; j < pm.betsPerSuspect; ++j)
+					msg.suspects[i].cashBits[j] = { associatedPlayer: pm.NO_OWNERSHIP }
+				for(let j = 0; j < pm.betsPerSuspect; ++j)
+					msg.suspects[i].bets[j] = { owner: pm.BOARD_OWNERSHIP }
+			}
 
+			msg.suspects[i].onBoard = suspect.onBoard
+
+			for (let j = 0; j < pm.betsPerSuspect; ++j)
+				msg.suspects[i].cashBits[j].associatedPlayer = game.suspects[i].cashBits[j].associatedPlayer
+			for (let j = 0; j < pm.betsPerSuspect; ++j)
+				msg.suspects[i].bets[j].owner = game.suspects[i].bets[j].owner
+		})
+		game.sockets.forEach( (socket)=>{
 			socket.emit("game update", msg)
 		})
-		//various translations needed
 	}
 }
 
@@ -157,7 +152,8 @@ io.on("connection", (socket) => {
 			let suspect = {
 				cashBits: Array(pm.betsPerSuspect),
 				bets: Array(pm.betsPerSuspect),
-				portraitImageSrc: ""
+				portraitImageSrc: "",
+				onBoard: false
 			}
 
 			suspects.push(suspect)
@@ -172,16 +168,38 @@ io.on("connection", (socket) => {
 			}
 		}
 		//we're partway through making this into all pre-initialized and then the pics just come along
+
+		self.on("suspect confirmation", (msg) => {
+			game.sockets.forEach((sock)=>{
+				sock.emit("suspect confirmation",msg)
+			})
+		})
+
+		self.on("delete",(msg)=>{
+			let deletable = true
+			game.suspects[msg.index].bets.forEach((bet)=>{
+				if(bet.owner !== pm.BOARD_OWNERSHIP)
+					deletable = false
+			})
+
+			if(!deletable)
+				return
 			
+			game.suspects[msg.index].onBoard = false
+			game.broadcastState()
+		})
+
 		self.on("new suspect portrait", (msg) =>{
-			let suspect = game.suspects[game.lowestUnusedSuspect]
+			let suspect = game.suspects.find((suspect) => suspect.onBoard === false)
 			suspect.portraitImageSrc = msg.portraitImageSrc
+			
+			suspect.onBoard = true
+			log(suspect.onBoard,suspects.indexOf(suspect))
 
 			game.sockets.forEach((sock) => {
 				emitPortrait(suspect, sock)
 			})
-
-			++game.lowestUnusedSuspect
+			game.broadcastState()
 		} )
 
 		function emitPortrait(suspect,particularSocket) {
@@ -260,7 +278,9 @@ io.on("connection", (socket) => {
 
 		self.on("buy", (msg) => {
 			let suspect = suspects[msg.suspect]
-			log("total cash", getTotalCash(self))
+			
+			if(suspect.onBoard === false)
+				self.emit("unsuccessful buy")
 
 			let betToBuy = suspect.bets.find(bet => bet.owner === pm.BOARD_OWNERSHIP)
 			if (betToBuy === undefined)

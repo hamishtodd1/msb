@@ -1,11 +1,13 @@
 <!--
-	Deleting suspects
 	Everyone gets suspects simultaneously
 		Send new suspect picture
 		confirm all have received them
 		Then they appear
+	Bugs
+		Facebook web browser full screen
+		This-is-not-an-advert in order to make sounds play
+		Check that the connection is ok, took several seconds to send you your pic back
 	Just a video where you explain it
-	judgement mode emits confirmations
 
 	"World's shortest mrder mystery"
 	Script for "murder mystery", sock puppets:
@@ -191,11 +193,10 @@
 				initButtons()
 
 				let updateMouse = initMouse()
-
-				initSuspects()
-
+				
 				await initMeasuringRects()
 				initBoard()
+				initSuspects()
 				await initCamera()
 
 				initWindowResize()

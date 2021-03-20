@@ -67,7 +67,7 @@ async function initCamera() {
         newSuspectButton.intendedPosition.x = getPanelPositionX(suspects.length)
 
         let totalSuspects = 0
-        suspects.forEach((s) => { totalSuspects += s === undefined ? 0 : 1 })
+        suspects.forEach((s) => { totalSuspects += s.onBoard ? 1 : 0 })
         newSuspectButton.visible = cameraFeedRect.visible === false && totalSuspects < pm.maxSuspects
 
         if (frameCount === 0)
@@ -79,10 +79,10 @@ async function initCamera() {
 
         //no fucking idea why but this shit needs to be in here!
         const videoCaptureCanvas = document.createElement('canvas')
-        videoCaptureCanvas.width = video.videoWidth
-        videoCaptureCanvas.height = video.videoHeight
+        videoCaptureCanvas.width = 128
+        videoCaptureCanvas.height = 128
         const ctx = videoCaptureCanvas.getContext('2d')
-        ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
+        ctx.drawImage(video, 0, 0, 128, 128)
 
         socket.emit("new suspect portrait", {
             portraitImageSrc: videoCaptureCanvas.toDataURL("image/png")

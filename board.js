@@ -55,11 +55,11 @@ function initBoard() {
     getPanelPositionX = function (suspectIndex) {
         let indexConsideringSomeMayHaveBeenDeleted = 0
         for(let i = 0; i < suspectIndex; ++i) {
-            if (suspects[i] !== undefined)
+            if (suspects[i].onBoard)
                 ++indexConsideringSomeMayHaveBeenDeleted
         }
         //quite possibly
-        return camera.left +
+        return camera.getLeft() +
             panelPaddingMr.offset.x +
             suspectPanelDimensionsMr.offset.x / 2. +
             indexConsideringSomeMayHaveBeenDeleted * (suspectPanelDimensionsMr.offset.x + panelPaddingMr.offset.x)
@@ -104,6 +104,8 @@ function initBoard() {
             suspect.bets.forEach((bet, j) => {
                 bet.owner = msg.suspects[i].bets[j].owner
             })
+
+            suspect.onBoard = msg.suspects[i].onBoard
         })
 
         let changedHandses = Array(pm.betsPerSuspect)
