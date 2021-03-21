@@ -51,7 +51,8 @@ function beginGame(id) {
 				msg.suspects[i] = {
 					cashBits: Array(pm.betsPerSuspect),
 					bets: Array(pm.betsPerSuspect),
-					onBoard: game.suspects[i].onBoard
+					onBoard: game.suspects[i].onBoard,
+					socketsWithPortraitLoaded: {}
 				}
 				for(let j = 0; j < pm.betsPerSuspect; ++j)
 					msg.suspects[i].cashBits[j] = { associatedPlayer: pm.NO_OWNERSHIP }
@@ -204,6 +205,7 @@ io.on("connection", (socket) => {
 
 		function emitPortrait(suspect,particularSocket) {
 			log("sending suspect " + suspects.indexOf(suspect))
+			suspect.socketsWithPortraitLoaded = {}
 			particularSocket.emit("suspect portrait", {
 				index: suspects.indexOf(suspect),
 				portraitImageSrc: suspect.portraitImageSrc
@@ -219,6 +221,28 @@ io.on("connection", (socket) => {
 
 			//note: you might not get all of them if one is added just as you arrive
 		})
+
+		socket.on("portrait received", (msg)=>{
+			let suspect = suspects[msg.index]
+			suspect.socketsWithPortraitLoaded[socket.id] = false
+		})
+		socket.on("portrait loaded", (msg) => {
+			let suspect = suspects[msg.index]
+			suspect.socketsWithPortraitLoaded[socket.id] = true
+
+			let allLoaded = true
+			Object.keys(suspect.socketsWithPortraitLoaded).forEach((sockIdLoadedness)=>{
+				if(sockIdLoadedness === false)
+					allLoaded = false
+			})
+
+			if(allLoaded) {
+				game.sockets.forEach((sock) => {
+					sock.emit("suspect onBoard",{ index: msg.index })
+				})
+			}
+		})
+		//you do "portrait message received" and "portrait loaded". 
 
 		// self.on("delete",(msg)=>{
 		// 	delete suspects[msg.suspect]

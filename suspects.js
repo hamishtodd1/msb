@@ -257,6 +257,8 @@ function initSuspects() {
         
         let suspect = suspects[msg.index]
 
+        socket.emit("portrait received", { index: msg.index })
+
         let image = document.createElement("img")
         image.src = msg.portraitImageSrc
         image.onload = () => {
@@ -269,12 +271,15 @@ function initSuspects() {
             suspect.portrait.mesh.material.map = new THREE.CanvasTexture(canvasForImage)
             suspect.portrait.mesh.material.needsUpdate = true
 
-            playSound("newSuspect")
-            suspect.putOnBoard()
+            socket.emit("portrait loaded",{index:msg.index})
         }
 
-        socket.emit("portrait received")
         //and when server receives this from all it'll make them all appear
         //also, it'll allow in more new suspects
+    })
+
+    socket.on("suspect onBoard", (msg) => {
+        playSound("newSuspect")
+        suspects[msg.index].putOnBoard()
     })
 }

@@ -79,10 +79,10 @@ async function initCamera() {
 
         //no fucking idea why but this shit needs to be in here!
         const videoCaptureCanvas = document.createElement('canvas')
-        videoCaptureCanvas.width = 128
-        videoCaptureCanvas.height = 128
+        videoCaptureCanvas.width = 90
+        videoCaptureCanvas.height = 90
         const ctx = videoCaptureCanvas.getContext('2d')
-        ctx.drawImage(video, 0, 0, 128, 128)
+        ctx.drawImage(video, 0, 0, 90, 90)
 
         socket.emit("new suspect portrait", {
             portraitImageSrc: videoCaptureCanvas.toDataURL("image/png")
