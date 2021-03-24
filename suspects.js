@@ -137,38 +137,55 @@ function initSuspects() {
                 target.x = suspectPanelDimensionsMr.offset.x - suspectSlipPadding * 2.
                 target.y = clickableBoxHeight
             }
-            updateFunctions.push(()=>{
-                boardMat.opacity -= frameDelta * .6
-                handMat.opacity -= frameDelta * .6
-            })
+            let coolDown = 0.
             let boardMat = new THREE.MeshBasicMaterial({
                 color:0xFFFFFF,
                 transparent:true,
                 opacity:0.
             })
+            updateFunctions.push(() => {
+                coolDown = Math.max(0., coolDown - frameDelta)
+
+                boardMat.opacity = coolDown * .6
+            })
+            let highlightyBit = Rectangle({
+                z: -4.5,
+                mat: boardMat,
+                getScale: (target)=>{
+                    target.x = suspect.boardFrame.scale.x * (1.-coolDown)
+                    target.y = suspect.boardFrame.scale.y * (1.-coolDown)
+                },
+                getPosition: (target) => {
+                    target.x = suspect.boardFrame.position.x
+                    target.y = suspect.boardFrame.position.y
+                }
+            })
             suspect.boardFrame = Rectangle({
                 onClick: () => {
-                    // if(boardMat.opacity <= 0.)
-                    {
+                    if(coolDown <= 0.) {
                         socket.emit("buy", { suspect: suspects.indexOf(suspect) })
-                        boardMat.opacity = .6
+                        coolDown = 1.
                     }
                 },
-                mat: boardMat,
                 z: -4.,
+                frameOnly: true,
                 haveFrame: true,
                 getScale: getFrameScale,
                 getPosition: (target) => {
                     suspect.frame.getEdgeCenter("t", target)
                     target.y -= suspectSlipPadding * 2. + portraitHeight + suspect.boardFrame.scale.y / 2.
 
-                    target.x += Math.pow(Math.max(boardMat.opacity, 0.), 2.) * Math.sin(frameCount * .7) * .2
+                    target.x += Math.pow(Math.max(coolDown, 0.), 2.) * Math.sin(frameCount * .7) * .2
                 }
             })
+
             let handMat = new THREE.MeshBasicMaterial({ 
                 color: 0xFFFFFF ,
                 transparent:true,
                 opacity:0.
+            })
+            updateFunctions.push(()=>{
+                handMat.opacity -= frameDelta * .6
             })
             suspect.handFrame = Rectangle({
                 onClick: () => {

@@ -1,10 +1,22 @@
 # What is this?
-Robin Hanson's "Murder She Bet", turned from boardgame to video game. Robin's post on the boardgame is [here](https://www.overcomingbias.com/2018/08/my-board-board-game.html), and see [here](http://mason.gmu.edu/~rhanson/futarchy.pdf) and [here](https://mason.gmu.edu/~rhanson/gamble.html) for the philosophy behind it.
+This is a game, originally a [board game](https://www.overcomingbias.com/2018/08/my-board-board-game.html)) designed by the social scientist / philosopher Robin Hanson, turned into a video game. The boardgame is about, on the surface, betting on murder mysteries. But really it is deeper than that.
 
-There is a [subreddit](https://www.reddit.com/r/MurderSheBet/)
+# "Prediction Markets"?
+Murder She Bet (MSB) is actually an as-simple-as-possible example of a Prediction Market (PM), an institution designed by Hanson that has implications, I would say, for both science and politics. Prediction Markets are encourage making probabilistic predictions, where you make explicit both your beliefs and your levels of confidence in those beliefs. This is a good thing, both board games and in decision-making institutions, for three reasons:
 
-# Why did you make this?
-Originally, mostly because I was interested in the difference between physical activities / board games and virtual activities / video games. Murder, She Bet exists as a board game; I wanted to compare it with what it's like as a video game. I originally started this project during my PhD, which was in part focussed on the related question of whether [Dynamicland](dynamicland.org) will turn out to be a good idea.
+1. Bayesian statistics is an objectively very helpful way to see the world, and you get better at it with practice. When playing MSB, people seem to use it intuitively. If two new suspects are introduced, almost by definition they start out with equal probability. But when new information comes along (eg, "the victim changed their will"), there's a clear sense in which all the players "update" by thinking "would I see this evidence in the situation where suspect X hasn't done it? Would I see it in the situation situation where they have done it?", and adjust their bets accordingly. They even try to form a clear anticipation of something to happen in the next few scenes - you see them buying 3 bets, waiting, and then selling the bets if they don't see what they expected. It's science! Of a kind.
+
+2. People often lie about their beliefs, but that becomes basically impossible when there's a prediction market around. If you watch a murder mystery in the ordinary way (on the sofa, with your family), you expect to see a lot of people posturing, saying crap like "oh well of COURSE X did it then". With a prediction market, if a person *wants* to say something like that, everyone knows what they should do: *if they really believe 100% that that person is guilty*, they should buy every bet on that suspect. If they don't do this, i.e. they don't "put their money where their mouth is", you know they don't mean what they said.
+
+3. The market aggregates information in a clever way. As you play, you'll see that, at any given time, the price of a suspect's bets tells you the probability that the players ascribe to the belief that that suspect did it. This means that they can be used to trade money (in the form of promises to pay off bets) for consensus beliefs.
+
+Hanson has written proposals for PMs to predict how scientific theories will hold up [(link)](http://mason.gmu.edu/~rhanson/futarchy.pdf), and even for deciding what policies to implement to give voters what they want out of a government [(link)](https://mason.gmu.edu/~rhanson/gamble.html).
+
+# Can I contact you?
+Please do, I'm @hamish_todd on twitter. My email is my first name, then my surname, then the numeral 1, at gmail.
+
+# Original motivation: board game versus video game
+I originally wanted to make this because I was interested in the difference between physical activities / board games and virtual activities / video games. Murder, She Bet exists as a board game; I wanted to compare it with what it's like as a video game. I originally started this project during my PhD, which was in part focussed on the related question of whether [Dynamicland](dynamicland.org) will turn out to be a good idea.
 
 ![Boardgame](./assets/board.jpg)
 
@@ -42,9 +54,6 @@ If you'd like to fork this and change the prices, the key values are:
 * cheapestBet, which is measured as a proportion of the money that a successful bet wins. Set this to *0.09* to get bet values similar to the original game.
     
 * startingCash, which is measured as a proportion of the total price of 1 full column's worth of contracts. In the original game this is about *0.6*. Although possibly it should be measured as a proportion of the price per winning bet. I currently feel I have very little of idea what this "should" be. I think at least it should be uncommon, but not unheard of, for people to buy the most expensive bets before the endgame. Also, it should probably be impossible for someone to buy all the bets in a column at the beginning of a game and then just leave it at that. I suppose people in general should also have enough money to make any bet that they think will be worth it (a microcosm of the real world I guess!).
-
-# Can I contact you?
-Please do, I'm @hamish_todd on twitter. My email is my first name, then my surname, then the numeral 1, at gmail.
 
 # Credits
 Camera click: Kwahmah https://freesound.org/people/kwahmah_02/sounds/260138/

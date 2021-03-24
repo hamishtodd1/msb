@@ -1,14 +1,47 @@
 <!--
-	Everyone gets suspects simultaneously
-		Send new suspect picture
-		confirm all have received them
-		Then they appear
 	Bugs
 		If your display goes to sleep, the socket goes
 		Facebook web browser full screen
 		This-is-not-an-advert in order to make sounds play
 		Check that the connection is ok, took several seconds to send you your pic back
 	Just a video where you explain it
+
+
+
+	ssh -i msb1Pair.pem ec2-user@ec2-54-82-22-36.compute-1.amazonaws.com
+	Restart button might be nice, requires two presses
+	Can get more playtesters from:
+		StrangeCharms
+		GMTK
+	Could have an automated thing: when you buy a bet, however much extra probability this puts into the suspect, that much is sold, equally, from the other suspects
+	Possibly betting on "who should be put on the pitch" in a football simulator
+	Mute button for sound effects
+	The bets have their color fade to green and come from the bottom and the top
+	You need a more detailed arrow, apparently people can be close
+	Also, hide your cash when done
+	Lobbyist mode
+		With lobbyist mode, you also have a lot of bets more expensive than what the person gets for them. Then, a strategy: if you know someone is trying to manipulate the price of X to be >80p at 1pm, but the true price of X is 20p, you can:
+		-buy a load of bets on X at <80p
+		-wait until 12:59pm when the price is 81p
+		-sell a bet, price goes down to 79p
+		-watch the manipulator buy so price goes back to 81p
+		-sell again
+		-manipulator buys again
+		etc. Only problem is, you have to buy when 
+
+		Yes, key thing is that there should be unlimited bets, so that the manipulator is forced to make the price extraordinarily high so that when everyone sells it's still above the watermark
+
+		If you can figure out how much the manipulator gains from having the price be past the watermark, you can pump all that money out of them
+
+
+
+		No reason why it should be secret really. Say how much cash the manipulator gets, and who they are, and what suspect they're going for.
+
+		Easter egg: open console and set newGameButton.manipulatorMode = true before clicking it
+
+		-how much money they get
+		-how much extra money they start with
+		-When the suspect appears, a 25-second timer starts. If the suspect's bets are trading at 1:1 when it's done, the manipulator gets N dollars.
 
 	"World's shortest mrder mystery"
 	Script for "murder mystery", sock puppets:

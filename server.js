@@ -12,7 +12,6 @@ const http = require("http").Server(app);
 const io = require("socket.io")(http);
 
 const port = process.env.PORT || 443
-
 http.listen(port, () => {
 	log("\nServer is listening on port ", port);
 })
