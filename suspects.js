@@ -146,7 +146,7 @@ function initSuspects() {
             updateFunctions.push(() => {
                 coolDown = Math.max(0., coolDown - frameDelta)
 
-                boardMat.opacity = coolDown * .6
+                boardMat.opacity = coolDown
             })
             let highlightyBit = Rectangle({
                 z: -4.5,
@@ -179,28 +179,24 @@ function initSuspects() {
                 }
             })
 
-            let handMat = new THREE.MeshBasicMaterial({ 
-                color: 0xFFFFFF ,
-                transparent:true,
-                opacity:0.
-            })
+            let sellCooldown = 0.
             updateFunctions.push(()=>{
-                handMat.opacity -= frameDelta * .6
+                sellCooldown -= frameDelta
             })
             suspect.handFrame = Rectangle({
                 onClick: () => {
                     socket.emit("sell", { suspect: suspects.indexOf(suspect) })
-                    handMat.opacity = .6
+                    sellCooldown = 1.
                 },
-                mat: handMat,
                 z: -4.,
                 haveFrame: true,
+                frameOnly:true,
                 getScale: getFrameScale,
                 getPosition: (target) => {
                     suspect.frame.getEdgeCenter("b", target)
                     target.y += suspectSlipPadding * 1. + suspect.handFrame.scale.y / 2.
 
-                    target.x += Math.max(handMat.opacity,0.) * Math.sin(frameCount * .7) * .2
+                    target.x += Math.max(sellCooldown,0.) * Math.sin(frameCount * .7) * .2
                 }
             })
         }
