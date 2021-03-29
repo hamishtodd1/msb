@@ -1,4 +1,4 @@
-async function initCamera() {
+async function initCamera(suspectPositionY) {
 
     const video = document.createElement('video');
     {
@@ -65,6 +65,8 @@ async function initCamera() {
 
     updateFunctions.push(() => {
         newSuspectButton.intendedPosition.x = getPanelPositionX(suspects.length)
+
+        newSuspectButton.position.y = suspectPositionY
 
         let totalSuspects = 0
         suspects.forEach((s) => { totalSuspects += s.onBoard ? 1 : 0 })

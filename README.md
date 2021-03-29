@@ -36,6 +36,8 @@ As a video game, Murder She Bet is:
 
 * Is able to have a leaderboard at the end rather than a simple win/loss, so people's skill is more accurately and proportionately reported. This, I think, combats a problem pointed out by [Zvi Moshowitz](https://www.lesswrong.com/posts/fs2ozRQ4osJr9Wbfu/on-robin-hanson-s-board-game) that in the boardgame, that the endgame has distorted incentives that point away from buy bets that reflect your belief about the probability of a suspect's guilt.
 
+* Permits much more fine-grained betting, i.e. each suspect gets far more bets than in the boardgame. Many players believe that one bet on a suspect is a useful thing to have (this leads to people obsessing over the first bet). I am pretty sure that this isn't true; I certainly think it shouldn't be. At least if everyone is playing with the optimal strategy (see above), it's not about how many bets you have at a given time but about how good you are at judging probabilities, which should involve exchanging a very large number of bets. Having only one or two bets on a suspect should be a pathological situation encountered rarely in optimal play, because it means that the owners of the bets are having to "round their probability to the nearest bet".
+
 Aside from the board game vs video game thing:
 * Visualizing mathematics is interesting. This is especially true of statistics. Statistics, as a field, is abstract and dry - but much as I love geometry, statistics is probably the most important area of mathematics, because almost all human thought is statistical, though people foolishly pretend it isn't.
 
@@ -48,12 +50,12 @@ Aside from the board game vs video game thing:
 # Specific pricing
 I've tweaked the rewards a bit from the original, where the prices of contracts had to be multiples of 5. There's good reason to do this. One problem with discrete jumps, that the boardgame had is how the second smallest bet is TWICE as costly as the smallest bet. This is a bad discontinuity that many experienced game designers (at least those at Edinburgh Independent Game Developers) know to avoid!
 
-If you'd like to fork this and change the prices, the key values are:
-* pm.betsPerSuspect. In the original game this was *10*. I drastically increased this, which I think is a pure win: you can have more fine-grain control over your bets, which becomes possible because betting is so much faster than the board game.
+If you'd like to fork this and change the prices, the important values are:
+* pm.betsPerSuspect. In the original game this was *10*. I've increased this a lot, to 24, see above. This may feel a bit fiddly, but tough, that's the game
 
 * cheapestBet, which is measured as a proportion of the money that a successful bet wins. Set this to *0.09* to get bet values similar to the original game.
     
-* startingCash, which is measured as a proportion of the total price of 1 full column's worth of contracts. In the original game this is about *0.6*. Although possibly it should be measured as a proportion of the price per winning bet. I currently feel I have very little of idea what this "should" be. I think at least it should be uncommon, but not unheard of, for people to buy the most expensive bets before the endgame. Also, it should probably be impossible for someone to buy all the bets in a column at the beginning of a game and then just leave it at that. I suppose people in general should also have enough money to make any bet that they think will be worth it (a microcosm of the real world I guess!).
+* startingCash, which is measured as a proportion of the total price of 1 full column's worth of contracts. In the original game this is about *0.6*. Although possibly it should be measured as a proportion of the price per winning bet. I currently feel I have very little of idea what this "should" be. I think at least it should be uncommon, but not unheard of, for people to buy the most expensive bets before the endgame. Also, it should probably be impossible for someone to buy all the bets in a column at the beginning of a game and then just leave it at that. I suppose people in general should also have enough money to make any bet that they think will be worth it (a microcosm of the real world I guess!). I'm thinking of randomizing it a bit, to make it more of a microcosm of the real world; maybe you could rate players based not on how much the end up with but how much they increased their wealth?
 
 # Credits
 Camera click: Kwahmah https://freesound.org/people/kwahmah_02/sounds/260138/

@@ -12,12 +12,12 @@
 //     return instancedMesh
 // }
 
-function initBoard() {
+async function initBoard() {
     //globals
     {
         const slotMr = MeasuringRect("bet slot", false)
-        cashWidth = 2.6
-        betHeight = 3.2 / pm.betsPerSuspect
+        cashWidth = 1.5
+        betHeight = 4. / pm.betsPerSuspect
         slotFrameThickness = betHeight / 2.
 
         cashMat = new THREE.MeshBasicMaterial()
@@ -40,7 +40,7 @@ function initBoard() {
             x: 0.
         })
         updateFunctions.push(()=>{
-            staticCash.intendedPosition.y = camera.getBottom() + .5
+            staticCash.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
             let totalCashWidth = getTotalCash() * cashWidth
             staticCash.intendedPosition.x = -(totalCashWidth / 2. - staticCash.scale.x / 2.)
         })
@@ -50,8 +50,29 @@ function initBoard() {
         return (betHeight + slotFrameThickness) * (index - (pm.betsPerSuspect - 1.) / 2.)
     }
 
-    suspectPanelDimensionsMr = MeasuringRect("suspectPanelDimensions")
-    panelPaddingMr = MeasuringRect("panelPadding", true)
+    const dashboardGap = 1.5
+    const suspectPositionY = camera.getTop() - (20. - dashboardGap) / 2.
+    //TODO rename this, it's not that hard
+    let gapBetweenPanels = .5
+    let panelWidth = (20. - gapBetweenPanels) / 6. - gapBetweenPanels
+    suspectPanelDimensionsMr = { offset: { 
+        x: panelWidth,
+        y: 20. - dashboardGap - .5
+    } }
+
+    updateFunctions.push(() => {
+        let frst = dashboard[0]
+        let last = dashboard[dashboard.length - 1]
+        frst.intendedPosition.x = camera.getLeft() + frst.scale.x / 2. + .5
+        last.intendedPosition.x = camera.getRight() - last.scale.x / 2. - .5
+
+        dashboard.forEach((btn) => {
+            btn.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
+        })
+
+        //maybe derive cashwidth from how much space there is between these two?
+    })
+
     getPanelPositionX = function (suspectIndex) {
         let indexConsideringSomeMayHaveBeenDeleted = 0
         for(let i = 0; i < suspectIndex; ++i) {
@@ -60,9 +81,9 @@ function initBoard() {
         }
         //quite possibly
         return camera.getLeft() +
-            panelPaddingMr.offset.x +
+            gapBetweenPanels +
             suspectPanelDimensionsMr.offset.x / 2. +
-            indexConsideringSomeMayHaveBeenDeleted * (suspectPanelDimensionsMr.offset.x + panelPaddingMr.offset.x)
+            indexConsideringSomeMayHaveBeenDeleted * (suspectPanelDimensionsMr.offset.x + gapBetweenPanels)
     }
 
     const discreteViridis = [
@@ -144,4 +165,7 @@ function initBoard() {
             })
         })
     })
+
+    initSuspects(suspectPositionY)
+    await initCamera(suspectPositionY)
 }

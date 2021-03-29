@@ -1,4 +1,9 @@
-function initSuspects() {
+/**
+ * So the label says what percent return you get
+ * It can be off to the side of the things
+ */
+
+function initSuspects(suspectPositionY) {
     let tickMat = new THREE.MeshBasicMaterial()
     new THREE.TextureLoader().load("assets/tick.png", (map) => {
         tickMat.map = map
@@ -40,10 +45,12 @@ function initSuspects() {
                 suspect.frame.intendedPosition.x = camera.getRight() * 2.
             else
                 suspect.frame.intendedPosition.x = getPanelPositionX(suspects.indexOf(suspect))
+
+            suspect.frame.intendedPosition.y = suspectPositionY
         })
 
         {
-            let tbDimension = .8
+            let tbDimension = .65
 
             suspect.confirmed = false
 
@@ -52,8 +59,6 @@ function initSuspects() {
                 target.y -= suspectSlipPadding * 2. + portraitHeight + tbDimension / 2.
 
                 target.x += suspect.frame.scale.x * .35
-
-                // target.y = camera.getTop() - tbDimension / 2. - panelPaddingMr.offset.x
             }
             const tick = Rectangle({
                 mat: tickMat,
@@ -78,7 +83,8 @@ function initSuspects() {
             })
 
             const labelR = Rectangle({
-                h: tbDimension, w: tbDimension * confirmMat.getAspect(),
+                h: tbDimension, 
+                w: tbDimension * confirmMat.getAspect(),
                 z: OVERLAY_Z + 1.,
                 mat: confirmMat,
                 getPosition: (target) => {

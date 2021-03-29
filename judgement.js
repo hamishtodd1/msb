@@ -49,153 +49,154 @@ function initJudgement() {
         })
     })
 
-    new THREE.TextureLoader().load("assets/judgement.png",(map)=>{
-        let mat = new THREE.MeshBasicMaterial({map,color:bgColor})
+    // new THREE.TextureLoader().load("assets/judgement.png",(map)=>{
+    //     let mat = new THREE.MeshBasicMaterial({map,color:bgColor})
+    // })
 
-        let jbDimension = 3.
-        let judgementButton = Rectangle({
-            onClick: () => {
-                socket.emit("judgement mode requested")
+    let judgementButton = Rectangle({
+        onClick: () => {
+            socket.emit("judgement mode requested")
 
-                waitingMessage.visible = true
-                waitingMessage.lastClicked = frameCount
-            },
-            mat,
-            z: 0.,
-            haveFrame: true,
-            w: jbDimension, h: jbDimension,
-            getPosition: (target) => {
-                target.x = camera.getRight() - jbDimension / 2. - panelPaddingMr.offset.x
-                target.y = camera.getTop() - jbDimension / 2. - panelPaddingMr.offset.x
-            }
-        })
-
-
-        
+            waitingMessage.visible = true
+            waitingMessage.lastClicked = frameCount
+        },
+        label: "Judgement!",
+        haveFrame: true,
+        h: 1.,
+        getScaleFromLabel: true,
+        z: 0.,
+        haveFrame: true,
+        haveIntendedPosition: true
+    })
+    dashboard.push(judgementButton)
 
 
-        const hider = Rectangle({
-            col,
-            w: 4., h: 4.,
-            z: OVERLAY_Z,
-            haveFrame: true,
-            visible: false,
-            getScale: (target) => {
-                let sus = suspects.find((s) => s !== undefined )
-                if (sus === undefined)
-                    return
 
-                target.x = camera.getRight() * 2. - panelPaddingMr.offset.x * 2.
-                target.y = sus.frame.scale.y - sus.frame.scale.x
-            },
-            getPosition: (target) =>{
-                let sus = suspects.find((s)=> s !== undefined)
-                if(sus === undefined)
-                    return
+    
 
-                sus.frame.getEdgeCenter("b",target)
-                target.y += hider.scale.y / 2.
-                target.x = 0.
-            }
-            // suspects[0].frame.getEdgeCenter("t", target)
-            // target.y -= portraitHeight / 2. + suspectSlipPadding
-        })
 
-        // let closeButton = null
-        // let cbDimension = 2.
-        // new THREE.TextureLoader().load("assets/close.png", (map) => {
-        //     closeButton = Rectangle({
-        //         w: cbDimension, h: cbDimension, z: OVERLAY_Z + 1.,
-        //         map, visible: false,
-        //         getPosition: (target) => {
-        //             hider.getCorner("tr", target)
-        //             target.x -= cbDimension / 2.
-        //             target.y -= cbDimension / 2.
-        //         },
-        //         onClick: () => {
-        //             judgementMode = false
-        //         }
-        //     })
-        // })
-
-        const youSign = Rectangle({
-            label: "← You",
-            h: rowHeight,
-            getScaleFromLabel: true,
-            z: OVERLAY_Z + 2.,
-            getPosition: (target) => {
-                if (finalCashes[socket.playerId] === undefined) {
-                    target.x = 0.
-                    target.y = 0.
-                }
-                else {
-                    hider.getEdgeCenter("r", target)
-                    target.x -= youSign.scale.x / 2. + .5
-
-                    target.y = finalCashes[socket.playerId].position.y
-                }
-            }
-        })
-
-        updateFunctions.push( () => {
-            // closeButton.visible = judgementMode
-            hider.visible = judgementMode
-            youSign.visible = judgementMode
-
-            let gameHasActuallyBeenPlayedABit = false
-            suspects.forEach((sus)=>{
-                if( pm.getNumBoardBets(sus) < pm.betsPerSuspect )
-                    gameHasActuallyBeenPlayedABit = true
-            })
-
-            judgementButton.visible = !judgementMode && !waitingMessage.visible && gameHasActuallyBeenPlayedABit
-        })
-
-        const finalCashes = {}
-        updateFunctions.push(() => {
-            if (!judgementMode)
+    const hider = Rectangle({
+        col,
+        w: 4., h: 4.,
+        z: OVERLAY_Z,
+        haveFrame: true,
+        visible: false,
+        getScale: (target) => {
+            let sus = suspects.find((s) => s !== undefined )
+            if (sus === undefined)
                 return
 
-            const ids = Object.keys(staticCashesValues)
+            suspects[0].frame.getEdgeCenter("l",target)
+            target.x *= 2.
+            target.y = sus.frame.scale.y - sus.frame.scale.x
+        },
+        getPosition: (target) =>{
+            let sus = suspects.find((s)=> s !== undefined)
+            if(sus === undefined)
+                return
 
-            Object.keys(staticCashesValues).forEach((id) => {
-                if (finalCashes[id] === undefined) {
-                    finalCashes[id] = Rectangle({
-                        mat: cashMat,
-                        h: betHeight,
-                        w: 999999999.,
-                        z: OVERLAY_Z + 1.,
-                        haveIntendedPosition: true,
-                        x: 0.
-                    })
-                }
-            })
+            sus.frame.getEdgeCenter("b",target)
+            target.y += hider.scale.y / 2.
+            target.x = 0.
+        }
+        // suspects[0].frame.getEdgeCenter("t", target)
+        // target.y -= portraitHeight / 2. + suspectSlipPadding
+    })
 
-            let max = -Infinity
-            let min = Infinity
-            ids.forEach((id, i) => {
-                finalCashes[id].scale.x = 0.
-                finalCashes[id].scale.x += cashWidth * staticCashesValues[id]
+    // let closeButton = null
+    // let cbDimension = 2.
+    // new THREE.TextureLoader().load("assets/close.png", (map) => {
+    //     closeButton = Rectangle({
+    //         w: cbDimension, h: cbDimension, z: OVERLAY_Z + 1.,
+    //         map, visible: false,
+    //         getPosition: (target) => {
+    //             hider.getCorner("tr", target)
+    //             target.x -= cbDimension / 2.
+    //             target.y -= cbDimension / 2.
+    //         },
+    //         onClick: () => {
+    //             judgementMode = false
+    //         }
+    //     })
+    // })
 
-                suspects.forEach((sus) => {
-                    if (!sus.confirmed)
-                        return
-                    sus.bets.forEach((bet) => {
-                        if (bet.owner === id)
-                            finalCashes[id].scale.x += cashWidth
-                    })
+    const youSign = Rectangle({
+        label: "← You",
+        h: rowHeight,
+        getScaleFromLabel: true,
+        z: OVERLAY_Z + 2.,
+        getPosition: (target) => {
+            if (finalCashes[socket.playerId] === undefined) {
+                target.x = 0.
+                target.y = 0.
+            }
+            else {
+                hider.getEdgeCenter("r", target)
+                target.x -= youSign.scale.x / 2. + .5
+
+                target.y = finalCashes[socket.playerId].position.y
+            }
+        }
+    })
+
+    updateFunctions.push( () => {
+        // closeButton.visible = judgementMode
+        hider.visible = judgementMode
+        youSign.visible = judgementMode
+
+        let gameHasActuallyBeenPlayedABit = false
+        suspects.forEach((sus)=>{
+            if( pm.getNumBoardBets(sus) < pm.betsPerSuspect )
+                gameHasActuallyBeenPlayedABit = true
+        })
+
+        judgementButton.visible = !judgementMode && !waitingMessage.visible && gameHasActuallyBeenPlayedABit
+    })
+
+    const finalCashes = {}
+    updateFunctions.push(() => {
+        if (!judgementMode)
+            return
+
+        const ids = Object.keys(staticCashesValues)
+
+        Object.keys(staticCashesValues).forEach((id) => {
+            if (finalCashes[id] === undefined) {
+                finalCashes[id] = Rectangle({
+                    mat: cashMat,
+                    h: betHeight,
+                    w: 999999999.,
+                    z: OVERLAY_Z + 1.,
+                    haveIntendedPosition: true,
+                    x: 0.
                 })
+            }
+        })
 
-                max = Math.max(max, finalCashes[id].scale.x)
-                min = Math.min(min, finalCashes[id].scale.x)
+        let max = -Infinity
+        let min = Infinity
+        ids.forEach((id, i) => {
+            finalCashes[id].scale.x = 0.
+            finalCashes[id].scale.x += cashWidth * staticCashesValues[id]
+
+            suspects.forEach((sus) => {
+                if (!sus.confirmed)
+                    return
+                sus.bets.forEach((bet) => {
+                    if (bet.owner === id)
+                        finalCashes[id].scale.x += cashWidth
+                })
             })
 
-            let top = hider.getEdgeCenter("t", v0).y - 3.
-            let bottom = hider.getEdgeCenter("b", v0).y + 2.
-            ids.forEach((id) => {
-                let ranking = (finalCashes[id].scale.x - min) / (max - min)
-                finalCashes[id].intendedPosition.y = bottom + (top - bottom) * ranking
-            })
+            max = Math.max(max, finalCashes[id].scale.x)
+            min = Math.min(min, finalCashes[id].scale.x)
+        })
+
+        let top = hider.getEdgeCenter("t", v0).y - 3.
+        let bottom = hider.getEdgeCenter("b", v0).y + 2.
+        ids.forEach((id) => {
+            let ranking = (finalCashes[id].scale.x - min) / (max - min)
+            finalCashes[id].intendedPosition.y = bottom + (top - bottom) * ranking
         })
     })
 }

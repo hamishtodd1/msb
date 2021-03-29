@@ -1,12 +1,13 @@
 <!--
-	Room at bottom for judgement, id, cash
-	Make sure it all works on a square screen
 	Judgement mode
-		Your bets (not others') are visible in the background. Greyed out colors
-		But they zoom into place
+		Just cover the market half, your bets are visible below
+		Your bets (not others') are visible in the background
+		They zoom into place. Your cash too
 		When you change which suspects are confirmed, the scaling takes a little time to respond
+	You can expand the suspect frames and areas to take up more space
 	Bugs
-		If your display goes to sleep, the socket goes
+		You get black frickin squares. Refreshing makes it go away...
+		PROBABLY If your display goes to sleep, the socket goes
 		Facebook web browser full screen
 		This-is-not-an-advert in order to make sounds play
 		Check that the connection is ok, took several seconds to send you your pic back
@@ -168,12 +169,13 @@
 	
 	<br></br>
 
-	<h3>The rules:</h3>
+	<h3><em>Murder, She Bet</em> is a game about putting your money where your (probabilistic) mouth is.
+	The rules are:</h3>
 	<ol>
-		<li>You will watch a Murder Mystery, with several suspects, all of whom may be <em>guilty</em>.</li>
+		<li>You will watch a Murder Mystery, with several <em>suspects</em> that may be <em>guilty</em>.</li>
 		<li>Any player can raise suspicion of a new suspect they would like to bet on.</li>
 		<li>The guilt of the suspects is determined when, and ONLY WHEN, the credits roll.</li>
-		<li>With guilt determined, bets on guilty suspects are worth money, bets on innocents are worthless.</li>
+		<li>Bets on guilty suspects will turn into money, bets on innocent suspects turn into nothing.</li>
 	</ol>
 
 	<center><iframe width="100%" height="56.25%" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0"
@@ -246,23 +248,45 @@
 				let updateMouse = initMouse()
 				
 				await initMeasuringRects()
-				initBoard()
-				initSuspects()
-				await initCamera()
+				await initBoard()
 
 				initWindowResize()
 
+				let idBoxDimension = 1.
+				const idBox = Rectangle({
+					label: "Game ID: " + gameId,
+					getScaleFromLabel: true,
+					haveIntendedPosition: true,
+					haveFrame: true
+				})
+				dashboard.push(idBox)
+
 				initJudgement()
 
-				let idBoxDimension = 3.
-				const idBox = Rectangle({
-					label:"Game ID: " + gameId,
-					w: idBoxDimension, h: idBoxDimension,
-					getPosition:(target) => {
-						target.x = camera.getRight() - idBoxDimension / 2.
-						target.y = 0.
-					}
-				})
+				{
+					const connectionLostBox = Rectangle({
+						label: "Connection lost",
+						h: 2.,
+						getScaleFromLabel: true,
+						haveFrame: true,
+						z: 4.9
+					})
+
+					let timeSinceLastPongReception = 0.
+					socket.on("pongAA",()=>{
+						timeSinceLastPongReception = 0.
+					})
+					updateFunctions.push(()=>{
+						let aboutToPass2 = timeSinceLastPongReception < 2. &&
+							timeSinceLastPongReception + frameDelta >= 2.
+						if( aboutToPass2 )
+							socket.emit("pingAA")
+
+						connectionLostBox.visible = timeSinceLastPongReception > 4.
+
+						timeSinceLastPongReception += frameDelta
+					})
+				}
 
 				socket.emit("ready for suspect portraits")
 

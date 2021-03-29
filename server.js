@@ -211,6 +211,9 @@ io.on("connection", (socket) => {
 			})
 		}
 
+		socket.on("pingAA", () => {
+			socket.emit("pongAA")
+		})
 		socket.on( "ready for suspect portraits", ()=>{
 			game.suspects.forEach((suspect, i) => {
 				if (suspect.portraitImageSrc !== "")

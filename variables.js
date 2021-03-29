@@ -39,3 +39,5 @@ const socket = io();
 const OVERLAY_Z = 7.
 
 let judgementMode = false
+
+const dashboard = []
