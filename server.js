@@ -1,4 +1,7 @@
-//--------------Bringing in libraries
+///////////////
+// IMPORTING //
+///////////////
+
 const express = require("express");
 const app = express();
 app.use(express.static(__dirname ));
@@ -11,7 +14,7 @@ app.get("/", function(req, res) {
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 
-const port = process.env.PORT || 443
+const port = process.env.PORT || 80
 http.listen(port, () => {
 	log("\nServer is listening on port ", port);
 })
@@ -245,10 +248,6 @@ io.on("connection", (socket) => {
 			}
 		})
 		//you do "portrait message received" and "portrait loaded". 
-
-		// self.on("delete",(msg)=>{
-		// 	delete suspects[msg.suspect]
-		// })
 
 		self.on("sell", (msg) => {
 			let suspect = suspects[msg.suspect]

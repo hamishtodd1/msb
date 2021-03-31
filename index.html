@@ -286,6 +286,8 @@
 							socket.emit("pingAA")
 
 						connectionLostBox.visible = timeSinceLastPongReception > 4.
+						if(timeSinceLastPongReception > 8.)
+							location.reload()
 
 						timeSinceLastPongReception += frameDelta
 					})
