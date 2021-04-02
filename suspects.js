@@ -17,7 +17,7 @@ function initSuspects(suspectPositionY) {
 
     let portraitHeight = 1.
     updateFunctions.push(() => {
-        portraitHeight = suspectPanelDimensions.minX - suspectSlipPadding * 2.
+        portraitHeight = suspectPanelDimensions.x - suspectSlipPadding * 2.
     })
 
     socket.on("suspect confirmation",(msg)=>{
@@ -29,6 +29,37 @@ function initSuspects(suspectPositionY) {
         suspects.push(suspect)
 
         suspect.onBoard = false
+
+        {
+            // let percentageDisplay = Rectangle({
+            //     label: "88%",
+            //     z: -4.,
+            //     h: .6,
+            // })
+            // updateFunctions.push(() => {
+            //     if (!suspect.cashBits[0])
+            //         return
+
+            //     let cheapestAvailableBet = suspect.cashBits.find((cb) => {
+
+            //     })
+
+            //     suspect.boardFrame.getEdgeCenter("l", v0)
+            //     suspect.cashBits[0].slot.getEdgeCenter("l", v1)
+
+            //     // percentageDisplay.scale.y = 1.
+
+            //     // percentageDisplay.scale.x = Math.abs(v0.x - v1.x)
+            //     // percentageDisplay.scale.y = 1.//rect.scale.y / rect.textMeshes[0].material.getAspect()
+            //     // percentageDisplay.scale.y = percentageDisplay.textMeshes[0].scale.x / percentageDisplay.textMeshes[0].material.getAspect()
+
+            //     percentageDisplay.position.x = v1.x - percentageDisplay.scale.x / 2.
+            //     percentageDisplay.position.y = 3.
+            // })
+        }
+
+
+        // percentageDisplay.textMeshes[0].material.setText("to be or not to be that")
 
         suspect.frame = Rectangle({
             frameOnly: true,
@@ -69,7 +100,6 @@ function initSuspects(suspectPositionY) {
             })
             const boxForTick = Rectangle({
                 onClick: () => {
-                    log("yo")
                     socket.emit("suspect confirmation", { 
                         index: suspects.indexOf(suspect),
                         value: !suspect.confirmed

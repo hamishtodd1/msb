@@ -1,30 +1,23 @@
 <!--
-	Judgement mode
-		Just cover the market half, your bets are visible below
-		Your bets (not others') are visible in the background
-		They zoom into place. Your cash too
-		When you change which suspects are confirmed, the scaling takes a little time to respond
-	Portraits with appropriate stretch
+	Increase aws capability
+	Get camera access
+	Test. Can get more playtesters from:
+		StrangeCharms
+		GMTK
+	Server closes a room when pinging stops
+	Mute button? Eh, just turn off the sound
 	Bugs
 		You get black frickin squares. Refreshing makes it go away...
 		PROBABLY If your display goes to sleep, the socket goes
 		Facebook web browser full screen
 		This-is-not-an-advert in order to make sounds play
-		Check that the connection is ok, took several seconds to send you your pic back
+	World's shortest murder mystery
 	Make a video where you play it
 
 
-
-	ssh -i msb1Pair.pem ec2-user@ec2-54-82-22-36.compute-1.amazonaws.com
-	Restart button might be nice, requires two presses
-	Can get more playtesters from:
-		StrangeCharms
-		GMTK
 	Could have an automated thing: when you buy a bet, however much extra probability this puts into the suspect, that much is sold, equally, from the other suspects
 	Possibly betting on "who should be put on the pitch" in a football simulator
-	Mute button for sound effects
 	The bets have their color fade to green and come from the bottom and the top
-	You need a more detailed arrow, apparently people can be close
 	Also, hide your cash when done
 	Lobbyist mode
 		With lobbyist mode, you also have a lot of bets more expensive than what the person gets for them. Then, a strategy: if you know someone is trying to manipulate the price of X to be >80p at 1pm, but the true price of X is 20p, you can:
@@ -143,41 +136,50 @@
 	<header>
 	<h1><center>Murder, She Bet</center></h1>
 	</header>
+
+	<br></br>
 	
 	<center><button type="button" id="newGameButton">Start a new game!</button></center>
 	
 	<p>
-		<center>Or:</center>
+		<center>Or enter GameId:</center>
 		<center><textarea id="gameIdBox" name="gameIdBox" rows="1" cols="74">
-			type gameId then press enter
 		</textarea></center>
+		<center><button type="button" id="enterGameButton">Submit</button></center>
 	</p>
 	
 	<br></br>
 
 	<center><h3><em>Murder, She Bet</em> is a game about putting your money where your <del>mouth</del> probabilistic beliefs are</h3></center>
+
+	<br></br>
+
 	<h3>The rules:</h3>
 	<ol>
-		<li>Players will watch a Murder Mystery, with multiple <em>suspects</em> that may be <em>guilty</em>.</li>
-		<li>Suspect characters must be added to the board.</li>
-		<li>Bets may be bought and sold all the way up to when the credits roll.</li>
-		<li>Upon the rolling of the credits, the guilt of the suspects must be settled.</li>
-		<li>Bets on guilty suspects will turn into money; bets on innocent suspects will vanish.</li>
+		<li>Players will watch a Murder Mystery, with multiple <em>suspects</em> that may be <em>guilty</em></li>
+		<li>Suspect characters will be added to the board as they appear</li>
+		<li>Bets may be bought and sold all the way up to when the credits roll</li>
+		<li>Upon the rolling of the credits, the guilt or innocence of suspects will be settled</li>
+		<li>Bets on guilty suspects turn into money, bets on innocent suspects are worthless</li>
 	</ol>
 
 	<br></br>
 
+	<center><h3>This is what a game looks like:</h3></center>
+
 	<center><iframe width="100%" height="56.25%" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0"
 		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 		allowfullscreen="false"></iframe></center>
 
 	<br></br>
 
-	<center>For practice: The World's Shortest Murder Mystery!</center>
+	<center><h3>For practice: The World's Shortest Murder Mystery!</h3></center>
 
 	<center><iframe width="100%" height="56.25%" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0"
 		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 		allowfullscreen="false"></iframe></center>
+
+	<br></br>
 
 	<center>Created by <a href='https://twitter.com/hamish_todd'>@hamish_todd</a></center>
 	<center>More information on the game and its philosophy can be found <a href= 'https://github.com/hamishtodd1/msb/blob/main/README.md'>here</a></center>

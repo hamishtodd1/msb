@@ -125,6 +125,7 @@ async function initBoard() {
     })
     
     socket.on("game update", (msg) => {
+        log("yo")
         // console.assert(msg.suspects.length === suspects.length)
 
         //ugh, you need multiple layers

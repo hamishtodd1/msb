@@ -197,7 +197,6 @@ io.on("connection", (socket) => {
 			suspect.portraitImageSrc = msg.portraitImageSrc
 			
 			suspect.onBoard = true
-			log(suspect.onBoard,suspects.indexOf(suspect))
 
 			game.sockets.forEach((sock) => {
 				emitPortrait(suspect, sock)
@@ -219,7 +218,7 @@ io.on("connection", (socket) => {
 		})
 		socket.on( "ready for suspect portraits", ()=>{
 			game.suspects.forEach((suspect, i) => {
-				if (suspect.portraitImageSrc !== "")
+				if (suspect.portraitImageSrc !== "" && suspect.onBoard)
 					emitPortrait(suspect,socket)
 			})
 			game.broadcastState()
@@ -235,13 +234,13 @@ io.on("connection", (socket) => {
 			let suspect = suspects[msg.index]
 			suspect.socketsWithPortraitLoaded[socket.id] = true
 
-			let allLoaded = true
+			let loadedForAllPlayersThatReceived = true
 			Object.keys(suspect.socketsWithPortraitLoaded).forEach((sockIdLoadedness)=>{
 				if(sockIdLoadedness === false)
-					allLoaded = false
+					loadedForAllPlayersThatReceived = false
 			})
 
-			if(allLoaded) {
+			if(loadedForAllPlayersThatReceived) {
 				game.sockets.forEach((sock) => {
 					sock.emit("suspect onBoard",{ index: msg.index })
 				})

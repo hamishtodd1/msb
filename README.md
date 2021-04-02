@@ -1,10 +1,10 @@
 # What is this?
-This is a video game, originally a [board game](https://www.overcomingbias.com/2018/08/my-board-board-game.html), about betting on murder mysteries. At least that's what it is on the surface! Really it is a bit deeper.
+This is a video game, originally a [board game](https://www.overcomingbias.com/2018/08/my-market-board-game.html), about betting on murder mysteries. At least that's what it is on the surface! Really it is a bit deeper.
 
 # Who made it?
-The video game version was made by me, Hamish Todd. I'm a software developer and interactive visualization researcher with a PhD in molecular graphics. You can read more about me on my [personal website](http://hamishtodd1.github.io/). I'm @hamish_todd on twitter, and my email is my first name, then my surname, then the numeral 1, at gmail.
+The video game version was made by me, Hamish Todd. You can read more about me on my [personal website](http://hamishtodd1.github.io/). I have a PhD in molecular graphics and I'm generally interested in communication that uses interactive visualization. I'm @hamish_todd on twitter, and my email is my first name, then my surname, then the numeral 1, at gmail.
 
-The original boardgame was created by social scientist Robin Hanson in 1989 as a way of exploring and illustrating a very interesting idea of his: Prediction Markets.
+The original boardgame was created by social scientist Robin Hanson in 1989 as a way of exploring and illustrating a very interesting idea that he developed with Ron Fischer: Prediction Markets.
 
 # What is a "Prediction Market"?
 Murder She Bet (MSB) is an as-simple-as-possible example of a Prediction Market (PM), an institution that has enormous potential utility. Obvious uses include corporate and military strategy (Best Buy used them to decide on HD-DVD vs Blu-Ray, and the US military used them to predict terrorist attacks), but also for science funding, community organization, and politics. Prediction Markets encourage making probabilistic predictions where your beliefs and your levels of confidence in those beliefs both become explicit (although PMs are usually anonymous). This is a good thing -both for decision-making institutions and board games!- for three reasons:

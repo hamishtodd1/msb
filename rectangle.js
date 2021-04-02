@@ -74,7 +74,10 @@ function initRectangles() {
                 })
 
                 updateFunctions.push(() => {
-                    const widestWidth = (getMax(rect.textMeshes, (tm)=>{return tm.scale.x})).scale.x
+                    let widestTextMesh = getMax(rect.textMeshes, (tm) => { return tm.scale.x })
+                    if (!widestTextMesh)
+                        return
+                    const widestWidth = widestTextMesh.scale.x
                     const intendedWidth = rect.scale.x
                     const scaleMultiple = intendedWidth / widestWidth
                     rect.textMeshes.forEach((tm,i) => {

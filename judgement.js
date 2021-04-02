@@ -11,7 +11,14 @@
     Their colors go duller
     Well, you only need to see the important ones
 
-    Winner indicator: flashing frame
+
+    Judgement mode
+		Not centered
+		Just cover the market half, your bets are visible below
+		Your bets (not others') are visible in the background
+		They zoom into place. Your cash too
+		When you change which suspects are confirmed, the scaling takes a little time to respond
+		Better arrow
  */
 
 function initJudgement() {
@@ -99,8 +106,6 @@ function initJudgement() {
             target.y += hider.scale.y / 2.
             target.x = 0.
         }
-        // suspects[0].frame.getEdgeCenter("t", target)
-        // target.y -= portraitHeight / 2. + suspectSlipPadding
     })
 
     // let closeButton = null
