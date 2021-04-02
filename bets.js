@@ -8,7 +8,7 @@ function bestowBets(suspect) {
         let bet = Rectangle({
             getScale: (target) => {
                 target.x = cashWidth
-                target.y = betHeight
+                target.y = cashHeight
             },
             haveIntendedPosition: true,
             z: -3.,

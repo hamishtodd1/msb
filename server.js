@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
 	socket.emit("serverConnected")
 
 	socket.on("gameInitializationRequest", (msg) => {
-		socket.playerId = msg.storedId || socket.id
+		socket.playerId = msg.playerId ? msg.playerId : socket.id
 
 		gameId = Object.keys(games).length
 		
@@ -98,7 +98,7 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("gameEntryRequest", (msg) => {
-		socket.playerId = msg.storedId || socket.id
+		socket.playerId = msg.playerId || socket.id
 
 		if( games[msg.requestedGameKey] === undefined ) {
 			log( "didn't find game ", msg.requestedGameKey, ", all we have is ", games)

@@ -12,7 +12,7 @@ socket.on("serverConnected", () =>
 	let newGameButton = document.getElementById('newGameButton')
 	newGameButton.onclick = ()=>{
 		socket.emit("gameInitializationRequest", {
-			storedId: window.localStorage.playerId || null
+			playerId: window.localStorage.playerId ? window.localStorage.playerId : null
 		})
 	}
 
@@ -27,8 +27,9 @@ socket.on("serverConnected", () =>
 
 		socket.emit("gameEntryRequest", {
 			requestedGameKey,
-			storedId: window.localStorage.playerId || null
+			playerId: window.localStorage.playerId ? window.localStorage.playerId : null
 		})
+		log(window.localStorage.playerId)
 	}
 
 	if( 1 ) {
@@ -46,6 +47,7 @@ socket.on("serverConnected", () =>
 		document.removeEventListener("keydown", onButtonPress);
 
 		socket.playerId = msg.playerId
+		window.localStorage.playerId = socket.playerId
 
 		while(document.body.children.length)
 			document.body.removeChild(document.body.children[document.body.children.length-1]);

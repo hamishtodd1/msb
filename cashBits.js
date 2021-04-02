@@ -5,13 +5,15 @@ function bestowCashBits(suspect,) {
         const index = i
         let slot = Rectangle({
             getPosition: (target) => {
-                target.x = suspect.frame.position.x - .5 * cashWidth + pm.betPrices[index] * cashWidth / 2.
+                target.x = suspect.frame.position.x 
+                    - .5 * cashWidth 
+                    + pm.betPrices[index] * cashWidth / 2.
 
                 target.y = suspect.boardFrame.position.y + getSlotY(index)
             },
             getScale: (target) => {
                 target.x = pm.betPrices[index] * cashWidth
-                target.y = betHeight
+                target.y = cashHeight
             },
             z: -2.,
             frameOnly: true,
@@ -21,7 +23,7 @@ function bestowCashBits(suspect,) {
         let cashBit = Rectangle({
             getScale: (target) => {
                 target.x = pm.betPrices[index] * cashWidth
-                target.y = betHeight
+                target.y = cashHeight
             },
             z: -3.,
             mat: cashMat,

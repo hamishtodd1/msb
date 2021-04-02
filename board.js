@@ -16,9 +16,9 @@ async function initBoard() {
     //globals
     {
         const slotMr = MeasuringRect("bet slot", false)
-        cashWidth = 1.5
-        betHeight = 4. / pm.betsPerSuspect
-        slotFrameThickness = betHeight / 2.
+        cashWidth = 1.8
+        cashHeight = 4. / pm.betsPerSuspect
+        slotFrameThickness = cashHeight / 2.
 
         cashMat = new THREE.MeshBasicMaterial()
 
@@ -33,7 +33,7 @@ async function initBoard() {
 
         staticCash = Rectangle({
             mat: cashMat,
-            h: betHeight,
+            h: cashHeight,
             w: 999999999.,
             haveIntendedPosition:true,
             y: camera.getBottom() + .5,
@@ -47,18 +47,26 @@ async function initBoard() {
     }
 
     getSlotY = function(index) {
-        return (betHeight + slotFrameThickness) * (index - (pm.betsPerSuspect - 1.) / 2.)
+        return (cashHeight + slotFrameThickness) * (index - (pm.betsPerSuspect - 1.) / 2.)
     }
 
     const dashboardGap = 1.5
     const suspectPositionY = camera.getTop() - (20. - dashboardGap) / 2.
     //TODO rename this, it's not that hard
     let gapBetweenPanels = .5
-    let panelWidth = (20. - gapBetweenPanels) / 6. - gapBetweenPanels
-    suspectPanelDimensionsMr = { offset: { 
-        x: panelWidth,
+    suspectPanelDimensions = { 
+        x: 0.,
         y: 20. - dashboardGap - .5
-    } }
+    }
+
+    let minScreenWidth = camera.getTop() * 2.
+    suspectPanelDimensions.minX = (minScreenWidth - gapBetweenPanels) / pm.maxSuspects - gapBetweenPanels
+    function updateSuspectPanelDimensions() {
+        let screenWidth = camera.getRight() * 2.
+        suspectPanelDimensions.x = (screenWidth - gapBetweenPanels) / pm.maxSuspects - gapBetweenPanels
+    }
+    
+    updateFunctions.push(updateSuspectPanelDimensions)
 
     updateFunctions.push(() => {
         let frst = dashboard[0]
@@ -82,8 +90,8 @@ async function initBoard() {
         //quite possibly
         return camera.getLeft() +
             gapBetweenPanels +
-            suspectPanelDimensionsMr.offset.x / 2. +
-            indexConsideringSomeMayHaveBeenDeleted * (suspectPanelDimensionsMr.offset.x + gapBetweenPanels)
+            suspectPanelDimensions.x / 2. +
+            indexConsideringSomeMayHaveBeenDeleted * (suspectPanelDimensions.x + gapBetweenPanels)
     }
 
     const discreteViridis = [
@@ -118,6 +126,8 @@ async function initBoard() {
     
     socket.on("game update", (msg) => {
         // console.assert(msg.suspects.length === suspects.length)
+
+        //ugh, you need multiple layers
 
         staticCash.scale.x = msg.staticCashes[socket.playerId] * cashWidth
 

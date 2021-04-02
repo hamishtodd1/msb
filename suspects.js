@@ -17,7 +17,7 @@ function initSuspects(suspectPositionY) {
 
     let portraitHeight = 1.
     updateFunctions.push(() => {
-        portraitHeight = suspectPanelDimensionsMr.offset.x - suspectSlipPadding * 2.
+        portraitHeight = suspectPanelDimensions.minX - suspectSlipPadding * 2.
     })
 
     socket.on("suspect confirmation",(msg)=>{
@@ -35,8 +35,8 @@ function initSuspects(suspectPositionY) {
             haveFrame: true,
             z: -5.,
             getScale: (target) => {
-                target.x = suspectPanelDimensionsMr.offset.x
-                target.y = suspectPanelDimensionsMr.offset.y
+                target.x = suspectPanelDimensions.x
+                target.y = suspectPanelDimensions.y
             },
             haveIntendedPosition: true
         })
@@ -136,11 +136,11 @@ function initSuspects(suspectPositionY) {
         //     }
         // })
 
-        //slots
+        
         {
             function getFrameScale(target) {
-                let clickableBoxHeight = .5 * (suspectPanelDimensionsMr.offset.y - portraitHeight - suspectSlipPadding * 4.)
-                target.x = suspectPanelDimensionsMr.offset.x - suspectSlipPadding * 2.
+                let clickableBoxHeight = .5 * (suspectPanelDimensions.y - portraitHeight - suspectSlipPadding * 4.)
+                target.x = suspectPanelDimensions.x - suspectSlipPadding * 2.
                 target.y = clickableBoxHeight
             }
             let coolDown = 0.
@@ -212,7 +212,7 @@ function initSuspects(suspectPositionY) {
             x: 0., y: 0., w: 4., h: 4.,
             haveFrame: true,
             getScale: (target) => {
-                target.x = suspectPanelDimensionsMr.offset.x - suspectSlipPadding * 2.
+                target.x = portraitHeight
                 target.y = portraitHeight
             },
             getPosition: (target) => {

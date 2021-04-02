@@ -1,3 +1,6 @@
+//might be nice to properly chop off the sides
+//should be possible easily with the draw thing
+
 async function initCamera(suspectPositionY) {
 
     const video = document.createElement('video');
@@ -55,8 +58,8 @@ async function initCamera(suspectPositionY) {
         frameOnly: true,
         z: -5.,
         getScale: (target) => {
-            target.x = suspectPanelDimensionsMr.offset.x
-            target.y = suspectPanelDimensionsMr.offset.y
+            target.x = suspectPanelDimensions.x
+            target.y = suspectPanelDimensions.y
         },
         onClick: () => {
             setCameraStuffVisibility(true)

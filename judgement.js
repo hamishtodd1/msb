@@ -164,7 +164,7 @@ function initJudgement() {
             if (finalCashes[id] === undefined) {
                 finalCashes[id] = Rectangle({
                     mat: cashMat,
-                    h: betHeight,
+                    h: cashHeight,
                     w: 999999999.,
                     z: OVERLAY_Z + 1.,
                     haveIntendedPosition: true,

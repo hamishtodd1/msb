@@ -1,6 +1,6 @@
 const pm = {}
 
-pm.maxSuspects = 6
+pm.maxSuspects = 8
 pm.betsPerSuspect = 24
 let cheapestBet = 1. / 24. //the value of a bet if you win is 1.
 

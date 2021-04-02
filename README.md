@@ -1,19 +1,21 @@
 # What is this?
-This is a game, originally a [board game](https://www.overcomingbias.com/2018/08/my-board-board-game.html)) designed by the social scientist / philosopher Robin Hanson, turned into a video game. The boardgame is about, on the surface, betting on murder mysteries. But really it is deeper than that.
+This is a video game, originally a [board game](https://www.overcomingbias.com/2018/08/my-board-board-game.html), about betting on murder mysteries. At least that's what it is on the surface! Really it is a bit deeper.
 
-# "Prediction Markets"?
-Murder She Bet (MSB) is actually an as-simple-as-possible example of a Prediction Market (PM), an institution designed by Hanson that has enormous potential utility for corporate strategy and community organization, but also, I would say, for science and politics. Prediction Markets encourage making probabilistic predictions, where your beliefs and your levels of confidence in those beliefs both become explicit (although PMs are usually anonymous). This is a good thing, both board games and in decision-making institutions, for three reasons:
+# Who made it?
+The video game version was made by me, Hamish Todd. I'm a software developer and interactive visualization researcher with a PhD in molecular graphics. You can read more about me on my [personal website](http://hamishtodd1.github.io/). I'm @hamish_todd on twitter, and my email is my first name, then my surname, then the numeral 1, at gmail.
 
-1. Bayesian statistics is an objectively very helpful way to see the world, and you get better at it with practice. When playing MSB, people seem to use it intuitively. If two new suspects are introduced, almost by definition they start out with equal probability. But when new information comes along (eg, "the victim changed their will"), there's a clear sense in which all the players "update" by thinking "would I see this evidence in the situation where suspect X hasn't done it? Would I see it in the situation situation where they have done it?", and adjust their bets accordingly. They even try to form a clear anticipation of something to happen in the next few scenes - you see them buying 3 bets, waiting, and then selling the bets if they don't see what they expected. It's science! Of a kind.
+The original boardgame was created by social scientist Robin Hanson in 1989 as a way of exploring and illustrating a very interesting idea of his: Prediction Markets.
 
-2. People often lie, to others and themselves, about what they really believe is going to happen. But that becomes basically impossible when there's a prediction market around. If you watch a murder mystery in the ordinary way (on the sofa, with your family), you expect to see a lot of people posturing, saying crap like "oh well of COURSE X did it then, you'll see I'm right". With a prediction market, if a person *wants* to say something like that, everyone knows what they should do: *if they really believe 100% that that person is guilty*, they will buy every bet on that suspect. If they don't do this, i.e. they don't "put their money where their mouth is", you know they don't mean what they said.
+# What is a "Prediction Market"?
+Murder She Bet (MSB) is an as-simple-as-possible example of a Prediction Market (PM), an institution that has enormous potential utility. Obvious uses include corporate and military strategy (Best Buy used them to decide on HD-DVD vs Blu-Ray, and the US military used them to predict terrorist attacks), but also for science funding, community organization, and politics. Prediction Markets encourage making probabilistic predictions where your beliefs and your levels of confidence in those beliefs both become explicit (although PMs are usually anonymous). This is a good thing -both for decision-making institutions and board games!- for three reasons:
+
+1. Bayesian statistics is an objectively very helpful way to see the world, and you get better at it with practice. When playing MSB, people use it intuitively. Whenever, in the TV show, new information comes along (eg, "the victim changed their will"), there's a clear sense in which all the players "update" by thinking "would I see this evidence in the situation where suspect X hasn't done it? Would I see it in the situation situation where they have done it?", and adjust their bets accordingly. They even try to form a clear anticipation of something to happen in the next few scenes - you see them buying 3 bets, waiting, and then selling the bets if they don't see what they expected. It's science! Of a kind.
+
+2. Humans often lie, including to themselves, about what they honestly believe is going to happen. But lying about your beliefs becomes basically impossible when there's a prediction market around. When you watch a murder mystery in the ordinary way, without MSB, you expect to see a lot of people posturing, saying crap like "oh well of COURSE X did it then, you'll see I'm right". With a prediction market, if a person *wants* to say something like that, everyone knows what they should do: *if they really believe 100% that that person is guilty*, they will buy every bet on that suspect. If they don't do this, i.e. they don't "put their money where their mouth is", you know they don't mean what they said.
 
 3. Prediction markets aggregate information in a sophisticated way. As you play, you'll see that, at any given time, the price of a suspect's bets tells you the probability that the players ascribe to the belief that that suspect did it (because people who think the market price "should be higher" can buy a bet, and those who think it "should be lower" can sell bets). So now suppose you're an organization who has money to spend on acquiring information about the future, such as a scientific funding body, or a political party, or a firm. You want to find some "consensus opinion". You can set up a PM, with cash rewards, that will be played by everyone who has confidence in their knowledge of what questions your PM. From looking at the prices of bets on the different outcomes, you can figure out what the concensus is.
 
 Hanson has written more on PMs to predict how scientific theories will hold up [(link)](http://mason.gmu.edu/~rhanson/futarchy.pdf), and even for deciding what policies to implement to give voters what they want out of a government [(link)](https://mason.gmu.edu/~rhanson/gamble.html).
-
-# Can I contact you?
-Please do, I'm @hamish_todd on twitter. My email is my first name, then my surname, then the numeral 1, at gmail.
 
 # Original motivation: board game versus video game
 I originally wanted to make this because I was interested in the difference between physical activities / board games and virtual activities / video games. Murder, She Bet exists as a board game; I wanted to compare it with what it's like as a video game. I originally started this project during my PhD, which was in part focussed on the related question of whether [Dynamicland](dynamicland.org) will turn out to be a good idea.
@@ -22,30 +24,29 @@ I originally wanted to make this because I was interested in the difference betw
 
 As a video game, Murder She Bet is:
 
-* Easier to play quickly
+* Easier to play quickly. Though harder for me to make!
 
 * Allows more intellectual energy to be spent on decisions (instead of what bills to pay with)
 
 * Can use your geometrical intuition in thinking about money and contracts. This is better because numerals require parsing. Comparative magnitudes are all that matter, and you get that from line lengths.
 
-* Anonymous. You don't have to know who has bets in what. In the board game, this occupies your mind a bunch; you're asking "who, of these people I am playing with, is going to win?". But while being a very human question, that question is irrelevant to making decisions that will help you win. For example, it encourages holding grudges against people.
+* Anonymous. You don't have to know who has bets in what. In the board game, this occupies your mind a bunch; you're asking "who, of these people I am playing with, is going to win?". But while being a very human question, that question is irrelevant to making decisions that will help you win. For example, it encourages holding grudges against people. Life lesson, I guess: you're able to make your life better faster if you spend less time holding grudges and comparing yourself to others!
 
-* Harder to make, for me. Making the board took only a few hours, this took a few days. But easier to play for you I think!
+* It's easier to remember which column goes with which suspect, because you can delete people with a single button press
 
-* Easier to associate characters with columns of bets, because you can delete people with a single button press
-
-* Is able to have a leaderboard at the end rather than a simple win/loss, so people's skill is more accurately and proportionately reported. This, I think, combats a problem pointed out by [Zvi Moshowitz](https://www.lesswrong.com/posts/fs2ozRQ4osJr9Wbfu/on-robin-hanson-s-board-game) that in the boardgame, that the endgame has distorted incentives that point away from buy bets that reflect your belief about the probability of a suspect's guilt.
+* Is able to quickly set up a leaderboard at the end rather than a simple win/loss, so people's skill is more accurately and proportionately reported. This, I think, combats a problem pointed out by [Zvi Moshowitz](https://www.lesswrong.com/posts/fs2ozRQ4osJr9Wbfu/on-robin-hanson-s-board-game) that in the boardgame, that the endgame has distorted incentives that point away from buy bets that reflect your belief about the probability of a suspect's guilt. It's also more like a real-world stock market, where the goal is not to purely to be the one person at the very top, but simply to make decisions that get you the most money.
 
 * Permits much more fine-grained betting, i.e. each suspect gets far more bets than in the boardgame. Many players believe that one bet on a suspect is a useful thing to have (this leads to people obsessing over the first bet). I am pretty sure that this isn't true; I certainly think it shouldn't be. At least if everyone is playing with the optimal strategy (see above), it's not about how many bets you have at a given time but about how good you are at judging probabilities, which should involve exchanging a very large number of bets. Having only one or two bets on a suspect should be a pathological situation encountered rarely in optimal play, because it means that the owners of the bets are having to "round their probability to the nearest bet".
 
-Aside from the board game vs video game thing:
+# Other reasons I made this
+
 * Visualizing mathematics is interesting. This is especially true of statistics. Statistics, as a field, is abstract and dry - but much as I love geometry, statistics is probably the most important area of mathematics, because almost all human thought is statistical, though people foolishly pretend it isn't.
 
 * Using games to express sophisticated ideas is generally very interesting to me. Games are certainly good for expressing ideas when, as here, the idea is a system.
 
-* Prediction markets may or may not be a good idea. But at the very least we can agree that the modern academic system, which is in the background of much of science, is just awful (especially for something that's supposed to, and sometimes does, produce great things). It's so sickening that we should consider any alternative whatsoever to be something worthy of serious consideration.
+* ~~Prediction markets may or may not be a good idea~~ Edit: they are an extraordinarily good idea. The modern academic system, which is in the background of much of science, is just awful (especially for something that's supposed to, and sometimes does, produce great things). It's so sickening that we should consider any alternative whatsoever to be something worthy of serious consideration.
 
-* Probably I want to signal tribal allegiance with rationalists, plus intelligence! For more on this, see Robin's book The Elephant In The Brain! One piece of evidence for this is that I always thought of my interest in games-as-communication as being mostly about level design, but Murder She bet has no level design.
+* Also, y'know, I want to signal tribal allegiance with rationalists and intelligence. For more on this, see Robin's book The Elephant In The Brain! One piece of evidence for this is that I always thought of my interest in games-as-communication as being mostly about level design, but Murder She bet has no level design.
 
 # Specific pricing
 I've tweaked the rewards a bit from the original, where the prices of contracts had to be multiples of 5. There's good reason to do this. One problem with discrete jumps, that the boardgame had is how the second smallest bet is TWICE as costly as the smallest bet. This is a bad discontinuity that many experienced game designers (at least those at Edinburgh Independent Game Developers) know to avoid!
