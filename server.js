@@ -98,7 +98,7 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("gameEntryRequest", (msg) => {
-		socket.playerId = msg.playerId || socket.id
+		socket.playerId = msg.playerId ? msg.playerId : socket.id
 
 		if( games[msg.requestedGameKey] === undefined ) {
 			log( "didn't find game ", msg.requestedGameKey, ", all we have is ", games)
@@ -328,8 +328,6 @@ io.on("connection", (socket) => {
 					}
 
 					betToBuy.owner = self.playerId
-					
-					log("total cash", getTotalCash(self))
 
 					mergeOwnedCashBitsIntoStaticCashIfNecessary()
 					game.broadcastState()

@@ -31,35 +31,54 @@ function initSuspects(suspectPositionY) {
         suspect.onBoard = false
 
         {
-            // let percentageDisplay = Rectangle({
-            //     label: "88%",
-            //     z: -4.,
-            //     h: .6,
-            // })
-            // updateFunctions.push(() => {
-            //     if (!suspect.cashBits[0])
-            //         return
+            let percentageDisplay = Rectangle({
+                label: "88%",
+                col: bgColor,
+                z: -4.9
+            })
+            updateFunctions.push(() => {
+                if (!suspect.cashBits[0])
+                    return
 
-            //     let cheapestAvailableBet = suspect.cashBits.find((cb) => {
+                let numInBoard = pm.getNumBoardBets(suspect)
+                let cheapestAvailableBetSlotIndex = pm.betsPerSuspect - numInBoard - 1
+                if (cheapestAvailableBetSlotIndex < 0) {
+                    percentageDisplay.visible = false
+                    return
+                }
+                percentageDisplay.visible = true
 
-            //     })
 
-            //     suspect.boardFrame.getEdgeCenter("l", v0)
-            //     suspect.cashBits[0].slot.getEdgeCenter("l", v1)
+                let cheapestAvailableBetSlot = suspect.cashBits[cheapestAvailableBetSlotIndex].slot
 
-            //     // percentageDisplay.scale.y = 1.
+                let price = pm.betPrices[cheapestAvailableBetSlotIndex]
+                let percentage = Math.round(price * 100.)
+                percentageDisplay.textMeshes[0].material.setText(percentage + "%")
 
-            //     // percentageDisplay.scale.x = Math.abs(v0.x - v1.x)
-            //     // percentageDisplay.scale.y = 1.//rect.scale.y / rect.textMeshes[0].material.getAspect()
-            //     // percentageDisplay.scale.y = percentageDisplay.textMeshes[0].scale.x / percentageDisplay.textMeshes[0].material.getAspect()
+                suspect.boardFrame.getEdgeCenter("l", v0)
+                cheapestAvailableBetSlot.getEdgeCenter("l", v1)
 
-            //     percentageDisplay.position.x = v1.x - percentageDisplay.scale.x / 2.
-            //     percentageDisplay.position.y = 3.
-            // })
+                percentageDisplay.textMeshes[0].rotation.z = camera.rotation.z
+
+                //pretty hacky, dunno why you can't just always have this
+                // if(frameCount > 4) {
+                //     percentageDisplay.scale.x = Math.abs(v0.x - v1.x)
+                //     percentageDisplay.scale.y = percentageDisplay.scale.x
+                // }
+                // percentageDisplay.position.x = v1.x - percentageDisplay.scale.x / 2.
+                // percentageDisplay.position.y = cheapestAvailableBetSlot.position.y
+
+                //FUCK DUDE YOU'RE REPLACING THEIR CASH WHEN THEY REFRESH
+                //probably the game has players, not sockets, and those have sockets
+
+                cheapestAvailableBetSlot.getEdgeCenter("r", percentageDisplay.position)
+                percentageDisplay.position.x += percentageDisplay.scale.x / 2. + .05
+                percentageDisplay.position.y -= .2
+
+                percentageDisplay.scale.x = 1.4
+                percentageDisplay.scale.y = 1.4
+            })
         }
-
-
-        // percentageDisplay.textMeshes[0].material.setText("to be or not to be that")
 
         suspect.frame = Rectangle({
             frameOnly: true,
