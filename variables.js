@@ -32,7 +32,7 @@ const rectangles = []
 
 const suspects = []
 
-const bgColor = 0x666666
+const bgColor = 0x777777
 
 const socket = io();
 

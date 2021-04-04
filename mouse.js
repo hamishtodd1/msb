@@ -43,12 +43,12 @@ function initMouse()
 	asynchronous.updateFromClientCoordinates = function(rawX,rawY)
 	{
 		//center
-		asynchronous.position.x = rawX - ( window.innerWidth / 2 );
-		asynchronous.position.y = -rawY+ ( window.innerHeight/ 2 );
+		asynchronous.position.x =  rawX - ( document.documentElement.clientWidth / 2. )
+		asynchronous.position.y = -rawY + ( document.documentElement.clientHeight/ 2. )
 		
 		//scale
-		asynchronous.position.x /= window.innerWidth / 2;
-		asynchronous.position.y /= window.innerHeight / 2;
+		asynchronous.position.x /= document.documentElement.clientWidth  / 2.
+		asynchronous.position.y /= document.documentElement.clientHeight / 2.
 
 		if (camera.rotation.z !== 0.) {
 			let temp = asynchronous.position.y
@@ -56,11 +56,11 @@ function initMouse()
 			asynchronous.position.x = -temp
 		}
 		
-		var centerToFrameVertical = (camera.getTop() - camera.getBottom()) / 2;
-		var centerToFrameHorizontal = centerToFrameVertical * camera.aspect;
+		var centerToFrameVertical = (camera.getTop() - camera.getBottom()) / 2.
+		var centerToFrameHorizontal = centerToFrameVertical * camera.aspect
 		
-		asynchronous.position.x *= centerToFrameHorizontal;
-		asynchronous.position.y *= centerToFrameVertical;
+		asynchronous.position.x *= centerToFrameHorizontal
+		asynchronous.position.y *= centerToFrameVertical
 
 		// a.position.copy(asynchronous.position)
 		// a.position.z = 0.

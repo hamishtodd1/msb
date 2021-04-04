@@ -13,6 +13,8 @@ function initSuspects(suspectPositionY) {
     let confirmMat = text("Confirm: ",true)
     let deleteMat = text("Delete?", true)
 
+    const frameMat = new THREE.MeshBasicMaterial({ color: 0x888888 })
+
     const suspectSlipPadding = .25
 
     let portraitHeight = 1.
@@ -83,9 +85,10 @@ function initSuspects(suspectPositionY) {
         }
 
         suspect.frame = Rectangle({
-            frameOnly: true,
+            // frameOnly: true,
             haveFrame: true,
-            z: -5.,
+            mat: frameMat,
+            z: -4.99999999,
             getScale: (target) => {
                 target.x = suspectPanelDimensions.x
                 target.y = suspectPanelDimensions.y

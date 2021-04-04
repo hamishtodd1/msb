@@ -42,7 +42,7 @@ function bestowBets(suspect) {
 
         let numInBoard = pm.getNumBoardBets(suspect)
         let numInHand = 0
-        bets.forEach((bet,i)=>{
+        bets.forEach( (bet,i) => {
             if(bet.owner === socket.playerId)
                 ++numInHand
 

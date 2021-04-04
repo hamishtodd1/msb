@@ -204,26 +204,25 @@ function initJudgement() {
                 if (!suspect.confirmed)
                     return
 
-                // suspect.bets.forEach((bet) => {
-                //     if (bet.owner === playerId) {
-                //         log(bet.position.x)
+                suspect.bets.forEach((bet) => {
+                    if (bet.owner === playerId) {
+                        log(bet.position.x)
 
-                //         finalStaticCashes[playerId].getEdgeCenter("l", bet.intendedPosition)
-                //         bet.intendedPosition.x -= bet.scale.x / 2.
-                //         bet.intendedPosition.x -= numBetsSoFar * cashWidth
+                        finalStaticCashes[playerId].getEdgeCenter("l", bet.intendedPosition)
+                        bet.intendedPosition.x -= bet.scale.x / 2.
+                        bet.intendedPosition.x -= numBetsSoFar * cashWidth
 
-                //         //URGH, the bet's owner doesn't tell you where they are?
-                //         //You'd also like them to fly back into place
+                        //URGH, the bet's owner doesn't tell you where they are?
 
-                //         bet.position.z = OVERLAY_Z + 1.
+                        bet.position.z = OVERLAY_Z + 1.
 
-                //         log(bet.intendedPosition.x)
+                        log(bet.intendedPosition.x)
 
-                //         log(bet.position.x)
+                        log(bet.position.x)
 
-                //         ++numBetsSoFar
-                //     }
-                // })
+                        ++numBetsSoFar
+                    }
+                })
             })
         })
     })
