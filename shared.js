@@ -8,6 +8,14 @@ pm.betPrices = Array(pm.betsPerSuspect)
 for (let i = 0.; i < pm.betsPerSuspect; ++i)
     pm.betPrices[i] = Math.pow(cheapestBet, 1. - i / pm.betsPerSuspect)
 
+{
+    let entireColumnPrice = 0.
+    for (let i = 0.; i < pm.betsPerSuspect; ++i)
+        entireColumnPrice += pm.betPrices[i]
+    let arbitraryValueChosenByRobinHanson = .6
+    pm.startingCash = entireColumnPrice * arbitraryValueChosenByRobinHanson // STARTING CASH
+}
+
 pm.BOARD_OWNERSHIP = -1
 pm.NO_OWNERSHIP = -2 //urgh, or "no association"? bit of a mess
 

@@ -37,12 +37,15 @@ async function initBoard() {
             w: 999999999.,
             haveIntendedPosition:true,
             y: camera.getBottom() + .5,
-            x: 0.
+            x: 0.,
+            z: OVERLAY_Z + 1.
         })
         updateFunctions.push(()=>{
-            staticCash.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
-            let totalCashWidth = getTotalCash() * cashWidth
-            staticCash.intendedPosition.x = -(totalCashWidth / 2. - staticCash.scale.x / 2.)
+            if( !judgementMode ) {
+                staticCash.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
+                let totalCashWidth = getTotalCash() * cashWidth
+                staticCash.intendedPosition.x = -(totalCashWidth / 2. - staticCash.scale.x / 2.)
+            }
         })
     }
 
@@ -117,13 +120,6 @@ async function initBoard() {
     }
     getViridis(pm.maxSuspects+1, cashMat.color)
 
-    socket.on("unsuccessful buy", () => {
-        playSound("exchangeFailure")
-    })
-    socket.on("unsuccessful sell", () => {
-        playSound("exchangeFailure")
-    })
-    
     socket.on("game update", (msg) => {
         // console.assert(msg.suspects.length === suspects.length)
 

@@ -31,6 +31,8 @@ function initSuspects(suspectPositionY) {
         suspect.onBoard = false
 
         {
+            //might be nice to have a little arrow pointing that way
+
             let percentageDisplay = Rectangle({
                 label: "88%",
                 col: bgColor,
@@ -148,43 +150,6 @@ function initSuspects(suspectPositionY) {
                 labelR.visible = judgementMode
             })
         }
-
-        // var guiltButton = Rectangle({
-        //     onClick: () => {
-        //         log("guilty pressed")
-        //     },
-        //     label: "guilty!",
-        //     z: 0.,
-        //     haveFrame: true,
-        //     getScale: (target) => {
-        //         target.x = portrait.scale.x / 2.
-        //         target.y = portrait.scale.y / 2.
-        //     },
-        //     getPosition: (target) => {
-        //         target.x = suspect.frame.position.x - suspect.frame.scale.x / 4.
-        //         target.y = suspect.frame.position.y //should be just below portrait
-        //     }
-        // })
-
-        // var deleteButton = Rectangle({
-        //     onClick: () => {
-        //     log("delete pressed")
-        //         socket.emit("delete",{suspect:suspects.indexOf(suspect)})
-        // },
-        //     label: "delete",
-        //     // col: 0xFF0000,
-        //     z: 0.,
-        //     haveFrame: true,
-        //     getScale: (target) => {
-        //         target.x = portrait.scale.x / 2.
-        //         target.y = portrait.scale.y / 2.
-        //     },
-        //     getPosition: (target) => {
-        //         target.x = suspect.frame.position.x + suspect.frame.scale.x / 4.
-        //         target.y = suspect.frame.position.y //should be just below portrait
-        //     }
-        // })
-
         
         {
             function getFrameScale(target) {
@@ -193,7 +158,7 @@ function initSuspects(suspectPositionY) {
                 target.y = clickableBoxHeight
             }
             let coolDown = 0.
-            let boardMat = new THREE.MeshBasicMaterial({
+            let coolDownIndicatorMat = new THREE.MeshBasicMaterial({
                 color:0xFFFFFF,
                 transparent:true,
                 opacity:0.
@@ -201,11 +166,17 @@ function initSuspects(suspectPositionY) {
             updateFunctions.push(() => {
                 coolDown = Math.max(0., coolDown - frameDelta)
 
-                boardMat.opacity = coolDown
+                coolDownIndicatorMat.opacity = coolDown
+
+                coolDownIndicatorMat.color.setRGB(
+                    1.,
+                    Math.max(coolDownIndicatorMat.color.g + .2,0.),
+                    Math.max(coolDownIndicatorMat.color.b + .2,0.)
+                )
             })
-            let highlightyBit = Rectangle({
+            let cooldownIndicator = Rectangle({
                 z: -4.5,
-                mat: boardMat,
+                mat: coolDownIndicatorMat,
                 getScale: (target)=>{
                     target.x = suspect.boardFrame.scale.x * (1.-coolDown)
                     target.y = suspect.boardFrame.scale.y * (1.-coolDown)
@@ -221,6 +192,10 @@ function initSuspects(suspectPositionY) {
                         socket.emit("buy", { suspect: suspects.indexOf(suspect) })
                         coolDown = 1.
                     }
+                    else {
+                        coolDownIndicatorMat.color.g = 0.
+                        coolDownIndicatorMat.color.b = 0.
+                    }
                 },
                 z: -4.,
                 frameOnly: true,
@@ -234,12 +209,23 @@ function initSuspects(suspectPositionY) {
                 }
             })
 
+            socket.on("unsuccessful buy", () => {
+                playSound("exchangeFailure")
+                coolDown = 0.
+            })
+            socket.on("unsuccessful sell", () => {
+                playSound("exchangeFailure")
+            })
+
             let sellCooldown = 0.
             updateFunctions.push(()=>{
                 sellCooldown -= frameDelta
             })
             suspect.handFrame = Rectangle({
                 onClick: () => {
+                    if(judgementMode)
+                        return
+
                     socket.emit("sell", { suspect: suspects.indexOf(suspect) })
                     sellCooldown = 1.
                 },

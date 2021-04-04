@@ -55,4 +55,5 @@ function initWindowResize()
 	}
 	window.addEventListener('resize', respondToResize, false);
 	respondToResize();
+	document.body.appendChild(renderer.domElement);
 }

@@ -1,17 +1,20 @@
 <!--
 	Increase aws capability
 	Get camera access
+	Don't accept new pictures for a couple of seconds
+		They need a notification saying their pic bounced
 	Test. Can get more playtesters from:
 		StrangeCharms
 		GMTK
-	Server closes a room when pinging stops
-	Mute button? Eh, just turn off the sound
+	Game loses socket when ping stops
+	Server closes a room when all players gone
 	Bugs
 		You get black frickin squares. Refreshing makes it go away...
 		PROBABLY If your display goes to sleep, the socket goes
 		Facebook web browser full screen
 		This-is-not-an-advert in order to make sounds play
 	World's shortest murder mystery
+	Mute button? Eh, just turn off the sound Rowan
 	Make a video where you play it
 
 
@@ -240,13 +243,8 @@
 				// initInstancedMesh()
 				initRectangles()
 
-				log(pm.betsPerSuspect)
-
 				renderer = new THREE.WebGLRenderer({ antialias: true });
-				renderer.setPixelRatio(window.devicePixelRatio);
-				renderer.setSize(window.innerWidth, window.innerHeight);
 				renderer.setClearColor(bgColor)
-				document.body.appendChild(renderer.domElement);
 
 				initButtons()
 

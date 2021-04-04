@@ -25,8 +25,6 @@ function initJudgement() {
 
     let col = 0x505050
 
-    const rowHeight = 2.
-
     let waitingMessage = Rectangle({
         h: 16., w: 16.,
         label: ["Waiting for other", "players to press", "judgement button..."],
@@ -44,15 +42,14 @@ function initJudgement() {
     })
 
     socket.on("judgement mode confirmed",()=>{
-        playSound("judgement")
         judgementMode = true
         waitingMessage.visible = false
     })
 
     const staticCashesValues = {}
     socket.on("game update", (msg) => {
-        Object.keys(msg.staticCashes).forEach((id,i) => {
-            staticCashesValues[id] = msg.staticCashes[id]
+        Object.keys(msg.staticCashes).forEach((playerId,i) => {
+            staticCashesValues[playerId] = msg.staticCashes[playerId]
         })
     })
 
@@ -89,21 +86,13 @@ function initJudgement() {
         haveFrame: true,
         visible: false,
         getScale: (target) => {
-            let sus = suspects.find((s) => s !== undefined )
-            if (sus === undefined)
-                return
-
             suspects[0].frame.getEdgeCenter("l",target)
             target.x *= 2.
-            target.y = sus.frame.scale.y - sus.frame.scale.x
+
+            target.y = suspects[0].boardFrame.scale.y
         },
         getPosition: (target) =>{
-            let sus = suspects.find((s)=> s !== undefined)
-            if(sus === undefined)
-                return
-
-            sus.frame.getEdgeCenter("b",target)
-            target.y += hider.scale.y / 2.
+            target.y = suspects[0].boardFrame.position.y
             target.x = 0.
         }
     })
@@ -125,21 +114,24 @@ function initJudgement() {
     //     })
     // })
 
+    let dividingLine = 0.
+    updateFunctions.push(()=>{
+        dividingLine = camera.getRight() - 8.
+    })
+
     const youSign = Rectangle({
         label: "← You",
-        h: rowHeight,
+        h: 1.5,
         getScaleFromLabel: true,
         z: OVERLAY_Z + 2.,
         getPosition: (target) => {
-            if (finalCashes[socket.playerId] === undefined) {
+            if (finalStaticCashes[socket.playerId] === undefined) {
                 target.x = 0.
                 target.y = 0.
             }
             else {
-                hider.getEdgeCenter("r", target)
-                target.x -= youSign.scale.x / 2. + .5
-
-                target.y = finalCashes[socket.playerId].position.y
+                target.y = finalStaticCashes[socket.playerId].position.y
+                target.x = dividingLine + youSign.scale.x / 2.
             }
         }
     })
@@ -149,26 +141,47 @@ function initJudgement() {
         hider.visible = judgementMode
         youSign.visible = judgementMode
 
-        let gameHasActuallyBeenPlayedABit = false
+        let gameHasBeenPlayedABit = false
         suspects.forEach((sus)=>{
             if( pm.getNumBoardBets(sus) < pm.betsPerSuspect )
-                gameHasActuallyBeenPlayedABit = true
+                gameHasBeenPlayedABit = true
         })
 
-        judgementButton.visible = !judgementMode && !waitingMessage.visible && gameHasActuallyBeenPlayedABit
+        judgementButton.visible = !judgementMode && !waitingMessage.visible && gameHasBeenPlayedABit
     })
 
-    const finalCashes = {}
+    const finalStaticCashes = {}
+    finalStaticCashes[socket.playerId] = staticCash
+    const finalAmounts = {}
     updateFunctions.push(() => {
         if (!judgementMode)
             return
 
-        const ids = Object.keys(staticCashesValues)
+        const playerIds = Object.keys(staticCashesValues)
 
-        Object.keys(staticCashesValues).forEach((id) => {
-            if (finalCashes[id] === undefined) {
-                finalCashes[id] = Rectangle({
-                    mat: cashMat,
+        let max = -Infinity
+        let min = Infinity
+
+        let topPosition = hider.getEdgeCenter("t", v0).y - 3.
+        let bottomPosition = hider.getEdgeCenter("b", v0).y + 2.
+
+        playerIds.forEach((playerId) => {
+            finalAmounts[playerId] = staticCashesValues[playerId]
+            suspects.forEach((sus) => {
+                if (!sus.confirmed)
+                    return
+                sus.bets.forEach((bet) => {
+                    if (bet.owner === playerId)
+                        finalAmounts[playerId] += 1.
+                })
+            })
+
+            max = Math.max(max, finalAmounts[playerId])
+            min = Math.min(min, finalAmounts[playerId])
+
+            if (playerId !== socket.playerId && finalStaticCashes[playerId] === undefined) {
+                finalStaticCashes[playerId] = Rectangle({
+                    mat: staticCash.mesh.material,
                     h: cashHeight,
                     w: 999999999.,
                     z: OVERLAY_Z + 1.,
@@ -176,32 +189,44 @@ function initJudgement() {
                     x: 0.
                 })
             }
+
+            finalStaticCashes[playerId].scale.x = cashWidth * staticCashesValues[playerId]
         })
 
-        let max = -Infinity
-        let min = Infinity
-        ids.forEach((id, i) => {
-            finalCashes[id].scale.x = 0.
-            finalCashes[id].scale.x += cashWidth * staticCashesValues[id]
+        playerIds.forEach((playerId) => {
+            let ranking = (finalAmounts[playerId] - min) / (max - min)
+            finalStaticCashes[playerId].intendedPosition.y = bottomPosition + (topPosition - bottomPosition) * ranking
 
-            suspects.forEach((sus) => {
-                if (!sus.confirmed)
+            finalStaticCashes[playerId].intendedPosition.x = dividingLine - finalStaticCashes[playerId].scale.x / 2.
+
+            let numBetsSoFar = 0.
+            suspects.forEach((suspect) => {
+                if (!suspect.confirmed)
                     return
-                sus.bets.forEach((bet) => {
-                    if (bet.owner === id)
-                        finalCashes[id].scale.x += cashWidth
+
+                suspect.bets.forEach((bet) => {
+                    if (bet.owner === playerId) {
+                        log(bet.position.x)
+
+                        finalStaticCashes[playerId].getEdgeCenter("l", bet.intendedPosition)
+                        bet.intendedPosition.x -= bet.scale.x / 2.
+                        bet.intendedPosition.x -= numBetsSoFar * cashWidth
+
+                        //URGH, the bet's owner doesn't tell you where they are?
+                        //You'd also like them to fly back into place
+
+                        bet.position.z = OVERLAY_Z + 1.
+
+                        log(bet.intendedPosition.x)
+
+                        log(bet.position.x)
+
+                        ++numBetsSoFar
+                    }
                 })
             })
-
-            max = Math.max(max, finalCashes[id].scale.x)
-            min = Math.min(min, finalCashes[id].scale.x)
-        })
-
-        let top = hider.getEdgeCenter("t", v0).y - 3.
-        let bottom = hider.getEdgeCenter("b", v0).y + 2.
-        ids.forEach((id) => {
-            let ranking = (finalCashes[id].scale.x - min) / (max - min)
-            finalCashes[id].intendedPosition.y = bottom + (top - bottom) * ranking
         })
     })
 }
+
+//need confirmation boxes to be bigger

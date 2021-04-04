@@ -35,10 +35,14 @@ function bestowBets(suspect) {
 
     const betsAccountedFor = Array(pm.betsPerSuspect)
     const previousOwners = Array(pm.betsPerSuspect)
+
     updateFunctions.push(() => {
+        if(judgementMode && suspect.confirmed)
+            return
+
         let numInBoard = pm.getNumBoardBets(suspect)
         let numInHand = 0
-        suspect.bets.forEach((bet,i)=>{
+        bets.forEach((bet,i)=>{
             if(bet.owner === socket.playerId)
                 ++numInHand
 

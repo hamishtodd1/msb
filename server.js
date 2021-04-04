@@ -37,17 +37,14 @@ function beginGame(id) {
 
 	game.sockets = []
 	game.suspects = []
+	game.staticCashes = {}
 
 	let msg = {
-		staticCashes: {},
+		staticCashes: game.staticCashes,
 		suspects: []
 	}
 
 	game.broadcastState = () => {
-		game.sockets.forEach( (socket) => {
-			msg.staticCashes[socket.playerId] = socket.staticCash
-		})
-
 		game.suspects.forEach((suspect, i) => {
 			if(msg.suspects[i] === undefined) {
 				msg.suspects[i] = {
@@ -136,20 +133,20 @@ io.on("connection", (socket) => {
 		// THE IMPORTANT PART //
 		////////////////////////
 
-		let entireColumnPrice = 0.
-		for (let i = 0.; i < pm.betsPerSuspect; ++i)
-			entireColumnPrice += pm.betPrices[i]
-		let arbitraryValueChosenByRobinHanson = .6
-		self.staticCash = entireColumnPrice * arbitraryValueChosenByRobinHanson // STARTING CASH
+		if(!game.staticCashes[socket.playerId])
+			game.staticCashes[socket.playerId] = pm.startingCash
+
+		//imagine at first that there's a SMALL reward for manipulation
+		//and a SMALL amt of extra cash for manipulator
+
 		//Hey, maybe you should be able to buy the entire board.
 		//It's only meant to be about whether these things will make extra money for you
 
 		getTotalCash = (socket) => {
-			return socket.staticCash + pm.getLooseCash(socket.playerId, game.suspects)
+			return game.staticCashes[socket.playerId] + pm.getLooseCash(socket.playerId, game.suspects)
 		}
 
 		const suspects = game.suspects
-
 
 		for(let i = 0; i < pm.maxSuspects; ++i) {
 			let suspect = {
@@ -263,7 +260,7 @@ io.on("connection", (socket) => {
 				let currentOwner = pm.getCashBitOwnership(suspect, cb)
 
 				if (currentOwner !== pm.NO_OWNERSHIP)
-					currentOwner.staticCash += pm.betPrices[slotIndex]
+					game.staticCashes[currentOwner.playerId] += pm.betPrices[slotIndex]
 
 				cb.associatedPlayer = self.playerId
 
@@ -283,6 +280,8 @@ io.on("connection", (socket) => {
 			})
 
 			if (numRequests >= 2) {
+				//it is time!
+				mergeOwnedCashBitsIntoStaticCash()
 				game.sockets.forEach((sock) => {
 					sock.emit("judgement mode confirmed")
 				})
@@ -321,46 +320,32 @@ io.on("connection", (socket) => {
 
 					if (currentOwner !== self.playerId) { //you were the last to sell to this slot
 						if (currentOwner !== pm.NO_OWNERSHIP )
-							currentOwner.staticCash += pm.betPrices[slotIndex]
+							game.staticCashes[currentOwner.playerId] += pm.betPrices[slotIndex]
 
 						cb.associatedPlayer = self.playerId
-						self.staticCash -= pm.betPrices[slotIndex]
+						game.staticCashes[self.playerId] -= pm.betPrices[slotIndex]
 					}
 
 					betToBuy.owner = self.playerId
 
-					mergeOwnedCashBitsIntoStaticCashIfNecessary()
+					if (game.staticCashes[self.playerId] < 0.)
+						mergeOwnedCashBitsIntoStaticCash()
+					
 					game.broadcastState()
 				}
 			}
 		})
 
-		self.associateCashBit = function( suspect, slotIndex ) {
-			let cashBitToAssociate = suspect.cashBits[slotIndex]
-			
-			let currentOwner = pm.getCashBitOwnership(suspect,cashBitToAssociate)
-			if( currentOwner !== pm.NO_OWNERSHIP)
-				currentOwner.staticCash += cashBitToAssociate.value
-
-			cashBitToAssociate.associatedPlayer = self.playerId
-			self.staticCash -= cashBitToAssociate.value
-			//this is NOT the thing that TAKES the cash. It's just changing visual depiction
-
-			mergeOwnedCashBitsIntoStaticCashIfNecessary()
-		}
-
-		function mergeOwnedCashBitsIntoStaticCashIfNecessary() {
+		function mergeOwnedCashBitsIntoStaticCash() {
 			//could only do some of them
-			if (self.staticCash < 0.) {
-				suspects.forEach((sus) => {
-					sus.cashBits.forEach( (cb, i) => {
-						if (pm.getCashBitOwnership(sus, cb) === self.playerId) {
-							cb.associatedPlayer = pm.NO_OWNERSHIP
-							self.staticCash += cb.value
-						}
-					})
+			suspects.forEach((sus) => {
+				sus.cashBits.forEach((cb, i) => {
+					if (pm.getCashBitOwnership(sus, cb) === self.playerId) {
+						cb.associatedPlayer = pm.NO_OWNERSHIP
+						game.staticCashes[self.playerId] += cb.value
+					}
 				})
-			}
+			})
 		}
 	}
 });

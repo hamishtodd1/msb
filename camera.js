@@ -76,6 +76,9 @@ async function initCamera(suspectPositionY) {
                 target.y = suspectPanelDimensions.y
             },
             onClick: () => {
+                if(judgementMode)
+                    return
+                    
                 setCameraStuffVisibility(true)
             }
         })
