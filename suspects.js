@@ -280,8 +280,8 @@ function initSuspects(suspectPositionY) {
         let hasAtSomePointHadABet = false
         updateFunctions.push(() => {
             deletable = hasAtSomePointHadABet
-            suspect.bets.forEach((bet) => {
-                if (bet.owner !== pm.BOARD_OWNERSHIP) {
+            suspect.betOwners.forEach((betOwner) => {
+                if (betOwner !== pm.BOARD_OWNERSHIP) {
                     hasAtSomePointHadABet = true
                     deletable = false
                 }

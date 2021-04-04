@@ -4,6 +4,8 @@ function bestowBets(suspect) {
 
     const bets = Array(pm.betsPerSuspect)
     suspect.bets = bets
+    const betOwners = Array(pm.betsPerSuspect)
+    suspect.betOwners = betOwners
     for (let i = 0; i < pm.betsPerSuspect; ++i) {
         let bet = Rectangle({
             getScale: (target) => {
@@ -16,7 +18,7 @@ function bestowBets(suspect) {
         })
 
         bets[i] = bet
-        bet.owner = pm.BOARD_OWNERSHIP
+        suspect.betOwners[i] = pm.BOARD_OWNERSHIP
     }
 
     function sendUnusedBetClosestToY(y) {
@@ -42,16 +44,16 @@ function bestowBets(suspect) {
 
         let numInBoard = pm.getNumBoardBets(suspect)
         let numInHand = 0
-        bets.forEach( (bet,i) => {
-            if(bet.owner === socket.playerId)
+        betOwners.forEach( (betOwner,i) => {
+            if(betOwner === socket.playerId)
                 ++numInHand
 
-            if (bet.owner !== previousOwners[i]) {
-                if (bet.owner === socket.playerId)
+            if (betOwner !== previousOwners[i]) {
+                if (betOwner === socket.playerId)
                     playSound("gotBet")
-                else if (bet.owner !== pm.BOARD_OWNERSHIP)
+                else if (betOwner !== pm.BOARD_OWNERSHIP)
                     playSound("someoneElseGotBet")
-                previousOwners[i] = bet.owner
+                previousOwners[i] = betOwner
             }
         })
 

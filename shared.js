@@ -27,8 +27,8 @@ pm.NO_OWNERSHIP = -2 //urgh, or "no association"? bit of a mess
 
 pm.getNumBoardBets = (suspect) => {
     let numInBoard = 0
-    suspect.bets.forEach((bet) => {
-        if (bet.owner === pm.BOARD_OWNERSHIP)
+    suspect.betOwners.forEach((betOwner) => {
+        if (betOwner === pm.BOARD_OWNERSHIP)
             ++numInBoard
     })
     return numInBoard

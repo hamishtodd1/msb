@@ -128,8 +128,8 @@ async function initBoard() {
         staticCash.scale.x = msg.staticCashes[socket.playerId] * cashWidth
 
         suspects.forEach((suspect, i) => {
-            suspect.bets.forEach((bet, j) => {
-                bet.owner = msg.suspects[i].bets[j].owner
+            msg.suspects[i].betOwners.forEach((betOwner, j) => {
+                suspect.betOwners[j] = betOwner
             })
 
             suspect.onBoard = msg.suspects[i].onBoard

@@ -49,22 +49,18 @@ function beginGame(id) {
 			if(msg.suspects[i] === undefined) {
 				msg.suspects[i] = {
 					cashBits: Array(pm.betsPerSuspect),
-					bets: Array(pm.betsPerSuspect),
+					betOwners: game.suspects[i].betOwners,
 					onBoard: game.suspects[i].onBoard,
 					socketsWithPortraitLoaded: {}
 				}
 				for(let j = 0; j < pm.betsPerSuspect; ++j)
 					msg.suspects[i].cashBits[j] = { associatedPlayer: pm.NO_OWNERSHIP }
-				for(let j = 0; j < pm.betsPerSuspect; ++j)
-					msg.suspects[i].bets[j] = { owner: pm.BOARD_OWNERSHIP }
 			}
 
 			msg.suspects[i].onBoard = suspect.onBoard
 
 			for (let j = 0; j < pm.betsPerSuspect; ++j)
 				msg.suspects[i].cashBits[j].associatedPlayer = game.suspects[i].cashBits[j].associatedPlayer
-			for (let j = 0; j < pm.betsPerSuspect; ++j)
-				msg.suspects[i].bets[j].owner = game.suspects[i].bets[j].owner
 		})
 		game.sockets.forEach( (socket)=>{
 			socket.emit("game update", msg)
@@ -151,7 +147,7 @@ io.on("connection", (socket) => {
 		for(let i = 0; i < pm.maxSuspects; ++i) {
 			let suspect = {
 				cashBits: Array(pm.betsPerSuspect),
-				bets: Array(pm.betsPerSuspect),
+				betOwners: Array(pm.betsPerSuspect),
 				portraitImageSrc: "",
 				onBoard: false
 			}
@@ -164,7 +160,7 @@ io.on("connection", (socket) => {
 					value: pm.betPrices[j]
 				}
 
-				suspect.bets[j] = { owner: pm.BOARD_OWNERSHIP }
+				suspect.betOwners[j] = pm.BOARD_OWNERSHIP
 			}
 		}
 		//we're partway through making this into all pre-initialized and then the pics just come along
@@ -177,8 +173,8 @@ io.on("connection", (socket) => {
 
 		self.on("delete",(msg)=>{
 			let deletable = true
-			game.suspects[msg.index].bets.forEach((bet)=>{
-				if(bet.owner !== pm.BOARD_OWNERSHIP)
+			game.suspects[msg.index].betOwners.forEach((betOwner)=>{
+				if(betOwner !== pm.BOARD_OWNERSHIP)
 					deletable = false
 			})
 
@@ -249,8 +245,8 @@ io.on("connection", (socket) => {
 			let suspect = suspects[msg.suspect]
 			log("total cash", getTotalCash(self))
 
-			let betToSell = suspect.bets.find( bet => bet.owner === self.playerId )
-			if (betToSell === undefined)
+			let betToSellIndex = suspect.betOwners.indexOf( self.playerId )
+			if (betToSellIndex === -1)
 				self.emit("unsuccessful sell")
 			else {
 				let numInBoard = pm.getNumBoardBets(suspect)
@@ -264,7 +260,7 @@ io.on("connection", (socket) => {
 
 				cb.associatedPlayer = self.playerId
 
-				betToSell.owner = pm.BOARD_OWNERSHIP
+				suspect.betOwners[betToSellIndex] = pm.BOARD_OWNERSHIP
 				
 				log("total cash", getTotalCash(self))
 
@@ -305,8 +301,8 @@ io.on("connection", (socket) => {
 			if(suspect.onBoard === false)
 				self.emit("unsuccessful buy")
 
-			let betToBuy = suspect.bets.find(bet => bet.owner === pm.BOARD_OWNERSHIP)
-			if (betToBuy === undefined)
+			let betToBuyIndex = suspect.betOwners.indexOf( pm.BOARD_OWNERSHIP )
+			if (betToBuyIndex === -1)
 				self.emit("unsuccessful buy") //no bets left
 			else {
 				let numInBoard = pm.getNumBoardBets(suspect)
@@ -326,7 +322,7 @@ io.on("connection", (socket) => {
 						game.staticCashes[self.playerId] -= pm.betPrices[slotIndex]
 					}
 
-					betToBuy.owner = self.playerId
+					suspect.betOwners[betToBuyIndex] = self.playerId
 
 					if (game.staticCashes[self.playerId] < 0.)
 						mergeOwnedCashBitsIntoStaticCash()
