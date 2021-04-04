@@ -26,10 +26,13 @@ function initWindowResize()
 
 		renderer.setPixelRatio(window.devicePixelRatio)
 
-		renderer.setSize(window.innerWidth, window.innerHeight);
+		let width = document.documentElement.clientWidth
+		let height = document.documentElement.clientHeight
 
-		if (window.innerWidth > window.innerHeight) {
-			camera.aspect = window.innerWidth / window.innerHeight
+		renderer.setSize(width, height);
+
+		if (width > height) {
+			camera.aspect = width / height
 
 			camera.rotation.z = 0.
 
@@ -40,7 +43,7 @@ function initWindowResize()
 			camera.bottom = -cameraTop //rename this shit
 		}
 		else {
-			camera.aspect = window.innerHeight / window.innerWidth
+			camera.aspect = height / width
 
 			camera.top = cameraTop * camera.aspect
 			camera.bottom = -cameraTop * camera.aspect
