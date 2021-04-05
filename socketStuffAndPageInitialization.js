@@ -1,7 +1,10 @@
 //Would also be nice if people could get in with a web link
 
+console.error("seriously")
 socket.on("serverConnected", () =>
 {
+	log("connected")
+
 	let newGameButton = document.getElementById('newGameButton')
 	newGameButton.onclick = () => {
 		socket.emit("gameInitializationRequest", {
@@ -17,6 +20,7 @@ socket.on("serverConnected", () =>
 	}
 
 	function onGameIdSubmit() {
+		log("submitting")
 		var requestedGameKey = textBox.value.replace(/\s/g, "");
 		requestedGameKey.toLowerCase()
 
@@ -44,6 +48,7 @@ socket.on("serverConnected", () =>
 		document.addEventListener( "keydown", onButtonPress );
 
 	socket.on("gameInvitation", function (msg) {
+		log("invited")
 		document.removeEventListener("keydown", onButtonPress);
 
 		socket.playerId = msg.playerId

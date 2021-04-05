@@ -26,9 +26,10 @@ function initJudgement() {
     let col = 0x505050
 
     let waitingMessage = Rectangle({
-        h: 16., w: 16.,
-        label: ["Waiting for other", "players to press", "judgement button..."],
-        col,
+        h: 8., getScaleFromLabel: true,
+        haveFrame: true,
+        label: ["Waiting for another", "player to press", "end game button..."],
+        col: bgColor,
         visible: false
     })
     waitingMessage.lastClicked = 0
@@ -37,7 +38,6 @@ function initJudgement() {
             waitingMessage.visible === true && waitingMessage.lastClicked < frameCount - 5 ) {
             waitingMessage.visible = false
             socket.emit("judgement mode request cancelled")
-            log("ugh",waitingMessage.lastClicked,frameCount)
         }
     })
 
@@ -64,7 +64,7 @@ function initJudgement() {
             waitingMessage.visible = true
             waitingMessage.lastClicked = frameCount
         },
-        label: "Judgement!",
+        label: "End game!",
         haveFrame: true,
         h: 1.,
         getScaleFromLabel: true,
@@ -116,7 +116,7 @@ function initJudgement() {
 
     let dividingLine = 0.
     updateFunctions.push(()=>{
-        dividingLine = camera.getRight() - 8.
+        dividingLine = camera.getRight() - 6.
     })
 
     const youSign = Rectangle({
@@ -150,7 +150,7 @@ function initJudgement() {
         judgementButton.visible = !judgementMode && !waitingMessage.visible && gameHasBeenPlayedABit
     })
 
-    const finalStaticCashes = {}
+    finalStaticCashes = {}
     finalStaticCashes[socket.playerId] = staticCash
     const finalAmounts = {}
     updateFunctions.push(() => {
@@ -198,31 +198,6 @@ function initJudgement() {
             finalStaticCashes[playerId].intendedPosition.y = bottomPosition + (topPosition - bottomPosition) * ranking
 
             finalStaticCashes[playerId].intendedPosition.x = dividingLine - finalStaticCashes[playerId].scale.x / 2.
-
-            let numBetsSoFar = 0.
-            suspects.forEach((suspect) => {
-                if (!suspect.confirmed)
-                    return
-
-                //move this to bets.js
-                // suspect.bets.forEach((bet) => {
-                //     if (bet.owner === playerId) {
-                //         log(bet.position.x)
-
-                //         finalStaticCashes[playerId].getEdgeCenter("l", bet.intendedPosition)
-                //         bet.intendedPosition.x -= bet.scale.x / 2.
-                //         bet.intendedPosition.x -= numBetsSoFar * cashWidth
-
-                //         bet.position.z = OVERLAY_Z + 1.
-
-                //         log(bet.intendedPosition.x)
-
-                //         log(bet.position.x)
-
-                //         ++numBetsSoFar
-                //     }
-                // })
-            })
         })
     })
 }

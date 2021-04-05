@@ -29,6 +29,10 @@ function initWindowResize()
 		let width = document.documentElement.clientWidth
 		let height = document.documentElement.clientHeight
 
+		let isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+		if(isFirefox)
+			height = window.innerHeight
+
 		renderer.setSize(width, height);
 
 		if (width > height) {

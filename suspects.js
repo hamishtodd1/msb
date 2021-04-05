@@ -191,6 +191,9 @@ function initSuspects(suspectPositionY) {
             })
             suspect.boardFrame = Rectangle({
                 onClick: () => {
+                    if(judgementMode)
+                        return
+
                     if(coolDown <= 0.) {
                         socket.emit("buy", { suspect: suspects.indexOf(suspect) })
                         coolDown = 1.
@@ -248,6 +251,7 @@ function initSuspects(suspectPositionY) {
         suspect.portrait = Rectangle({
             map: new THREE.Texture(),
             x: 0., y: 0., w: 4., h: 4.,
+            z: -4.,
             haveFrame: true,
             getScale: (target) => {
                 target.x = portraitHeight

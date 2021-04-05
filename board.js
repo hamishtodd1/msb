@@ -24,7 +24,7 @@ async function initBoard() {
 
         EVERYONE_ELSE_VERTICAL_POSITION = camera.getTop() * 1.3
         updateFunctions.push(() => {
-            EVERYONE_ELSE_VERTICAL_POSITION = camera.getTop() * 1.3
+            EVERYONE_ELSE_VERTICAL_POSITION = camera.getTop() * 1.15
         })
 
         getTotalCash = () => {

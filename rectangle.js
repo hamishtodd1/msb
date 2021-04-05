@@ -93,8 +93,11 @@ function initRectangles() {
                     })
 
                     if(params.getScaleFromLabel ) {
-                        console.assert(rect.textMeshes.length === 1)
-                        rect.scale.x = rect.textMeshes[0].material.getAspect() * rect.scale.y
+                        let widestAspect = -1.
+                        rect.textMeshes.forEach((tm)=>{
+                            widestAspect = Math.max(widestAspect,tm.material.getAspect())
+                        })
+                        rect.scale.x = widestAspect * rect.scale.y / rect.textMeshes.length
                     }
                 })
             }

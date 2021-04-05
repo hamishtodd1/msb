@@ -1,5 +1,5 @@
-//might be nice to properly chop off the sides
 //should be possible easily with the draw thing
+//show the square
 
 async function initCamera(suspectPositionY) {
 
@@ -39,14 +39,11 @@ async function initCamera(suspectPositionY) {
     }
 
     function setEverythingUp() {
-        log(video.videoWidth, video.videoHeight)
-
         const videoTexture = new THREE.VideoTexture(video)
         videoTexture.minFilter = THREE.LinearFilter
         const cameraFeedRect = Rectangle({
             map: videoTexture,
-            visible: false,
-            x: 0., y: 0., z: 5.,
+            x: 0., y: 0., z: 8.5,
             getScale: (target) => {
                 target.y = Math.min(camera.getTop() * 2., camera.getRight() * 2.,)
                 
@@ -57,8 +54,7 @@ async function initCamera(suspectPositionY) {
         let cocMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: .0001 })
         let clickOutCatcher = Rectangle({
             mat: cocMat,
-            visible: false,
-            z: cameraFeedRect.position.z - .05,
+            z: cameraFeedRect.position.z - 2.,
             w: 60., h: 20.,
             onClick: () => {
                 setCameraStuffVisibility(false)
@@ -66,7 +62,7 @@ async function initCamera(suspectPositionY) {
         })
 
         newSuspectButton = Rectangle({
-            label: ["new", "suspect"],
+            label: ["new", "bets"],
             haveIntendedPosition: true,
             haveFrame: true,
             frameOnly: true,
@@ -115,23 +111,52 @@ async function initCamera(suspectPositionY) {
             })
         }
 
-        let takePictureButton = null
+        let tpbMat = new THREE.MeshBasicMaterial()
+        let takePictureButton = Rectangle({
+            x: -0., y: -8., w: 4.5, h: 4.5, z: cameraFeedRect.position.z + .2,
+            mat: tpbMat,
+            col: 0xFF0000,
+            onClick: takePicture
+        })
         new THREE.TextureLoader().load("assets/takePicture.png", (map) => {
-            takePictureButton = Rectangle({
-                x: -0., y: -8., w: 3., h: 3., z: 6.,
-                map,
-                col: 0xFF0000,
-                visible: false,
-                onClick: takePicture
-            })
+            tpbMat.map = map
+            tpbMat.needsUpdate = true
+        })
+
+        let square = Rectangle({
+            frameOnly: true,
+            haveFrame: true,
+            w: 19.5, h: 19.5,
+            z: cameraFeedRect.position.z + .2
+        })
+
+        let cbMat = new THREE.MeshBasicMaterial()
+        let cbDimension = 2.
+        let closeButton = Rectangle({
+            w: cbDimension, h: cbDimension, z: cameraFeedRect.position.z + .2,
+            mat: cbMat,
+            getPosition: (target) => {
+                cameraFeedRect.getCorner("tr", target)
+                target.y -= cbDimension / 2.
+                target.x -= cbDimension / 2.
+
+                target.x = Math.min(target.x, camera.getRight() - cbDimension / 2.)
+            },
+            onClick: () => {
+                setCameraStuffVisibility(false)
+            }
+        })
+        new THREE.TextureLoader().load("assets/close.png", (map) => {
+            cbMat.map = map
+            cbMat.needsUpdate = true
         })
 
         setCameraStuffVisibility = (val) => {
             cameraFeedRect.visible = val
             takePictureButton.visible = val
             closeButton.visible = val
-            newSuspectButton.visible = !val
             clickOutCatcher.visible = val
+            square.visible = val
 
             if (val)
                 video.play()
@@ -139,23 +164,8 @@ async function initCamera(suspectPositionY) {
                 video.pause()
         }
 
-        let closeButton = null
-        {
-            let cbDimension = 2.
-            new THREE.TextureLoader().load("assets/close.png", (map) => {
-                closeButton = Rectangle({
-                    w: cbDimension, h: cbDimension, z: 6.,
-                    map,
-                    visible: false,
-                    getPosition: (target) => {
-                        cameraFeedRect.getCorner("tr", target)
-                        target.y -= cbDimension / 2.
-                    },
-                    onClick: () => {
-                        setCameraStuffVisibility(false)
-                    }
-                })
-            })
-        }
+        setCameraStuffVisibility(false)
     }
 }
+
+//need to do camera rotation for camera feed rect
