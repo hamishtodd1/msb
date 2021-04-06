@@ -1,6 +1,5 @@
 //Would also be nice if people could get in with a web link
 
-console.error("seriously")
 socket.on("serverConnected", () =>
 {
 	log("connected")
@@ -62,6 +61,5 @@ socket.on("serverConnected", () =>
 		document.body.style.overflow = "hidden"
 
 		init(socket, msg.gameId);
-		//you don't need to give socketId, it has that!
 	});
 });

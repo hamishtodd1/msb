@@ -15,12 +15,18 @@
 async function initBoard() {
     //globals
     {
-        const slotMr = MeasuringRect("bet slot", false)
         cashWidth = 1.8
-        cashHeight = 4. / pm.betsPerSuspect
+        cashHeight = 3.5 / pm.betsPerSuspect
         slotFrameThickness = cashHeight / 2.
 
+        // var actualCashColor = new THREE.Color()
         cashMat = new THREE.MeshBasicMaterial()
+
+        socket.on("confirmation cash awarded", (msg) => {
+            // log(suspects[msg.index])
+            // cashMat.color.copy(suspects[msg.index].bets[0].mesh.material.color)
+            // log(cashMat.color,actualCashColor)
+        })
 
         EVERYONE_ELSE_VERTICAL_POSITION = camera.getTop() * 1.3
         updateFunctions.push(() => {
@@ -41,11 +47,14 @@ async function initBoard() {
             z: OVERLAY_Z + 1.
         })
         updateFunctions.push(()=>{
-            if( !judgementMode ) {
+            if( !showingScoresMode ) {
                 staticCash.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
                 let totalCashWidth = getTotalCash() * cashWidth
                 staticCash.intendedPosition.x = -(totalCashWidth / 2. - staticCash.scale.x / 2.)
             }
+
+            // cashMat.color.lerp(actualCashColor,.04)
+            // cashMat.needsUpdate = true
         })
     }
 
@@ -53,8 +62,6 @@ async function initBoard() {
         return (cashHeight + slotFrameThickness) * (index - (pm.betsPerSuspect - 1.) / 2.)
     }
 
-    const dashboardGap = 1.5
-    const suspectPositionY = camera.getTop() - (20. - dashboardGap) / 2.
     //TODO rename this, it's not that hard
     let gapBetweenPanels = .5
     suspectPanelDimensions = { 
@@ -118,12 +125,9 @@ async function initBoard() {
             target.lerpHSL(b, (t < .5 ? t : t - .5) * 2.)
         }
     }
-    getViridis(pm.maxSuspects+1, cashMat.color)
+    getViridis(pm.maxSuspects + 1, cashMat.color)
 
     socket.on("game update", (msg) => {
-        // console.assert(msg.suspects.length === suspects.length)
-
-        //ugh, you need multiple layers
 
         staticCash.scale.x = msg.staticCashes[socket.playerId] * cashWidth
 
@@ -132,7 +136,13 @@ async function initBoard() {
                 suspect.betOwners[j] = betOwner
             })
 
+            if(!suspect.onBoard && msg.suspects[i].onBoard)
+                playSound("newSuspect")
             suspect.onBoard = msg.suspects[i].onBoard
+
+            //can just have "waiting for another player to confirm suspect"
+
+            //no need for everyone to judge at the same time, can just have a "view ranking" thing
         })
 
         let changedHandses = Array(pm.betsPerSuspect)
@@ -172,6 +182,6 @@ async function initBoard() {
         })
     })
 
-    initSuspects(suspectPositionY)
-    await initCamera(suspectPositionY)
+    initSuspects()
+    await initCamera()
 }

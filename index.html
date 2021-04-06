@@ -1,28 +1,26 @@
 <!--
+	Sigh, bets from judgement turns into cash
 	Increase aws capability
 	Get camera access
-	Don't accept new pictures for a couple of seconds
-		They need a notification saying their pic bounced
 	Test. Can get more playtesters from:
 		StrangeCharms
 		GMTK
-	Game loses socket when ping stops
-	Server closes a room when all players gone
+		Senthuran, his wife, and Chao
 	Bugs
 		iphone camera is frozen
 		You get black frickin squares. Refreshing makes it go away...
+			Some worked, some black as well!
+			PROBABLY only happens when a new player enters, you don't get sent them
 		PROBABLY If your display goes to sleep, the socket goes
 		Facebook web browser full screen
 		This-is-not-an-advert in order to make sounds play
 	World's shortest murder mystery
-	Mute button? Eh, just turn off the sound Rowan
 	Make a video where you play it
-
-
+	
+	
+	Mute button? Eh, just turn off the sound Rowan
 	Could have an automated thing: when you buy a bet, however much extra probability this puts into the suspect, that much is sold, equally, from the other suspects
 	Possibly betting on "who should be put on the pitch" in a football simulator
-	The bets have their color fade to green and come from the bottom and the top
-	Also, hide your cash when done
 	Lobbyist mode
 		With lobbyist mode, you also have a lot of bets more expensive than what the person gets for them. Then, a strategy: if you know someone is trying to manipulate the price of X to be >80p at 1pm, but the true price of X is 20p, you can:
 		-buy a load of bets on X at <80p
@@ -227,8 +225,6 @@
 
 		<script src="rectangle.js"></script>
 
-		<script src="measuringRects.js"></script>
-		
 		<script src="windowResize.js"></script>
 
 		<script src="text.js"></script>
@@ -251,7 +247,6 @@
 
 				let updateMouse = initMouse()
 				
-				await initMeasuringRects()
 				await initBoard()
 
 				initWindowResize()

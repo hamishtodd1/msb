@@ -30,6 +30,23 @@ const pm = require("./shared.js")
 const games = {}
 
 function beginGame(id) {
+
+	//check on old games
+	{
+		Object.keys(games).forEach((gameId)=>{
+			let gotAtLeastOneStillPinging = false
+
+			games[gameId].sockets.forEach((sock)=>{
+				if((Date.now() - sock.timeOfLastPing)/1000. < 6. )
+					gotAtLeastOneStillPinging = true
+			})
+
+			if(!gotAtLeastOneStillPinging)
+				delete games[gameId]
+			//will that clear everything? Hopefully
+		})
+	}
+
 	log("starting game: ", id)
 
 	let game = {}
@@ -38,6 +55,8 @@ function beginGame(id) {
 	game.sockets = []
 	game.suspects = []
 	game.staticCashes = {}
+
+	game.timeAtLastPortrait = Date.now()
 
 	let msg = {
 		staticCashes: game.staticCashes,
@@ -149,7 +168,8 @@ io.on("connection", (socket) => {
 				cashBits: Array(pm.betsPerSuspect),
 				betOwners: Array(pm.betsPerSuspect),
 				portraitImageSrc: "",
-				onBoard: false
+				onBoard: false,
+				atLeastOneConfirmation: false
 			}
 
 			suspects.push(suspect)
@@ -165,10 +185,41 @@ io.on("connection", (socket) => {
 		}
 		//we're partway through making this into all pre-initialized and then the pics just come along
 
-		self.on("suspect confirmation", (msg) => {
-			game.sockets.forEach((sock)=>{
-				sock.emit("suspect confirmation",msg)
-			})
+		// self.on("suspect confirmation", (msg) => {
+		// 	game.sockets.forEach((sock)=>{
+		// 		sock.emit("suspect confirmation",msg)
+		// 	})
+		// })
+
+		self.on("confirmation", (msg) => {
+			let suspect = suspects[msg.index]
+			
+			if(!suspect.atLeastOneConfirmation) 
+				suspect.atLeastOneConfirmation = true
+			else {
+				game.sockets.forEach((sock)=>{
+					sock.emit("confirmation cash awarded", { index: suspects.indexOf(suspect) })
+				})
+
+				game.sockets.forEach((sock)=>{
+					mergeCashBitsIntoStaticCash(suspect, sock)
+				})
+
+				suspect.betOwners.forEach((betOwner)=>{
+					if(betOwner !== pm.BOARD_OWNERSHIP)
+						game.staticCashes[betOwner] += 1.
+				})
+				for(let i = 0; i < pm.betsPerSuspect; ++i)
+					suspect.betOwners[i] = pm.BOARD_OWNERSHIP
+
+				suspect.atLeastOneConfirmation = false
+
+				suspect.onBoard = false
+				game.broadcastState()
+			}
+		})
+		self.on("confirmation cancellation", (msg) => {
+			suspects[msg.index].atLeastOneConfirmation = false
 		})
 
 		self.on("delete",(msg)=>{
@@ -177,7 +228,6 @@ io.on("connection", (socket) => {
 				if(betOwner !== pm.BOARD_OWNERSHIP)
 					deletable = false
 			})
-
 			if(!deletable)
 				return
 			
@@ -185,16 +235,23 @@ io.on("connection", (socket) => {
 			game.broadcastState()
 		})
 
-		self.on("new suspect portrait", (msg) =>{
-			let suspect = game.suspects.find((suspect) => suspect.onBoard === false)
-			suspect.portraitImageSrc = msg.portraitImageSrc
-			
-			suspect.onBoard = true
 
-			game.sockets.forEach((sock) => {
-				emitPortrait(suspect, sock)
-			})
-			game.broadcastState()
+		self.on("new suspect portrait", (msg) =>{
+			let timeSinceLastPortrait = (Date.now() - game.timeAtLastPortrait) / 1000.
+			
+			if(timeSinceLastPortrait > 4.) {
+				game.timeAtLastPortrait = Date.now()
+
+				let suspect = game.suspects.find((suspect) => suspect.onBoard === false)
+				suspect.portraitImageSrc = msg.portraitImageSrc
+				
+				game.sockets.forEach((sock) => {
+					emitPortrait(suspect, sock)
+				})
+				game.broadcastState()	
+			}
+			else
+				self.emit("portrait rejected")
 		} )
 
 		function emitPortrait(suspect,particularSocket) {
@@ -207,6 +264,7 @@ io.on("connection", (socket) => {
 		}
 
 		socket.on("pingAA", () => {
+			socket.timeOfLastPing = Date.now()
 			socket.emit("pongAA")
 		})
 		socket.on( "ready for suspect portraits", ()=>{
@@ -234,9 +292,8 @@ io.on("connection", (socket) => {
 			})
 
 			if(loadedForAllPlayersThatReceived) {
-				game.sockets.forEach((sock) => {
-					sock.emit("suspect onBoard",{ index: msg.index })
-				})
+				suspect.onBoard = true
+				game.broadcastState()
 			}
 		})
 		//you do "portrait message received" and "portrait loaded". 
@@ -277,7 +334,7 @@ io.on("connection", (socket) => {
 
 			if (numRequests >= 2) {
 				//it is time!
-				mergeOwnedCashBitsIntoStaticCash()
+				mergeSocketOwnedCashBitsIntoStaticCash(self)
 				game.sockets.forEach((sock) => {
 					sock.emit("judgement mode confirmed")
 				})
@@ -325,22 +382,25 @@ io.on("connection", (socket) => {
 					suspect.betOwners[betToBuyIndex] = self.playerId
 
 					if (game.staticCashes[self.playerId] < 0.)
-						mergeOwnedCashBitsIntoStaticCash()
+						mergeSocketOwnedCashBitsIntoStaticCash(self)
 					
 					game.broadcastState()
 				}
 			}
 		})
 
-		function mergeOwnedCashBitsIntoStaticCash() {
-			//could only do some of them
+		function mergeSocketOwnedCashBitsIntoStaticCash(sock) {
 			suspects.forEach((sus) => {
-				sus.cashBits.forEach((cb, i) => {
-					if (pm.getCashBitOwnership(sus, cb) === self.playerId) {
-						cb.associatedPlayer = pm.NO_OWNERSHIP
-						game.staticCashes[self.playerId] += cb.value
-					}
-				})
+				mergeCashBitsIntoStaticCash(sus, sock)
+			})
+		}
+
+		function mergeCashBitsIntoStaticCash(sus,sock) {
+			sus.cashBits.forEach((cb, i) => {
+				if (pm.getCashBitOwnership(sus, cb) === sock.playerId) {
+					cb.associatedPlayer = pm.NO_OWNERSHIP
+					game.staticCashes[sock.playerId] += cb.value
+				}
 			})
 		}
 	}

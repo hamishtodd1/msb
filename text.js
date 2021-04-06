@@ -12,6 +12,15 @@ function text(initialText,materialOnly)
 		return currentText
 	}
 
+	let backGroundColor = "#" + renderer.getClearColor().getHexString()
+
+	material.setColor = function(newColor) {
+		if (newColor[0] !== "#")
+			console.error("play by the html rules")
+
+		backGroundColor = newColor
+	}
+
 	material.setText = function(text) {
 		if(currentText === text)
 			return
@@ -30,7 +39,6 @@ function text(initialText,materialOnly)
 		context.textAlign = "center";
 		context.textBaseline = "middle";
 		
-		let backGroundColor = "#" + renderer.getClearColor().getHexString()
 		context.fillStyle = backGroundColor;
 		context.fillRect(
 			canvas.width / 2 - textWidth / 2 - backgroundMargin / 2, 
@@ -38,7 +46,7 @@ function text(initialText,materialOnly)
 			textWidth + backgroundMargin, 
 			textSize + backgroundMargin);
 		
-		let textColor = "#D3D1D3"
+		let textColor = "#FFFFFF"
 		context.fillStyle = textColor;
 		context.fillText(text, canvas.width / 2, canvas.height / 2);
 

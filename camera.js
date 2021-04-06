@@ -1,7 +1,7 @@
 //should be possible easily with the draw thing
 //show the square
 
-async function initCamera(suspectPositionY) {
+async function initCamera() {
 
     setCameraStuffVisibility = () => {}
 
@@ -62,7 +62,7 @@ async function initCamera(suspectPositionY) {
         })
 
         newSuspectButton = Rectangle({
-            label: ["new", "bets"],
+            // label: ["new", "bets"],
             haveIntendedPosition: true,
             haveFrame: true,
             frameOnly: true,
@@ -72,14 +72,33 @@ async function initCamera(suspectPositionY) {
                 target.y = suspectPanelDimensions.y
             },
             onClick: () => {
-                if(judgementMode)
+                if (showingScoresMode)
                     return
-                    
+
                 setCameraStuffVisibility(true)
             }
         })
+        let newSuspectMat = new THREE.MeshBasicMaterial({color:bgColor})
+        new THREE.TextureLoader().load("assets/add.png", (map) => {
+            newSuspectMat.map = map
+            newSuspectMat.needsUpdate = true
+        })
+        let newSuspectPic = Rectangle({
+            mat: newSuspectMat,
+            getScale:(target)=>{
+                target.x = suspectPanelDimensions.x
+                target.y = suspectPanelDimensions.x
+            },
+            getPosition:(target)=>{
+                target.x = newSuspectButton.position.x
+                target.y = newSuspectButton.position.y
+            },
+            z: newSuspectButton.position.z - 3.
+        })
 
         updateFunctions.push(() => {
+            newSuspectPic.visible = newSuspectButton.visible
+
             newSuspectButton.intendedPosition.x = getPanelPositionX(suspects.length)
 
             newSuspectButton.position.y = suspectPositionY
@@ -166,6 +185,22 @@ async function initCamera(suspectPositionY) {
 
         setCameraStuffVisibility(false)
     }
+
+    let portraitRejectedSignTimeVisible = 0
+    let portraitRejectedSign = Rectangle({
+        h: 4., 
+        z: 4.9,
+        label: "Portrait rejected",
+        getScaleFromLabel:true,
+        haveFrame:true
+    })
+    socket.on("portrait rejected", () => {
+        portraitRejectedSignTimeVisible = 3.
+    })
+    updateFunctions.push(()=>{
+        portraitRejectedSignTimeVisible -= frameDelta
+        portraitRejectedSign.visible = portraitRejectedSignTimeVisible > 0.
+    })
 }
 
 //need to do camera rotation for camera feed rect

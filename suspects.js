@@ -3,7 +3,7 @@
  * It can be off to the side of the things
  */
 
-function initSuspects(suspectPositionY) {
+function initSuspects() {
     let tickMat = new THREE.MeshBasicMaterial()
     new THREE.TextureLoader().load("assets/tick.png", (map) => {
         tickMat.map = map
@@ -13,18 +13,35 @@ function initSuspects(suspectPositionY) {
     let confirmMat = text("Confirm: ",true)
     let deleteMat = text("Delete?", true)
 
+    let judgeMats = []
+    let crossMats = []
+    new THREE.TextureLoader().load("assets/close.png", (map) => {
+        crossMats.forEach((crossMat) => {
+            crossMat.color.setHex(bgColor)
+            crossMat.map = map
+            crossMat.needsUpdate = true
+        })
+    })
+    new THREE.TextureLoader().load("assets/judgement.png", (map) => {
+        judgeMats.forEach((judgeMat) => {
+            judgeMat.color.setHex(bgColor)
+            judgeMat.map = map
+            judgeMat.needsUpdate = true
+        })
+    })
+
     const frameMat = new THREE.MeshBasicMaterial({ color: 0x888888 })
 
     const suspectSlipPadding = .25
 
-    let portraitHeight = 1.
-    updateFunctions.push(() => {
-        portraitHeight = suspectPanelDimensions.x - suspectSlipPadding * 2.
-    })
+    function getPortraitHeight() {
+        return suspectPanelDimensions.x - suspectSlipPadding * 2.
+    }
+    getLittleButtonHeight = () => getPortraitHeight() / 2. - suspectSlipPadding / 2.
 
-    socket.on("suspect confirmation",(msg)=>{
-        suspects[msg.index].confirmed = msg.value
-    })
+    // socket.on("suspect confirmation",(msg)=>{
+    //     suspects[msg.index].confirmed = msg.value
+    // })
 
     Suspect = () => {
         let suspect = {}
@@ -32,14 +49,36 @@ function initSuspects(suspectPositionY) {
 
         suspect.onBoard = false
 
+        suspect.frame = Rectangle({
+            // frameOnly: true,
+            haveFrame: true,
+            mat: frameMat,
+            z: -4.99999999,
+            getScale: (target) => {
+                target.x = suspectPanelDimensions.x
+                target.y = suspectPanelDimensions.y
+            },
+            haveIntendedPosition: true
+        })
+        updateFunctions.push(() => {
+            if (!suspect.onBoard)
+                suspect.frame.intendedPosition.x = camera.getRight() * 2.
+            else
+                suspect.frame.intendedPosition.x = getPanelPositionX(suspects.indexOf(suspect))
+
+            suspect.frame.intendedPosition.y = suspectPositionY
+        })
+
+        //percentage
         {
             //might be nice to have a little arrow pointing that way
 
             let percentageDisplay = Rectangle({
                 label: "88%",
-                col: bgColor,
+                col: frameMat.color.getHex(),
                 z: -4.9
             })
+            percentageDisplay.textMeshes[0].material.setColor("#888888")
             updateFunctions.push(() => {
                 if (!suspect.cashBits[0])
                     return
@@ -57,7 +96,9 @@ function initSuspects(suspectPositionY) {
 
                 let price = pm.betPrices[cheapestAvailableBetSlotIndex]
                 let percentage = Math.round(price * 100.)
-                percentageDisplay.textMeshes[0].material.setText(percentage + "%")
+                percentageDisplay.textMeshes[0].material.setText( 
+                    (percentage > 9 ? "" : " ")
+                    + percentage + "%")
 
                 suspect.boardFrame.getEdgeCenter("l", v0)
                 cheapestAvailableBetSlot.getEdgeCenter("l", v1)
@@ -84,97 +125,78 @@ function initSuspects(suspectPositionY) {
             })
         }
 
-        suspect.frame = Rectangle({
-            // frameOnly: true,
-            haveFrame: true,
-            mat: frameMat,
-            z: -4.99999999,
-            getScale: (target) => {
-                target.x = suspectPanelDimensions.x
-                target.y = suspectPanelDimensions.y
-            },
-            haveIntendedPosition: true
-        })
-        updateFunctions.push(() => {
-            if (!suspect.onBoard)
-                suspect.frame.intendedPosition.x = camera.getRight() * 2.
-            else
-                suspect.frame.intendedPosition.x = getPanelPositionX(suspects.indexOf(suspect))
+        // {
+        //     let tbDimension = .65
 
-            suspect.frame.intendedPosition.y = suspectPositionY
-        })
+        //     suspect.confirmed = false
 
-        {
-            let tbDimension = .65
+        //     function getTickPosition(target) {
+        //         suspect.frame.getEdgeCenter("t", target)
+        //         target.y -= suspectSlipPadding * 3. + getLittleButtonHeight() + getPortraitHeight() + tbDimension / 2.
 
-            suspect.confirmed = false
+        //         target.x += suspect.frame.scale.x * .35
+        //     }
+        //     const tick = Rectangle({
+        //         mat: tickMat,
+        //         z: OVERLAY_Z + .5,
+        //         w: tbDimension, h: tbDimension,
+        //         visible: false,
+        //         getPosition: getTickPosition
+        //     })
+        //     const boxForTick = Rectangle({
+        //         onClick: () => {
+        //             socket.emit("suspect confirmation", { 
+        //                 index: suspects.indexOf(suspect),
+        //                 value: !suspect.confirmed
+        //             })
+        //         },
+        //         z: OVERLAY_Z + 1.,
+        //         haveFrame: true,
+        //         frameOnly: true,
+        //         w: tbDimension, h: tbDimension,
+        //         getPosition: getTickPosition
+        //     })
 
-            function getTickPosition(target) {
-                suspect.frame.getEdgeCenter("t", target)
-                target.y -= suspectSlipPadding * 2. + portraitHeight + tbDimension / 2.
+        //     const labelR = Rectangle({
+        //         h: tbDimension, 
+        //         w: tbDimension * confirmMat.getAspect(),
+        //         z: OVERLAY_Z + 1.,
+        //         mat: confirmMat,
+        //         getPosition: (target) => {
+        //             target.y = boxForTick.position.y
+        //             target.x = boxForTick.position.x - labelR.scale.x / 2. - .45
+        //         }
+        //     })
 
-                target.x += suspect.frame.scale.x * .35
-            }
-            const tick = Rectangle({
-                mat: tickMat,
-                z: OVERLAY_Z + .5,
-                w: tbDimension, h: tbDimension,
-                visible: false,
-                getPosition: getTickPosition
-            })
-            const boxForTick = Rectangle({
-                onClick: () => {
-                    socket.emit("suspect confirmation", { 
-                        index: suspects.indexOf(suspect),
-                        value: !suspect.confirmed
-                    })
-                },
-                z: OVERLAY_Z + 1.,
-                haveFrame: true,
-                frameOnly: true,
-                w: tbDimension, h: tbDimension,
-                getPosition: getTickPosition
-            })
-
-            const labelR = Rectangle({
-                h: tbDimension, 
-                w: tbDimension * confirmMat.getAspect(),
-                z: OVERLAY_Z + 1.,
-                mat: confirmMat,
-                getPosition: (target) => {
-                    target.y = boxForTick.position.y
-                    target.x = boxForTick.position.x - labelR.scale.x / 2. - .45
-                }
-            })
-
-            updateFunctions.push( () => {
-                boxForTick.visible = judgementMode
-                tick.visible = suspect.confirmed && judgementMode
-                labelR.visible = judgementMode
-            })
-        }
+        //     updateFunctions.push( () => {
+        //         boxForTick.visible = showingScoresMode
+        //         tick.visible = suspect.confirmed && showingScoresMode
+        //         labelR.visible = showingScoresMode
+        //     })
+        // }
         
         {
             function getFrameScale(target) {
-                let clickableBoxHeight = .5 * (suspectPanelDimensions.y - portraitHeight - suspectSlipPadding * 4.)
+                let clickableBoxHeight = .5 * (suspectPanelDimensions.y - getPortraitHeight() - suspectSlipPadding * 5. - getLittleButtonHeight())
                 target.x = suspectPanelDimensions.x - suspectSlipPadding * 2.
                 target.y = clickableBoxHeight
             }
             let coolDown = 0.
+            let coolDownDuration = 1.5
             let coolDownIndicatorMat = new THREE.MeshBasicMaterial({
                 color:0xFFFFFF,
                 transparent:true,
                 opacity:0.
             })
             updateFunctions.push(() => {
-                coolDown = Math.max(0., coolDown - frameDelta)
+                coolDown = Math.max(0., coolDown - frameDelta / coolDownDuration)
 
-                coolDownIndicatorMat.opacity = coolDown
+                coolDownIndicatorMat.opacity = Math.pow(coolDown,.7)
 
                 coolDownIndicatorMat.color.setRGB(
                     1.,
-                    Math.max(coolDownIndicatorMat.color.g + .2,0.),
-                    Math.max(coolDownIndicatorMat.color.b + .2,0.)
+                    Math.max(coolDownIndicatorMat.color.g + .25,0.),
+                    Math.max(coolDownIndicatorMat.color.b + .25,0.)
                 )
             })
             let cooldownIndicator = Rectangle({
@@ -191,7 +213,7 @@ function initSuspects(suspectPositionY) {
             })
             suspect.boardFrame = Rectangle({
                 onClick: () => {
-                    if(judgementMode)
+                    if(showingScoresMode)
                         return
 
                     if(coolDown <= 0.) {
@@ -209,9 +231,9 @@ function initSuspects(suspectPositionY) {
                 getScale: getFrameScale,
                 getPosition: (target) => {
                     suspect.frame.getEdgeCenter("t", target)
-                    target.y -= suspectSlipPadding * 2. + portraitHeight + suspect.boardFrame.scale.y / 2.
+                    target.y -= suspectSlipPadding * 3. + getLittleButtonHeight() + getPortraitHeight() + suspect.boardFrame.scale.y / 2.
 
-                    target.x += Math.pow(Math.max(coolDown, 0.), 2.) * Math.sin(frameCount * .7) * .2
+                    target.x += Math.pow(Math.max(coolDown, 0.), 8.) * Math.sin(frameCount * .7) * .2
                 }
             })
 
@@ -229,7 +251,7 @@ function initSuspects(suspectPositionY) {
             })
             suspect.handFrame = Rectangle({
                 onClick: () => {
-                    if(judgementMode)
+                    if(showingScoresMode)
                         return
 
                     socket.emit("sell", { suspect: suspects.indexOf(suspect) })
@@ -254,56 +276,20 @@ function initSuspects(suspectPositionY) {
             z: -4.,
             haveFrame: true,
             getScale: (target) => {
-                target.x = portraitHeight
-                target.y = portraitHeight
+                target.x = getPortraitHeight()
+                target.y = getPortraitHeight()
             },
             getPosition: (target) => {
                 target.x = suspect.frame.position.x
                 suspect.frame.getEdgeCenter("t", target)
-                target.y -= portraitHeight / 2. + suspectSlipPadding
+                target.y -= getPortraitHeight() / 2. + suspectSlipPadding * 2. + getLittleButtonHeight()
             }
         })
-
-        let deleteSign = Rectangle({
-            onClick: ()=>{
-                socket.emit("delete",{ index: suspects.indexOf(suspect) })
-            },
-            getScale: (target) => {
-                target.x = suspect.portrait.scale.x
-                target.y = suspect.portrait.scale.x / deleteMat.getAspect()
-            },
-            col: 0xFF0000,
-            z: suspect.portrait.position.z + 1.,
-            mat: deleteMat,
-            getPosition: (target) => {
-                suspect.portrait.getEdgeCenter("b",target)
-                target.y += deleteSign.scale.y / 2.
-            }
-        })
-        let deletable = false
-        let hasAtSomePointHadABet = false
-        updateFunctions.push(() => {
-            deletable = hasAtSomePointHadABet
-            suspect.betOwners.forEach((betOwner) => {
-                if (betOwner !== pm.BOARD_OWNERSHIP) {
-                    hasAtSomePointHadABet = true
-                    deletable = false
-                }
-            })
-
-            deleteSign.visible = deletable
-        })
-
-        suspect.putOnBoard = () => {
-            deletable = false
-            hasAtSomePointHadABet = false
-            suspect.onBoard = true
-        }
-
         updateFunctions.push(() => {
             suspect.portrait.mesh.rotation.z = camera.rotation.z
         })
-
+        
+        bestowJudgementAndCross(suspect, judgeMats, crossMats, suspectSlipPadding)
         bestowCashBits(suspect)
         bestowBets(suspect)
 
@@ -337,10 +323,5 @@ function initSuspects(suspectPositionY) {
 
         //and when server receives this from all it'll make them all appear
         //also, it'll allow in more new suspects
-    })
-
-    socket.on("suspect onBoard", (msg) => {
-        playSound("newSuspect")
-        suspects[msg.index].putOnBoard()
     })
 }

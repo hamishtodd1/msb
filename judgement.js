@@ -21,6 +21,81 @@
 		Better arrow
  */
 
+function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPadding) {
+    let waitingMessage = Rectangle({
+        h: 8., getScaleFromLabel: true,
+        haveFrame: true,
+        label: ["Waiting for another", "player to press", "confirmation button..."],
+        col: bgColor,
+        visible: false
+    })
+    waitingMessage.lastClicked = 0
+    updateFunctions.push(() => {
+        if (mouse.clicking && !mouse.oldClicking &&
+            waitingMessage.visible === true && waitingMessage.lastClicked < frameCount - 5) {
+            waitingMessage.visible = false
+            socket.emit("confirmation cancellation", { index: suspects.indexOf(suspect) })
+        }
+
+        if(!suspect.onBoard) {
+            waitingMessage.visible = false
+        }
+    })
+
+    let judge = Rectangle({
+        mat: new THREE.MeshBasicMaterial({ transparent: true }),
+        getScale: (target) => {
+            target.x = getLittleButtonHeight()
+            target.y = getLittleButtonHeight()
+        },
+        z: suspect.portrait.position.z,
+        getPosition: (target) => {
+            suspect.frame.getEdgeCenter("t", target)
+            target.y -= suspectSlipPadding + judge.mesh.scale.y / 2.
+
+            target.x = suspect.portrait.position.x - suspect.portrait.scale.x / 4. - suspectSlipPadding / 4.
+        },
+        haveFrame: true,
+        onClick: () => {
+            if (judge.mesh.material.opacity === 1.) {
+                socket.emit("confirmation", { index: suspects.indexOf(suspect)})
+
+                waitingMessage.visible = true
+                waitingMessage.lastClicked = frameCount
+            }
+        },
+    })
+    judgeMats.push(judge.mesh.material)
+
+    let cross = Rectangle({
+        mat: new THREE.MeshBasicMaterial({ transparent: true }),
+        getScale: (target) => {
+            target.x = getLittleButtonHeight()
+            target.y = getLittleButtonHeight()
+        },
+        z: suspect.portrait.position.z,
+        getPosition: (target) => {
+            suspect.frame.getEdgeCenter("t", target)
+            target.y -= suspectSlipPadding + cross.mesh.scale.y / 2.
+
+            target.x = suspect.portrait.position.x + suspect.portrait.scale.x / 4. + suspectSlipPadding / 4.
+        },
+        haveFrame: true,
+        onClick: () => {
+            if (cross.mesh.material.opacity === 1.)
+                socket.emit("delete", { index: suspects.indexOf(suspect) })
+        },
+    })
+    crossMats.push(cross.mesh.material)
+
+    updateFunctions.push(() => {
+        let someoneHasABet = pm.getNumBoardBets(suspect) < pm.betsPerSuspect
+
+        cross.mesh.material.opacity = someoneHasABet ? .1 : 1.
+        judge.mesh.material.opacity = someoneHasABet ? 1. : .1
+    })
+}
+
 function initJudgement() {
 
     let col = 0x505050
@@ -42,7 +117,7 @@ function initJudgement() {
     })
 
     socket.on("judgement mode confirmed",()=>{
-        judgementMode = true
+        showingScoresMode = true
         waitingMessage.visible = false
     })
 
@@ -57,7 +132,7 @@ function initJudgement() {
     //     let mat = new THREE.MeshBasicMaterial({map,color:bgColor})
     // })
 
-    let judgementButton = Rectangle({
+    let endGameButton = Rectangle({
         onClick: () => {
             socket.emit("judgement mode requested")
 
@@ -72,11 +147,7 @@ function initJudgement() {
         haveFrame: true,
         haveIntendedPosition: true
     })
-    dashboard.push(judgementButton)
-
-
-
-    
+    dashboard.push(endGameButton)
 
 
     const hider = Rectangle({
@@ -86,14 +157,8 @@ function initJudgement() {
         haveFrame: true,
         visible: false,
         getScale: (target) => {
-            suspects[0].frame.getEdgeCenter("l",target)
-            target.x *= 2.
-
-            target.y = suspects[0].boardFrame.scale.y
-        },
-        getPosition: (target) =>{
-            target.y = suspects[0].boardFrame.position.y
-            target.x = 0.
+            target.x = camera.getRight() * 2. - .5
+            target.y = camera.getTop() * 2. - .5
         }
     })
 
@@ -109,7 +174,7 @@ function initJudgement() {
     //             target.y -= cbDimension / 2.
     //         },
     //         onClick: () => {
-    //             judgementMode = false
+    //             showingScoresMode = false
     //         }
     //     })
     // })
@@ -137,24 +202,16 @@ function initJudgement() {
     })
 
     updateFunctions.push( () => {
-        // closeButton.visible = judgementMode
-        hider.visible = judgementMode
-        youSign.visible = judgementMode
-
-        let gameHasBeenPlayedABit = false
-        suspects.forEach((sus)=>{
-            if( pm.getNumBoardBets(sus) < pm.betsPerSuspect )
-                gameHasBeenPlayedABit = true
-        })
-
-        judgementButton.visible = !judgementMode && !waitingMessage.visible && gameHasBeenPlayedABit
+        // closeButton.visible = showingScoresMode
+        hider.visible = showingScoresMode
+        youSign.visible = showingScoresMode
     })
 
     finalStaticCashes = {}
     finalStaticCashes[socket.playerId] = staticCash
     const finalAmounts = {}
     updateFunctions.push(() => {
-        if (!judgementMode)
+        if (!showingScoresMode)
             return
 
         const playerIds = Object.keys(staticCashesValues)

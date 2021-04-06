@@ -89,7 +89,7 @@ function bestowBets(suspect) {
 
         //And all of that stuff can be overriden...
 
-        // if(judgementMode && suspect.confirmed) {
+        // if(showingScoresMode && suspect.confirmed) {
         //     log("yo")
         //     let numBetsSoFar = 0.
         //     bets.forEach((bet) => {

@@ -38,6 +38,10 @@ const socket = io();
 
 const OVERLAY_Z = 7.
 
-let judgementMode = false
+let showingScoresMode = false
 
 const dashboard = []
+
+const VISIBLE_AREA_HEIGHT = 20.
+const dashboardGap = 1.5
+const suspectPositionY = VISIBLE_AREA_HEIGHT/2. - (VISIBLE_AREA_HEIGHT - dashboardGap) / 2.

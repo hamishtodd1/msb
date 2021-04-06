@@ -1,4 +1,4 @@
-const cameraTop = 10.
+const cameraTop = VISIBLE_AREA_HEIGHT / 2.
 const camera = new THREE.OrthographicCamera(-10., 10., cameraTop, -cameraTop, 1, 100);
 camera.position.z = 10.
 scene.add(camera);
@@ -29,8 +29,9 @@ function initWindowResize()
 		let width = document.documentElement.clientWidth
 		let height = document.documentElement.clientHeight
 
-		let isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-		if(isFirefox)
+		//URGH
+		// let isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+		// if(isFirefox)
 			height = window.innerHeight
 
 		renderer.setSize(width, height);
