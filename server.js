@@ -60,10 +60,15 @@ function beginGame(id) {
 
 	let msg = {
 		staticCashes: game.staticCashes,
-		suspects: []
+		suspects: [],
+		suspectConfirmationAddOn: null
 	}
 
-	game.broadcastState = () => {
+	game.broadcastState = (suspectConfirmationAddOn) => {
+		if (suspectConfirmationAddOn === undefined)
+			msg.suspectConfirmationAddOn = null
+		else
+			msg.suspectConfirmationAddOn = suspectConfirmationAddOn
 		game.suspects.forEach((suspect, i) => {
 			if(msg.suspects[i] === undefined) {
 				msg.suspects[i] = {
@@ -198,10 +203,6 @@ io.on("connection", (socket) => {
 				suspect.atLeastOneConfirmation = true
 			else {
 				game.sockets.forEach((sock)=>{
-					sock.emit("confirmation cash awarded", { index: suspects.indexOf(suspect) })
-				})
-
-				game.sockets.forEach((sock)=>{
 					mergeCashBitsIntoStaticCash(suspect, sock)
 				})
 
@@ -209,13 +210,25 @@ io.on("connection", (socket) => {
 					if(betOwner !== pm.BOARD_OWNERSHIP)
 						game.staticCashes[betOwner] += 1.
 				})
-				for(let i = 0; i < pm.betsPerSuspect; ++i)
-					suspect.betOwners[i] = pm.BOARD_OWNERSHIP
 
-				suspect.atLeastOneConfirmation = false
+				let numOwneds = {}
+				game.sockets.forEach((sock,j) => {
+					numOwneds[sock.playerId] = 0
+					for (let i = 0; i < pm.betsPerSuspect; ++i) {
+						if (suspect.betOwners[i] === sock.playerId)
+							++numOwneds[sock.playerId]
+					}
+				})
 
 				suspect.onBoard = false
-				game.broadcastState()
+				for (let i = 0; i < pm.betsPerSuspect; ++i)
+					suspect.betOwners[i] = pm.BOARD_OWNERSHIP
+				suspect.atLeastOneConfirmation = false
+
+				game.broadcastState({
+					index: suspects.indexOf(suspect),
+					numOwneds
+				})
 			}
 		})
 		self.on("confirmation cancellation", (msg) => {

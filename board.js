@@ -22,19 +22,20 @@ async function initBoard() {
         // var actualCashColor = new THREE.Color()
         cashMat = new THREE.MeshBasicMaterial()
 
-        socket.on("confirmation cash awarded", (msg) => {
-            // log(suspects[msg.index])
-            // cashMat.color.copy(suspects[msg.index].bets[0].mesh.material.color)
-            // log(cashMat.color,actualCashColor)
-        })
-
         EVERYONE_ELSE_VERTICAL_POSITION = camera.getTop() * 1.3
         updateFunctions.push(() => {
             EVERYONE_ELSE_VERTICAL_POSITION = camera.getTop() * 1.15
         })
 
         getTotalCash = () => {
-            return staticCash.scale.x / cashWidth + pm.getLooseCash(socket.playerId,suspects)
+            let totalCash = staticCash.scale.x / cashWidth
+            transformedBets.forEach((tb)=>{
+                if(tb.visible)
+                    ++totalCash
+            })
+            totalCash += pm.getLooseCash(socket.playerId,suspects)
+
+            return totalCash
         }
 
         staticCash = Rectangle({
@@ -50,11 +51,28 @@ async function initBoard() {
             if( !showingScoresMode ) {
                 staticCash.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
                 let totalCashWidth = getTotalCash() * cashWidth
-                staticCash.intendedPosition.x = -(totalCashWidth / 2. - staticCash.scale.x / 2.)
+                let looseCashWidth = pm.getLooseCash(socket.playerId, suspects) * cashWidth
+                let totalCashFarRightEnd = totalCashWidth / 2.
+                staticCash.intendedPosition.x = totalCashFarRightEnd - looseCashWidth - staticCash.scale.x / 2.
             }
+        })
 
-            // cashMat.color.lerp(actualCashColor,.04)
-            // cashMat.needsUpdate = true
+        var transformedBets = Array(pm.betsPerSuspect)
+        for(let i = 0; i < pm.betsPerSuspect; ++i) {
+            let tb = Rectangle({
+                mat: cashMat,
+                h: cashHeight,
+                w: cashWidth,
+                haveIntendedPosition: true,
+            })
+            tb.visible = false
+            transformedBets[i] = tb
+        }
+        updateFunctions.push(()=>{
+            transformedBets.forEach((tb,i)=>{
+                tb.intendedPosition.y = staticCash.intendedPosition.y
+                tb.intendedPosition.x = staticCash.intendedPosition.x - staticCash.scale.x / 2. - cashWidth * (i + .5)
+            })
         })
     }
 
@@ -129,7 +147,20 @@ async function initBoard() {
 
     socket.on("game update", (msg) => {
 
-        staticCash.scale.x = msg.staticCashes[socket.playerId] * cashWidth
+        let newScaleX = msg.staticCashes[socket.playerId] * cashWidth
+        if (newScaleX !== staticCash.scale.x) {
+            transformedBets.forEach((tb, i) => { tb.visible = false })
+            staticCash.scale.x = newScaleX
+        }
+
+        if (msg.suspectConfirmationAddOn !== null) {
+            let numOwned = msg.suspectConfirmationAddOn.numOwneds[socket.playerId]
+            for (let i = 0; i < numOwned; ++i) {
+                transformedBets[i].position.x = suspects[msg.suspectConfirmationAddOn.index].handFrame.position.x
+                transformedBets[i].position.y = suspects[msg.suspectConfirmationAddOn.index].handFrame.position.y + getSlotY(i)
+                transformedBets[i].visible = true
+            }
+        }
 
         suspects.forEach((suspect, i) => {
             msg.suspects[i].betOwners.forEach((betOwner, j) => {

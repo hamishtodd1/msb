@@ -2,6 +2,7 @@
 	Sigh, bets from judgement turns into cash
 	Increase aws capability
 	Get camera access
+	less sound effects when a character is confirmed
 	Test. Can get more playtesters from:
 		StrangeCharms
 		GMTK
@@ -107,6 +108,7 @@
 			that chinese harvard lady
 		Publicity
 			Vitalik Buterin
+			Sunil Suri (wrote about futarchy, london based)
 			Lex Friedman
 			wsb, hacker news
 			r/wsb
@@ -256,7 +258,8 @@
 					label: "Game ID: " + gameId,
 					getScaleFromLabel: true,
 					haveIntendedPosition: true,
-					haveFrame: true
+					haveFrame: true,
+					z: OVERLAY_Z + 1.5
 				})
 				dashboard.push(idBox)
 

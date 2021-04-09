@@ -2,7 +2,7 @@
 This is a video game, originally a [board game](https://www.overcomingbias.com/2018/08/my-market-board-game.html), about betting on murder mysteries. At least that's what it is on the surface! Really it is a bit deeper.
 
 # Who made it?
-The video game version was made by me, Hamish Todd. You can read more about me on my [personal website](http://hamishtodd1.github.io/). I have a PhD in molecular graphics and I'm generally interested in communication that uses interactive visualization. I'm @hamish_todd on twitter, and my email is my first name, then my surname, then the numeral 1, at gmail.
+The video game version was made by me, [Hamish Todd](http://hamishtodd1.github.io/). I'm a researcher with interest in communication with interactive visualization. I'm @hamish_todd on twitter, and my email is my first name, then my surname, then the numeral 1, at gmail.
 
 The original boardgame was created by social scientist Robin Hanson in 1989 as a way of exploring and illustrating a very interesting idea that he developed with Ron Fischer: Prediction Markets.
 

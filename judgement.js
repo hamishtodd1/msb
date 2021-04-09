@@ -143,7 +143,7 @@ function initJudgement() {
         haveFrame: true,
         h: 1.,
         getScaleFromLabel: true,
-        z: 0.,
+        z: OVERLAY_Z + 1.5,
         haveFrame: true,
         haveIntendedPosition: true
     })
