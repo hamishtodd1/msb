@@ -1,7 +1,6 @@
 //matthew vandevander
 
 function initSound() {
-    const sounds = {};
     let fileNames = [
         "judgement",
         "gotBet",
@@ -16,11 +15,4 @@ function initSound() {
         if(fn !== "exhangeFailure" && fn !== "newSuspect")
             sounds[fn].volume = .2
     })
-
-    playSound = (event) => {
-        let sound = sounds[event]
-        sound.currentTime = 0.
-        let soundPromise = sound.play()
-        soundPromise.then(function () { }).catch(function () { }) //suppress promise
-    }
 }

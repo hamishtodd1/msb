@@ -259,7 +259,7 @@ io.on("connection", (socket) => {
 				suspect.portraitImageSrc = msg.portraitImageSrc
 				
 				game.sockets.forEach((sock) => {
-					emitPortrait(suspect, sock)
+					emitPortrait(suspect, sock,false)
 				})
 				game.broadcastState()	
 			}
@@ -267,12 +267,13 @@ io.on("connection", (socket) => {
 				self.emit("portrait rejected")
 		} )
 
-		function emitPortrait(suspect,particularSocket) {
+		function emitPortrait(suspect,particularSocket,asap) {
 			log("sending suspect " + suspects.indexOf(suspect))
 			suspect.socketsWithPortraitLoaded = {}
 			particularSocket.emit("suspect portrait", {
 				index: suspects.indexOf(suspect),
-				portraitImageSrc: suspect.portraitImageSrc
+				portraitImageSrc: suspect.portraitImageSrc,
+				asap
 			})
 		}
 
@@ -283,7 +284,7 @@ io.on("connection", (socket) => {
 		socket.on( "ready for suspect portraits", ()=>{
 			game.suspects.forEach((suspect, i) => {
 				if (suspect.portraitImageSrc !== "" && suspect.onBoard)
-					emitPortrait(suspect,socket)
+					emitPortrait(suspect,socket,true)
 			})
 			game.broadcastState()
 

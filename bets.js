@@ -46,10 +46,18 @@ function bestowBets(suspect) {
                 ++numInHand
 
             if (betOwner !== previousOwners[i]) {
-                if (betOwner === socket.playerId)
-                    playSound("gotBet")
-                else if (betOwner !== pm.BOARD_OWNERSHIP)
-                    playSound("someoneElseGotBet")
+                if (betOwner === socket.playerId) {
+                    let sound = sounds["gotBet"]
+                    sound.currentTime = 0.
+                    let soundPromise = sound.play()
+                    soundPromise.then(function () { }).catch(function () { })
+                }
+                else if (betOwner !== pm.BOARD_OWNERSHIP) {
+                    let sound = sounds["someoneElseGotBet"]
+                    sound.currentTime = 0.
+                    let soundPromise = sound.play()
+                    soundPromise.then(function () { }).catch(function () { })
+                }
                 previousOwners[i] = betOwner
             }
         })

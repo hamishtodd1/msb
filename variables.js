@@ -45,3 +45,5 @@ const dashboard = []
 const VISIBLE_AREA_HEIGHT = 20.
 const dashboardGap = 1.5
 const suspectPositionY = VISIBLE_AREA_HEIGHT/2. - (VISIBLE_AREA_HEIGHT - dashboardGap) / 2.
+
+const sounds = {};

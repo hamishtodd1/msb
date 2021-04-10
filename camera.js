@@ -1,44 +1,100 @@
-//should be possible easily with the draw thing
-//show the square
-
 async function initCamera() {
 
     setCameraStuffVisibility = () => {}
 
-    const video = document.createElement('video');
+    let cameraSetUpAttemptMade = false
+
+    newSuspectButton = Rectangle({
+        // label: ["new", "bets"],
+        haveIntendedPosition: true,
+        haveFrame: true,
+        frameOnly: true,
+        z: -5.,
+        getScale: (target) => {
+            target.x = suspectPanelDimensions.x
+            target.y = suspectPanelDimensions.y
+        },
+        onClick: () => {
+            if(cameraSetUpAttemptMade) {
+                if (showingScoresMode)
+                    return
+
+                setCameraStuffVisibility(true)
+            }
+            else {
+                cameraSetUpAttemptMade = true
+                attemptToSetUpCamera()
+            }
+        }
+    })
+    let newSuspectMat = new THREE.MeshBasicMaterial({ color: bgColor })
+    new THREE.TextureLoader().load("assets/add.png", (map) => {
+        newSuspectMat.map = map
+        newSuspectMat.needsUpdate = true
+    })
+    let newSuspectPic = Rectangle({
+        mat: newSuspectMat,
+        getScale: (target) => {
+            target.x = suspectPanelDimensions.x
+            target.y = suspectPanelDimensions.x
+        },
+        getPosition: (target) => {
+            target.x = newSuspectButton.position.x
+            target.y = newSuspectButton.position.y
+        },
+        z: newSuspectButton.position.z - 3.
+    })
+
+    updateFunctions.push(() => {
+        newSuspectPic.visible = newSuspectButton.visible
+
+        newSuspectButton.intendedPosition.x = getPanelPositionX(suspects.length)
+
+        newSuspectButton.position.y = suspectPositionY
+
+        if (frameCount === 0)
+            newSuspectButton.goToIntendedPosition()
+    })
+
+    function attemptToSetUpCamera()
     {
-        video.autoplay = false
+        const video = document.createElement('video');
+
+        video.setAttribute('autoplay', '')
+        video.setAttribute('muted', '')
+        video.setAttribute('playsinline', '')
         const mediaConfig = { video: { facingMode: "environment" } };
-        const errBack = function (e) {
-            console.log('An error has occurred!', e)
+        const disallowOrImpossibilityFunc = function (e) {
+            newSuspectButton.visible = false
+            newSuspectPic.visible = false
         };
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia(mediaConfig).then(function (stream) {
                 video.srcObject = stream;
-                setEverythingUp()
-            });
+                setEverythingUp(video)
+            }).catch(disallowOrImpossibilityFunc);
         }
         /* Legacy code below! */
         else if (navigator.getUserMedia) { // Standard
             navigator.getUserMedia(mediaConfig, function (stream) {
                 video.src = stream;
-                setEverythingUp()
-            }, errBack);
+                setEverythingUp(video)
+            }, disallowOrImpossibilityFunc);
         } else if (navigator.webkitGetUserMedia) { // WebKit-prefixed
             navigator.webkitGetUserMedia(mediaConfig, function (stream) {
                 video.src = window.webkitURL.createObjectURL(stream);
-                setEverythingUp()
-            }, errBack);
+                setEverythingUp(video)
+            }, disallowOrImpossibilityFunc);
         } else if (navigator.mozGetUserMedia) { // Mozilla-prefixed
             navigator.mozGetUserMedia(mediaConfig, function (stream) {
                 video.src = window.URL.createObjectURL(stream);
-                setEverythingUp()
-            }, errBack);
+                setEverythingUp(video)
+            }, disallowOrImpossibilityFunc);
         }
     }
 
-    function setEverythingUp() {
+    function setEverythingUp(video) {
         const videoTexture = new THREE.VideoTexture(video)
         videoTexture.minFilter = THREE.LinearFilter
         const cameraFeedRect = Rectangle({
@@ -61,54 +117,13 @@ async function initCamera() {
             }
         })
 
-        newSuspectButton = Rectangle({
-            // label: ["new", "bets"],
-            haveIntendedPosition: true,
-            haveFrame: true,
-            frameOnly: true,
-            z: -5.,
-            getScale: (target) => {
-                target.x = suspectPanelDimensions.x
-                target.y = suspectPanelDimensions.y
-            },
-            onClick: () => {
-                if (showingScoresMode)
-                    return
-
-                setCameraStuffVisibility(true)
-            }
-        })
-        let newSuspectMat = new THREE.MeshBasicMaterial({color:bgColor})
-        new THREE.TextureLoader().load("assets/add.png", (map) => {
-            newSuspectMat.map = map
-            newSuspectMat.needsUpdate = true
-        })
-        let newSuspectPic = Rectangle({
-            mat: newSuspectMat,
-            getScale:(target)=>{
-                target.x = suspectPanelDimensions.x
-                target.y = suspectPanelDimensions.x
-            },
-            getPosition:(target)=>{
-                target.x = newSuspectButton.position.x
-                target.y = newSuspectButton.position.y
-            },
-            z: newSuspectButton.position.z - 3.
-        })
-
         updateFunctions.push(() => {
-            newSuspectPic.visible = newSuspectButton.visible
-
-            newSuspectButton.intendedPosition.x = getPanelPositionX(suspects.length)
-
-            newSuspectButton.position.y = suspectPositionY
-
             let totalSuspects = 0
             suspects.forEach((s) => { totalSuspects += s.onBoard ? 1 : 0 })
-            newSuspectButton.visible = cameraFeedRect.visible === false && totalSuspects < pm.maxSuspects
 
-            if (frameCount === 0)
-                newSuspectButton.goToIntendedPosition()
+            newSuspectButton.visible =
+                cameraFeedRect.visible === false &&
+                totalSuspects < pm.maxSuspects
         })
 
         function takePicture() {
@@ -183,7 +198,7 @@ async function initCamera() {
                 video.pause()
         }
 
-        setCameraStuffVisibility(false)
+        setCameraStuffVisibility(true)
     }
 
     let portraitRejectedSignTimeVisible = 0

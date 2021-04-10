@@ -42,10 +42,18 @@ function bestowCashBits(suspect,) {
         cashBits.forEach((cashBit, i) => {
             let owner = pm.getCashBitOwnership(suspect, cashBit)
             if(owner !== previousOwners[i]) {
-                if(owner === socket.playerId)
-                    playSound("gotMoney")
-                else if(owner !== pm.NO_OWNERSHIP)
-                    playSound("someoneElseGotMoney")
+                if(owner === socket.playerId) {
+                    let sound = sounds["gotMoney"]
+                    sound.currentTime = 0.
+                    let soundPromise = sound.play()
+                    soundPromise.then(function () { }).catch(function () { })
+                }
+                else if(owner !== pm.NO_OWNERSHIP) {
+                    let sound = sounds["someoneElseGotMoney"]
+                    sound.currentTime = 0.
+                    let soundPromise = sound.play()
+                    soundPromise.then(function () { }).catch(function () { })
+                }
                 previousOwners[i] = owner
             }
 

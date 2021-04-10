@@ -54,6 +54,7 @@ function initSuspects() {
             haveFrame: true,
             mat: frameMat,
             z: -4.99999999,
+            frameZ: -4.,
             getScale: (target) => {
                 target.x = suspectPanelDimensions.x
                 target.y = suspectPanelDimensions.y
@@ -238,11 +239,17 @@ function initSuspects() {
             })
 
             socket.on("unsuccessful buy", () => {
-                playSound("exchangeFailure")
+                let sound = sounds["exchangeFailure"]
+                sound.currentTime = 0.
+                let soundPromise = sound.play()
+                soundPromise.then(function () { }).catch(function () { })
                 coolDown = 0.
             })
             socket.on("unsuccessful sell", () => {
-                playSound("exchangeFailure")
+                let sound = sounds["exchangeFailure"]
+                sound.currentTime = 0.
+                let soundPromise = sound.play()
+                soundPromise.then(function () { }).catch(function () { })
             })
 
             let sellCooldown = 0.
@@ -304,12 +311,13 @@ function initSuspects() {
         
         let suspect = suspects[msg.index]
 
-        socket.emit("portrait received", { index: msg.index })
+        if(!msg.asap)
+            socket.emit("portrait received", { index: msg.index })
 
         let image = document.createElement("img")
         image.src = msg.portraitImageSrc
         image.onload = () => {
-            //really not sure why we can't just use the image
+            //there is a reason we can't just use the image. Just not sure what it is/
             const canvasForImage = document.createElement('canvas')
             canvasForImage.width = image.width
             canvasForImage.height = image.height
@@ -318,10 +326,8 @@ function initSuspects() {
             suspect.portrait.mesh.material.map = new THREE.CanvasTexture(canvasForImage)
             suspect.portrait.mesh.material.needsUpdate = true
 
-            socket.emit("portrait loaded",{index:msg.index})
+            if(!msg.asap)
+                socket.emit("portrait loaded",{index:msg.index})
         }
-
-        //and when server receives this from all it'll make them all appear
-        //also, it'll allow in more new suspects
     })
 }

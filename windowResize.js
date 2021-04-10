@@ -26,13 +26,8 @@ function initWindowResize()
 
 		renderer.setPixelRatio(window.devicePixelRatio)
 
-		let width = document.documentElement.clientWidth
-		let height = document.documentElement.clientHeight
-
-		//URGH
-		// let isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-		// if(isFirefox)
-			height = window.innerHeight
+		let width  = Math.max(document.documentElement.clientWidth, window.innerWidth)
+		let height = Math.max(document.documentElement.clientHeight, window.innerHeight)
 
 		renderer.setSize(width, height);
 

@@ -160,6 +160,13 @@ async function initBoard() {
                 transformedBets[i].position.y = suspects[msg.suspectConfirmationAddOn.index].handFrame.position.y + getSlotY(i)
                 transformedBets[i].visible = true
             }
+            
+            {
+                let sound = sounds["gotMoney"]
+                sound.currentTime = 0.
+                let soundPromise = sound.play()
+                soundPromise.then(function () { }).catch(function () { })
+            }
         }
 
         suspects.forEach((suspect, i) => {
@@ -167,8 +174,12 @@ async function initBoard() {
                 suspect.betOwners[j] = betOwner
             })
 
-            if(!suspect.onBoard && msg.suspects[i].onBoard)
-                playSound("newSuspect")
+            if (!suspect.onBoard && msg.suspects[i].onBoard && msg.suspectConfirmationAddOn === null) {
+                let sound = sounds["newSuspect"]
+                sound.currentTime = 0.
+                let soundPromise = sound.play()
+                soundPromise.then(function () { }).catch(function () { })
+            }
             suspect.onBoard = msg.suspects[i].onBoard
 
             //can just have "waiting for another player to confirm suspect"

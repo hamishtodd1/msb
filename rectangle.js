@@ -158,7 +158,7 @@ function initRectangles() {
                 updateFunctions.push(()=>{
                     rect.getEdgeCenter(edge,frameR.position)
 
-                    frameR.position.z = rect.position.z
+                    frameR.position.z = rect.position.z + params.frameZ ? params.frameZ : 0.
                     if (edge === "l" || edge === "r") {
                         frameR.position.x += thickness * .5 * (edge === "l" ? -1. : 1.)
                         frameR.scale.x = thickness
