@@ -69,11 +69,7 @@ async function initBoard() {
         updateFunctions.push(()=>{
             transformedBetsFreezeTime -= frameDelta
             transformedBets.forEach((tb,i)=>{
-                if (transformedBetsFreezeTime > 0.) {
-                    tb.intendedPosition.x = tb.position.x
-                    tb.intendedPosition.y = tb.position.y
-                }
-                else {
+                if (transformedBetsFreezeTime <= 0.) {
                     tb.intendedPosition.y = staticCash.intendedPosition.y
                     tb.intendedPosition.x = staticCash.intendedPosition.x - staticCash.scale.x / 2. - cashWidth * (i + .5)
                 }
@@ -106,11 +102,11 @@ async function initBoard() {
     updateFunctions.push(() => {
         let frst = dashboard[0]
         let last = dashboard[dashboard.length - 1]
-        frst.intendedPosition.x = camera.getLeft() + frst.scale.x / 2. + .5
-        last.intendedPosition.x = camera.getRight() - last.scale.x / 2. - .5
+        frst.position.x = camera.getLeft() + frst.scale.x / 2. + .5
+        last.position.x = camera.getRight() - last.scale.x / 2. - .5
 
         dashboard.forEach((btn) => {
-            btn.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
+            btn.position.y = camera.getBottom() + dashboardGap / 2.
         })
 
         //maybe derive cashwidth from how much space there is between these two?

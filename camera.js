@@ -1,5 +1,10 @@
 async function initCamera() {
 
+    let portraitRejectedSign = temporarilyVisibleWarningSign("Portrait rejected")
+    socket.on("portrait rejected", () => {
+        portraitRejectedSign.timeVisible = 3.
+    })
+
     setCameraStuffVisibility = () => {}
 
     let cameraSetUpAttemptMade = false
@@ -67,6 +72,9 @@ async function initCamera() {
         const disallowOrImpossibilityFunc = function (e) {
             newSuspectButton.visible = false
             newSuspectPic.visible = false
+
+            let noCameraSign = temporarilyVisibleWarningSign("Camera rejected")
+            noCameraSign.timeVisible = 3.
         };
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -202,22 +210,4 @@ async function initCamera() {
 
         setCameraStuffVisibility(true)
     }
-
-    let portraitRejectedSignTimeVisible = 0
-    let portraitRejectedSign = Rectangle({
-        h: 4., 
-        z: 4.9,
-        label: "Portrait rejected",
-        getScaleFromLabel:true,
-        haveFrame:true
-    })
-    socket.on("portrait rejected", () => {
-        portraitRejectedSignTimeVisible = 3.
-    })
-    updateFunctions.push(()=>{
-        portraitRejectedSignTimeVisible -= frameDelta
-        portraitRejectedSign.visible = portraitRejectedSignTimeVisible > 0.
-    })
 }
-
-//need to do camera rotation for camera feed rect

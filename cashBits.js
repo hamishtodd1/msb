@@ -20,7 +20,7 @@ function bestowCashBits(suspect) {
             frameOnly: true,
         })
         updateFunctions.push(()=>{
-            // slot.frameThickness = slotFrameThickness
+            slot.frameThickness = slotFrameThickness
         })
 
         let cashBit = Rectangle({

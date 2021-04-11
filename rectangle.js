@@ -1,3 +1,20 @@
+function temporarilyVisibleWarningSign(str) {
+    let sign = Rectangle({
+        h: 3.5,
+        z: 4.9,
+        label: str,
+        getScaleFromLabel: true,
+        haveFrame: true
+    })
+    sign.timeVisible = 0
+    updateFunctions.push(() => {
+        sign.timeVisible -= frameDelta
+        sign.visible = sign.timeVisible > 0.
+    })
+
+    return sign
+}
+
 function initRectangles() {
     let blackMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 })
     let tblr = "tblr"
@@ -124,7 +141,7 @@ function initRectangles() {
                 if (params.visible !== undefined)
                     rect.visible = params.visible
                 updateFunctions.push(() => {
-                    if(params.frameOnly)
+                    if (params.frameOnly || params.getScaleFromLabel)
                         rect.mesh.visible = false
                     else
                         rect.mesh.visible = rect.visible
