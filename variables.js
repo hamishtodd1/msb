@@ -34,6 +34,8 @@ const suspects = []
 
 const bgColor = 0x777777
 
+let square = null
+
 const socket = io();
 
 const OVERLAY_Z = 7.

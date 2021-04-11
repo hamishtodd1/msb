@@ -94,27 +94,5 @@ function bestowBets(suspect) {
             bet.intendedPosition.x = suspect.frame.position.x
             bet.position.x = suspect.frame.position.x
         })
-
-        //And all of that stuff can be overriden...
-
-        // if(showingScoresMode && suspect.confirmed) {
-        //     log("yo")
-        //     let numBetsSoFar = 0.
-        //     bets.forEach((bet) => {
-        //         Object.keys(finalStaticCashes).forEach((playerId)=>{
-                    //yeah, you need to know what bet is owned by whom, surprise surprise
-
-                    // if (bet.owner === playerId) {
-                    //     finalStaticCashes[playerId].getEdgeCenter("l", bet.intendedPosition)
-                    //     bet.intendedPosition.x -= bet.scale.x / 2.
-                    //     bet.intendedPosition.x -= numBetsSoFar * cashWidth
-
-                    //     bet.position.z = OVERLAY_Z + 1.
-
-                    //     ++numBetsSoFar
-                    // }
-        //         })
-        //     })
-        // }
     })
 }

@@ -39,7 +39,7 @@ socket.on("serverConnected", () =>
 		onGameIdSubmit()
 	}
 
-	if( 0 ) {
+	if( 1 ) {
 		textBox.value = 0
 		onGameIdSubmit()
 	}

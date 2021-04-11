@@ -1,4 +1,4 @@
-function bestowCashBits(suspect,) {
+function bestowCashBits(suspect) {
     let cashBits = []
     suspect.cashBits = cashBits
     for (let i = 0; i < pm.betsPerSuspect; ++i) {
@@ -16,8 +16,11 @@ function bestowCashBits(suspect,) {
                 target.y = cashHeight
             },
             z: -2.,
+            haveFrame:true,
             frameOnly: true,
-            frameThickness: slotFrameThickness
+        })
+        updateFunctions.push(()=>{
+            // slot.frameThickness = slotFrameThickness
         })
 
         let cashBit = Rectangle({

@@ -181,6 +181,10 @@ function initSuspects() {
                 let clickableBoxHeight = .5 * (suspectPanelDimensions.y - getPortraitHeight() - suspectSlipPadding * 5. - getLittleButtonHeight())
                 target.x = suspectPanelDimensions.x - suspectSlipPadding * 2.
                 target.y = clickableBoxHeight
+
+                //yes, it's a bit silly for this to happen a million times per frame, but whatever
+                cashHeight = (clickableBoxHeight - .5) / pm.betsPerSuspect / 1.5
+                slotFrameThickness = cashHeight / 2.
             }
             let coolDown = 0.
             let coolDownDuration = 1.5

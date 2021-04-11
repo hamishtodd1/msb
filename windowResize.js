@@ -29,6 +29,9 @@ function initWindowResize()
 		let width  = Math.max(document.documentElement.clientWidth, window.innerWidth)
 		let height = Math.max(document.documentElement.clientHeight, window.innerHeight)
 
+		width = window.innerWidth
+		height = window.innerHeight
+
 		renderer.setSize(width, height);
 
 		if (width > height) {

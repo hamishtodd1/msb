@@ -146,7 +146,7 @@ function initRectangles() {
         }
 
         if (params.frameThickness || params.haveFrame) {
-            let thickness = params.frameThickness || .05
+            rect.frameThickness = .05
             rect.edges = Array(4)
             for(let i = 0; i < 4; ++i) {
                 const edge = tblr[i]
@@ -158,17 +158,17 @@ function initRectangles() {
                 updateFunctions.push(()=>{
                     rect.getEdgeCenter(edge,frameR.position)
 
-                    frameR.position.z = rect.position.z + params.frameZ ? params.frameZ : 0.
+                    frameR.position.z = rect.position.z + (params.frameZ === undefined ? 0. : params.frameZ)
                     if (edge === "l" || edge === "r") {
-                        frameR.position.x += thickness * .5 * (edge === "l" ? -1. : 1.)
-                        frameR.scale.x = thickness
-                        frameR.scale.y = rect.scale.y + thickness * 2.
+                        frameR.position.x += rect.frameThickness * .5 * (edge === "l" ? -1. : 1.)
+                        frameR.scale.x = rect.frameThickness
+                        frameR.scale.y = rect.scale.y + rect.frameThickness * 2.
                     }
                         
                     if (edge === "t" || edge === "b"){
-                        frameR.position.y += thickness * .5 * (edge === "t" ? 1. : -1.)
-                        frameR.scale.y = thickness
-                        frameR.scale.x = rect.scale.x + thickness * 2.
+                        frameR.position.y += rect.frameThickness * .5 * (edge === "t" ? 1. : -1.)
+                        frameR.scale.y = rect.frameThickness
+                        frameR.scale.x = rect.scale.x + rect.frameThickness * 2.
                     }
                 })
             }

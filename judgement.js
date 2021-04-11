@@ -57,12 +57,11 @@ function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPaddin
         },
         haveFrame: true,
         onClick: () => {
-            if (judge.mesh.material.opacity === 1.) {
-                socket.emit("confirmation", { index: suspects.indexOf(suspect)})
+            // if (judge.mesh.material.opacity === 1.)
+            socket.emit("confirmation", { index: suspects.indexOf(suspect)})
 
-                waitingMessage.visible = true
-                waitingMessage.lastClicked = frameCount
-            }
+            waitingMessage.visible = true
+            waitingMessage.lastClicked = frameCount
         },
     })
     judgeMats.push(judge.mesh.material)
@@ -82,8 +81,8 @@ function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPaddin
         },
         haveFrame: true,
         onClick: () => {
-            if (cross.mesh.material.opacity === 1.)
-                socket.emit("delete", { index: suspects.indexOf(suspect) })
+            // if (cross.mesh.material.opacity === 1.)
+            socket.emit("delete", { index: suspects.indexOf(suspect) })
         },
     })
     crossMats.push(cross.mesh.material)
@@ -91,8 +90,8 @@ function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPaddin
     updateFunctions.push(() => {
         let someoneHasABet = pm.getNumBoardBets(suspect) < pm.betsPerSuspect
 
-        cross.mesh.material.opacity = someoneHasABet ? .1 : 1.
-        judge.mesh.material.opacity = someoneHasABet ? 1. : .1
+        // cross.mesh.material.opacity = someoneHasABet ? .1 : 1.
+        // judge.mesh.material.opacity = someoneHasABet ? 1. : .1
     })
 }
 
@@ -239,7 +238,6 @@ function initJudgement() {
             if (playerId !== socket.playerId && finalStaticCashes[playerId] === undefined) {
                 finalStaticCashes[playerId] = Rectangle({
                     mat: staticCash.mesh.material,
-                    h: cashHeight,
                     w: 999999999.,
                     z: OVERLAY_Z + 1.,
                     haveIntendedPosition: true,
@@ -255,6 +253,8 @@ function initJudgement() {
             finalStaticCashes[playerId].intendedPosition.y = bottomPosition + (topPosition - bottomPosition) * ranking
 
             finalStaticCashes[playerId].intendedPosition.x = dividingLine - finalStaticCashes[playerId].scale.x / 2.
+
+            finalStaticCashes[playerId].scale.y = cashHeight
         })
     })
 }

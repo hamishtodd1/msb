@@ -97,7 +97,7 @@ async function initCamera() {
     function setEverythingUp(video) {
         const videoTexture = new THREE.VideoTexture(video)
         videoTexture.minFilter = THREE.LinearFilter
-        const cameraFeedRect = Rectangle({
+        let cameraFeedRect = Rectangle({
             map: videoTexture,
             x: 0., y: 0., z: 8.5,
             getScale: (target) => {
@@ -191,6 +191,8 @@ async function initCamera() {
             closeButton.visible = val
             clickOutCatcher.visible = val
             square.visible = val
+
+            // log(square.position,cameraFeedRect.position.z)
 
             if (val)
                 video.play()
