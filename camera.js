@@ -109,9 +109,17 @@ async function initCamera() {
             map: videoTexture,
             x: 0., y: 0., z: 8.5,
             getScale: (target) => {
-                target.y = Math.min(camera.getTop() * 2., camera.getRight() * 2.,)
-                
-                target.x = target.y * (video.videoWidth / video.videoHeight)
+                let tallNotWide = camera.getTop() < camera.getRight()
+                if(!tallNotWide) {
+                    target.y = camera.getTop() * 2.
+                    target.x = target.y * (video.videoWidth / video.videoHeight)
+                    cameraFeedRect.rotation.z = 0.
+                }
+                else {
+                    target.x = camera.getTop() * 2.
+                    target.y = target.x / (video.videoWidth / video.videoHeight)
+                    cameraFeedRect.rotation.z = TAU / 4.
+                }
             }
         })
 
@@ -119,7 +127,7 @@ async function initCamera() {
         let clickOutCatcher = Rectangle({
             mat: cocMat,
             z: cameraFeedRect.position.z - 2.,
-            w: 60., h: 20.,
+            w: 180., h: 20.,
             onClick: () => {
                 setCameraStuffVisibility(false)
             }

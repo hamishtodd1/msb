@@ -1,12 +1,6 @@
 <!--
-	World's shortest murder mystery
 	Increase aws capability
-	Generating more anonymous Game IDs
 	It is pretty sluggish, maybe do the webgl thing
-	Test. Can get more playtesters from:
-		StrangeCharms
-		GMTK
-		Senthuran, his wife, and Chao
 	Make a video where you play it
 	probably best not to scale up cash width because think about initial cash
 
@@ -137,26 +131,27 @@
 	<center><button type="button" id="newGameButton">Start a new game!</button></center>
 	
 	<p>
-		<center>Or enter GameId:</center>
-		<center><textarea id="gameIdBox" name="gameIdBox" rows="1" cols="74">
-		</textarea></center>
+		<center>Or enter the ID of a game started by a friend:</center>
+		<center><textarea id="gameIdBox" name="gameIdBox" rows="1" cols="42"></textarea></center>
 		<center><button type="button" id="enterGameButton">Submit</button></center>
 	</p>
 	
 	<br></br>
 
-	<center><h3><em>Murder, She Bet</em> is a game about making educated guesses and putting your money where your mouth is.</h3></center>
+	<center><h3>A game about educated guesses<br>
+and putting your money where you'd usually only put your mouth</h3></center>
 
 	<br></br>
 
-	<h3>The rules:</h3>
+	<center><h3>The rules:</h3></center>
 	<ol>
 		<li>Players will watch a Murder Mystery, with multiple <em>suspects</em> that may be <em>guilty</em></li>
 		<li>Suspect characters will be added to the board as they appear</li>
 		<li>Bets can be bought AND sold all the way up to when the credits roll</li>
-		<li>Upon the rolling of the credits, the guilt or innocence of suspects will be settled</li>
-		<li>Bets on suspects who turn out to be guilty will turn into money
-		<li>Bets on suspects who turn out to be innocent are worthless</li>
+		<li>Upon the rolling of the credits, the guilt of suspects will be settled</li>
+		<li>If a suspect is <em>guilty</em> their bets turn into money</li>
+		<li>If not guilty, their bets are worthless</li>
+		<li>The same rules apply if <em>all</em> suspects are guilty, or if <em>none</em> are</li>
 	</ol>
 
 	<br></br>
@@ -177,7 +172,7 @@
 
 	<br></br>
 
-	<h3>A good strategy:</h3>
+	<center><h3>A good strategy:</h3></center>
 	<ol>
 		<li>When you look at the board, ignore what's in your hand, just look at the current percentage</li>
 		<li>For each, ask yourself "do I think it's more likely, or less likely, than that, they're guilty?"</li>
@@ -240,7 +235,6 @@
 			async function init(socket, gameId) {
 				initSound()
 
-				// initInstancedMesh()
 				initRectangles()
 
 				renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -295,17 +289,21 @@
 
 				socket.emit("ready for suspect portraits")
 
+				//it seems to go haywire when the connection is lost
+
 				function loop() {
 					let clockDelta = clock.getDelta()
 					frameDelta = clockDelta < .1 ? clockDelta : .1 //clamped because debugger pauses create weirdness
+					log(1./frameDelta)
 
 					mouse.updateFromAsync()
 
-					updateFunctions.forEach((uf) => uf())
+					updateFunctions.forEach(uf => uf())
 
 					++frameCount
 
 					renderer.render(scene, camera)
+					
 					setTimeout(() => {
 						requestAnimationFrame(loop)
 					}, 1000. / 60.);

@@ -41,8 +41,10 @@ function beginGame(id) {
 					gotAtLeastOneStillPinging = true
 			})
 
-			if(!gotAtLeastOneStillPinging)
+			if(!gotAtLeastOneStillPinging) {
+				log("\ndeleting game ", gameId)
 				delete games[gameId]
+			}
 			//will that clear everything? Hopefully
 		})
 	}
@@ -95,6 +97,10 @@ function beginGame(id) {
 //Default game
 beginGame(0);
 
+function generateGameId() {
+	return (Math.random() + 1).toString(36).substr(2, 4)
+}
+
 io.on("connection", (socket) => {
 
 	let self = socket
@@ -107,7 +113,9 @@ io.on("connection", (socket) => {
 	socket.on("gameInitializationRequest", (msg) => {
 		socket.playerId = msg.playerId ? msg.playerId : socket.id
 
-		gameId = Object.keys(games).length
+		let gameId = generateGameId()
+		while(games[gameId] !== undefined)
+			gameId = generateGameId()
 		
 		beginGame( gameId )
 

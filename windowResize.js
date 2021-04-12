@@ -29,6 +29,7 @@ function initWindowResize()
 		let width  = Math.max(document.documentElement.clientWidth, window.innerWidth)
 		let height = Math.max(document.documentElement.clientHeight, window.innerHeight)
 
+		//no fuck you, this works best
 		width = window.innerWidth
 		height = window.innerHeight
 
