@@ -109,16 +109,17 @@ async function initCamera() {
             map: videoTexture,
             x: 0., y: 0., z: 8.5,
             getScale: (target) => {
-                let tallNotWide = camera.getTop() < camera.getRight()
+                let tallNotWide = camera.rotation.z !== 0.
                 if(!tallNotWide) {
+                    log("y")
                     target.y = camera.getTop() * 2.
                     target.x = target.y * (video.videoWidth / video.videoHeight)
-                    cameraFeedRect.rotation.z = 0.
+                    cameraFeedRect.mesh.rotation.z = 0.
                 }
                 else {
                     target.x = camera.getTop() * 2.
                     target.y = target.x / (video.videoWidth / video.videoHeight)
-                    cameraFeedRect.rotation.z = TAU / 4.
+                    cameraFeedRect.mesh.rotation.z = TAU / 4.
                 }
             }
         })
