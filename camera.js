@@ -111,9 +111,16 @@ async function initCamera() {
             getScale: (target) => {
                 let tallNotWide = camera.rotation.z !== 0.
                 if(!tallNotWide) {
-                    target.y = camera.getTop() * 2.
-                    target.x = target.y * (video.videoWidth / video.videoHeight)
-                    cameraFeedRect.mesh.rotation.z = 0.
+                    if (video.videoWidth / video.videoHeight > 1.) {
+                        target.y = camera.getTop() * 2.
+                        target.x = target.y * (video.videoWidth / video.videoHeight)
+                        cameraFeedRect.mesh.rotation.z = 0.
+                    }
+                    else {
+                        target.x = camera.getTop() * 2.
+                        target.y = target.x / (video.videoWidth / video.videoHeight)
+                        cameraFeedRect.mesh.rotation.z = TAU / 4.
+                    }
                 }
                 else {
                     if (video.videoWidth / video.videoHeight > 1.) {
