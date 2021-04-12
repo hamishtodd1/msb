@@ -114,11 +114,11 @@ async function initCamera() {
                     if (video.videoWidth / video.videoHeight > 1.) {
                         target.y = camera.getTop() * 2.
                         target.x = target.y * (video.videoWidth / video.videoHeight)
-                        cameraFeedRect.mesh.rotation.z = TAU / 4.
+                        cameraFeedRect.mesh.rotation.z = 0.
                     }
                     else {
-                        target.x = camera.getTop() * 2.
-                        target.y = target.x / (video.videoWidth / video.videoHeight)
+                        target.y = camera.getTop() * 2.
+                        target.x = target.y * (video.videoWidth / video.videoHeight)
                         cameraFeedRect.mesh.rotation.z = 0.
                     }
                 }
@@ -126,11 +126,11 @@ async function initCamera() {
                     if (video.videoWidth / video.videoHeight > 1.) {
                         target.x = camera.getTop() * 2.
                         target.y = target.x / (video.videoWidth / video.videoHeight)
-                        cameraFeedRect.mesh.rotation.z = 0.
+                        cameraFeedRect.mesh.rotation.z = TAU / 4.
                     }
                     else {
-                        target.y = camera.getTop() * 2.
-                        target.x = target.y * (video.videoWidth / video.videoHeight)
+                        target.x = camera.getTop() * 2.
+                        target.y = target.x / (video.videoWidth / video.videoHeight)
                         cameraFeedRect.mesh.rotation.z = TAU / 4.
                     }
                 }
