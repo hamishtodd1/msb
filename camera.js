@@ -119,7 +119,7 @@ async function initCamera() {
                     else {
                         target.y = camera.getTop() * 2.
                         target.x = target.y * (video.videoWidth / video.videoHeight)
-                        cameraFeedRect.mesh.rotation.z = 0.
+                        cameraFeedRect.mesh.rotation.z = TAU / 4.
                     }
                 }
                 else {
@@ -131,7 +131,7 @@ async function initCamera() {
                     else {
                         target.x = camera.getTop() * 2.
                         target.y = target.x / (video.videoWidth / video.videoHeight)
-                        cameraFeedRect.mesh.rotation.z = TAU / 4.
+                        cameraFeedRect.mesh.rotation.z = 0.
                     }
                 }
             }
