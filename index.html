@@ -270,6 +270,7 @@ and putting your money where you'd usually only put your mouth</h3></center>
 						haveFrame: true,
 						z: 4.9
 					})
+					connectionLostBox.visible = false
 					socket.onclose = () => {
 						connectionLostBox.visible = true
 						location.reload()
