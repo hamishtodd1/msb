@@ -80,20 +80,20 @@ function initMouse()
 		
 		document.addEventListener('mouseup', function (event) {
 			asynchronous.clicking = false;
-			event.preventDefault();
+			// event.preventDefault();
 		})
 		document.addEventListener( 'touchend', function(event) {
 			asynchronous.clicking = false;
-			event.preventDefault();
+			// event.preventDefault();
 		})
 		
 		document.addEventListener('mousemove', function (event) {
 			asynchronous.updateFromClientCoordinates(event.clientX, event.clientY)
-			event.preventDefault();
+			// event.preventDefault();
 		})
 		document.addEventListener( 'touchmove', function( event ) {
 			asynchronous.updateFromClientCoordinates(event.changedTouches[0].clientX,event.changedTouches[0].clientY)
-			event.preventDefault();
+			// event.preventDefault();
 		})
 	}
 }
