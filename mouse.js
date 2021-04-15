@@ -79,21 +79,21 @@ function initMouse()
 		document.addEventListener('mousedown', onMouseOrFingerDown)
 		
 		document.addEventListener('mouseup', function (event) {
-			event.preventDefault();
 			asynchronous.clicking = false;
+			event.preventDefault();
 		})
 		document.addEventListener( 'touchend', function(event) {
-			event.preventDefault();
 			asynchronous.clicking = false;
+			event.preventDefault();
 		})
 		
 		document.addEventListener('mousemove', function (event) {
-			event.preventDefault();
 			asynchronous.updateFromClientCoordinates(event.clientX, event.clientY)
+			event.preventDefault();
 		})
 		document.addEventListener( 'touchmove', function( event ) {
-			event.preventDefault();
 			asynchronous.updateFromClientCoordinates(event.changedTouches[0].clientX,event.changedTouches[0].clientY)
+			event.preventDefault();
 		})
 	}
 }
