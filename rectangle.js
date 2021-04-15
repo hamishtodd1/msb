@@ -216,9 +216,10 @@ function initRectangles() {
 
             if (params.haveIntendedPosition) {
                 rect.intendedPosition = new THREE.Vector3().copy(rect.position)
+                let settlementRate = params.settlementRate || .1
                 updateFunctions.push(() => {
-                    rect.position.x += (rect.intendedPosition.x - rect.position.x) * .1
-                    rect.position.y += (rect.intendedPosition.y - rect.position.y) * .1
+                    rect.position.x += (rect.intendedPosition.x - rect.position.x) * settlementRate
+                    rect.position.y += (rect.intendedPosition.y - rect.position.y) * settlementRate
                 })
             }
 

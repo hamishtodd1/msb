@@ -13,6 +13,7 @@ function bestowBets(suspect) {
                 target.y = cashHeight
             },
             haveIntendedPosition: true,
+            settlementRate: .07,
             z: -3.,
             mat: betMat
         })

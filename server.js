@@ -32,22 +32,20 @@ const games = {}
 function beginGame(id) {
 
 	//check on old games
-	{
-		Object.keys(games).forEach((gameId)=>{
-			let gotAtLeastOneStillPinging = false
+	Object.keys(games).forEach((gameId)=>{
+		let gotAtLeastOneStillPinging = false
 
-			games[gameId].sockets.forEach((sock)=>{
-				if((Date.now() - sock.timeOfLastPing)/1000. < 6. )
-					gotAtLeastOneStillPinging = true
-			})
-
-			if(!gotAtLeastOneStillPinging) {
-				log("\ndeleting game ", gameId)
-				delete games[gameId]
-			}
-			//will that clear everything? Hopefully
+		games[gameId].sockets.forEach((sock)=>{
+			if((Date.now() - sock.timeOfLastPing)/1000. < 6. )
+				gotAtLeastOneStillPinging = true
 		})
-	}
+
+		if(!gotAtLeastOneStillPinging) {
+		log("\ndeleting game ", gameId)
+			delete games[gameId]
+		}
+		//will that clear everything? Hopefully
+	})
 
 	log("starting game: ", id)
 
@@ -58,7 +56,7 @@ function beginGame(id) {
 	game.suspects = []
 	game.staticCashes = {}
 
-	game.timeAtLastPortrait = Date.now()
+	game.timeAtLastPortrait = 0
 
 	let msg = {
 		staticCashes: game.staticCashes,

@@ -19,21 +19,6 @@ function initMouse()
 		mouse.oldPosition.copy(mouse.position);
 		mouse.position.copy(asynchronous.position);
 		mouse.delta.subVectors(mouse.position, mouse.oldPosition)
-
-		if(mouse.clicking && !mouse.oldClicking) {
-			let highestR = null
-			let highestZ = -Infinity
-			for(let i = 0; i < rectangles.length; ++i) {
-				let r = rectangles[i]
-				if (r.onClick !== undefined && r.mouseInside() && r.visible && r.position.z > highestZ) {
-					highestR = r
-					highestZ = r.position.z
-				}
-			}
-
-			if( highestR !== null && highestR.onClick !== undefined)
-				highestR.onClick()
-		}
 	}
 
 	// let a = new THREE.Mesh(new THREE.SphereGeometry(.5))
@@ -69,36 +54,46 @@ function initMouse()
 	}
 
 	{
-		document.addEventListener('mousemove', function (event) {
-			event.preventDefault();
-			asynchronous.updateFromClientCoordinates(event.clientX, event.clientY)
-		})
-
-		document.addEventListener('mousedown', function (event) {
+		function onMouseOrFingerDown(event) {
 			event.preventDefault();
 			asynchronous.clicking = true;
-			asynchronous.updateFromClientCoordinates(event.clientX, event.clientY)
-		})
+			let pos = event.changedTouches ? event.changedTouches : event
+			asynchronous.updateFromClientCoordinates(pos.clientX, pos.clientY)
 
+			let highestR = null
+			let highestZ = -Infinity
+			for (let i = 0; i < rectangles.length; ++i) {
+				let r = rectangles[i]
+				if (r.onClick !== undefined && r.mouseInside() && r.visible && r.position.z > highestZ) {
+					highestR = r
+					highestZ = r.position.z
+				}
+			}
+
+			if (highestR !== null && highestR.onClick !== undefined) {
+				let nameOfSoundToPlay = highestR.onClick()
+			}
+		}
+		
+		document.addEventListener('touchstart', onMouseOrFingerDown)
+		document.addEventListener('mousedown', onMouseOrFingerDown)
+		
 		document.addEventListener('mouseup', function (event) {
 			event.preventDefault();
 			asynchronous.clicking = false;
 		})
-	}
-
-	{
-		document.addEventListener( 'touchstart', function(event) {
+		document.addEventListener( 'touchend', function(event) {
 			event.preventDefault();
-			asynchronous.clicking = true;
-			asynchronous.updateFromClientCoordinates(event.changedTouches[0].clientX,event.changedTouches[0].clientY)
+			asynchronous.clicking = false;
+		})
+		
+		document.addEventListener('mousemove', function (event) {
+			event.preventDefault();
+			asynchronous.updateFromClientCoordinates(event.clientX, event.clientY)
 		})
 		document.addEventListener( 'touchmove', function( event ) {
 			event.preventDefault();
 			asynchronous.updateFromClientCoordinates(event.changedTouches[0].clientX,event.changedTouches[0].clientY)
-		})
-		document.addEventListener( 'touchend', function(event) {
-			event.preventDefault();
-			asynchronous.clicking = false;
 		})
 	}
 }

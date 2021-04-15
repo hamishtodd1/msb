@@ -16,8 +16,7 @@ camera.getLeft = () => {
 	return camera.rotation.z === 0. ? camera.left : camera.bottom
 }
 
-function initWindowResize()
-{
+function initWindowResize() {
 	//we're going to keep the height as 10 and -10
 
 	function respondToResize(event) {
@@ -26,12 +25,13 @@ function initWindowResize()
 
 		renderer.setPixelRatio(window.devicePixelRatio)
 
-		let width  = Math.max(document.documentElement.clientWidth, window.innerWidth)
-		let height = Math.max(document.documentElement.clientHeight, window.innerHeight)
+		let width = window.innerWidth
+			|| document.documentElement.clientWidth
+			|| document.body.clientWidth;
 
-		//no fuck you, this works best
-		width = window.innerWidth
-		height = window.innerHeight
+		let height = window.innerHeight
+			|| document.documentElement.clientHeight
+			|| document.body.clientHeight;
 
 		renderer.setSize(width, height);
 
@@ -58,9 +58,9 @@ function initWindowResize()
 			camera.rotation.z = Math.PI / 2.
 		}
 
-		camera.updateProjectionMatrix();
+		camera.updateProjectionMatrix()
 	}
-	window.addEventListener('resize', respondToResize, false);
-	respondToResize();
-	document.body.appendChild(renderer.domElement);
+	window.addEventListener('resize', respondToResize, false)
+	respondToResize()
+	document.body.appendChild(renderer.domElement)
 }

@@ -1,7 +1,8 @@
 <!--
 	Increase aws capability
-	It is pretty sluggish, maybe do the webgl thing
+	It is pretty sluggish, maybe do the webgl thing, it appears to be gpu limited
 	Make a video where you play it
+	Make the cashbits more noticeable
 	probably best not to scale up cash width because think about initial cash
 
 	//need to do camera rotation for camera feed rect
@@ -246,6 +247,7 @@ and putting your money where you'd usually only put your mouth</h3></center>
 				
 				await initBoard()
 
+				//could move this up to get rid of some initial movement
 				initWindowResize()
 
 				let idBoxDimension = 1.
@@ -268,18 +270,25 @@ and putting your money where you'd usually only put your mouth</h3></center>
 						haveFrame: true,
 						z: 4.9
 					})
+					socket.onclose = () => {
+						connectionLostBox.visible = true
+						location.reload()
+					}
 
 					let timeSinceLastPongReception = 0.
 					socket.on("pongAA",()=>{
 						timeSinceLastPongReception = 0.
 					})
 					updateFunctions.push(()=>{
-						let aboutToPass2 = timeSinceLastPongReception < 2. &&
+						let justAboutToPass2 = timeSinceLastPongReception < 2. &&
 							timeSinceLastPongReception + frameDelta >= 2.
-						if( aboutToPass2 )
+						if( justAboutToPass2 )
 							socket.emit("pingAA")
 
-						connectionLostBox.visible = timeSinceLastPongReception > 4.
+						if(timeSinceLastPongReception > 5.5) {
+							socket.close()
+							connectionLostBox.visible = true
+						}
 						if(timeSinceLastPongReception > 8.)
 							location.reload()
 
@@ -298,7 +307,9 @@ and putting your money where you'd usually only put your mouth</h3></center>
 
 					mouse.updateFromAsync()
 
+					// let now = Date.now()
 					updateFunctions.forEach(uf => uf())
+					// log((Date.now()-now)/1000.)
 
 					++frameCount
 

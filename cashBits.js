@@ -28,6 +28,7 @@ function bestowCashBits(suspect) {
                 target.x = pm.betPrices[index] * cashWidth
                 target.y = cashHeight
             },
+            settlementRate: .07,
             z: -3.,
             mat: cashMat,
             haveIntendedPosition: true
