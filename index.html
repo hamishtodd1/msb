@@ -1,9 +1,17 @@
 <!--
-	Increase aws capability
 	It is pretty sluggish, maybe do the webgl thing, it appears to be gpu limited
 	Make a video where you play it
 	Make the cashbits more noticeable
+	Something weird after buy
+	Outline for cash
+	The start button playes a sound and that makes it so you can play sounds
 	probably best not to scale up cash width because think about initial cash
+	Could make it so ctrl+v puts a pasted image in the camera feed
+	"who's connected" thing
+	Fucking rotating the fucking camera feed
+		Might it be that when you turn it sideways it gives you height and width reversed?
+
+	
 
 	//need to do camera rotation for camera feed rect
 	
@@ -149,7 +157,7 @@ and putting your money where you'd usually only put your mouth</h3></center>
 		<li>Players will watch a Murder Mystery, with multiple <em>suspects</em> that may be <em>guilty</em></li>
 		<li>Suspect characters will be added to the board as they appear</li>
 		<li>Bets can be bought AND sold all the way up to when the credits roll</li>
-		<li>Upon the rolling of the credits, the guilt of suspects will be settled</li>
+		<li><b>When and only when</b> the credits roll, the guilt of suspects will be settled</li>
 		<li>If a suspect is <em>guilty</em> their bets turn into money</li>
 		<li>If not guilty, their bets are worthless</li>
 		<li>The same rules apply if <em>all</em> suspects are guilty, or if <em>none</em> are</li>
@@ -175,11 +183,20 @@ and putting your money where you'd usually only put your mouth</h3></center>
 
 	<center><h3>A good strategy:</h3></center>
 	<ol>
-		<li>When you look at the board, ignore what's in your hand, just look at the current percentage</li>
-		<li>For each, ask yourself "do I think it's more likely, or less likely, than that, they're guilty?"</li>
-		<li>If you think it's more likely that they did it, eg they are at 20% and you think it's 50%, buy a bet</li>
-		<li>If you think it's less likely than the board does, sell a bet, or if you have none to sell, do nothing</li>
+		<li>Closely monitor the current percentages that each suspect's bets are at</li>
+		<li>If you'd say their price is too low, eg a suspicious one is at only 8%, buy on them!</li>
+		<li>If you think it's too high, and you have bets on them, sell</li>
 		<li>Keep doing that! Though don't forget to look up and watch the show sometimes!</li>
+		<li>(It's a mistake to think about what's currently in your hand too much!)</li>
+	</ol>
+
+	<center><h3>An advanced strategy:</h3></center>
+	<ol>
+		<li>Try to think up original, but credible, theories about the true answer</li>
+		<li>If you hit on one very different from the market guesses, buy bets appropriately...</li>
+		<li>...then tell all the other players your theory!</li>
+		<li>If persuaded, they'll frantically sell and buy, and almost certainly overcompensate</li>
+		<li>Bets you just bought will become overpriced so you can sell some, and pick up other bets cheaply</li>
 	</ol>
 
 	<!-- can also suggest sharing theories -->

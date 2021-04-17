@@ -39,13 +39,6 @@ socket.on("serverConnected", () =>
 		onGameIdSubmit()
 	}
 
-	if( 0 ) {
-		textBox.value = 0
-		onGameIdSubmit()
-	}
-	else
-		document.addEventListener( "keydown", onButtonPress );
-
 	socket.on("gameInvitation", function (msg) {
 		log("invited")
 		document.removeEventListener("keydown", onButtonPress);
@@ -62,4 +55,9 @@ socket.on("serverConnected", () =>
 
 		init(socket, msg.gameId);
 	});
+
+	if (1)
+		newGameButton.onclick()
+	else
+		document.addEventListener("keydown", onButtonPress)
 });

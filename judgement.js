@@ -51,20 +51,20 @@ function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPaddin
         z: suspect.portrait.position.z,
         getPosition: (target) => {
             suspect.frame.getEdgeCenter("t", target)
-            target.y -= suspectSlipPadding + judge.mesh.scale.y / 2.
+            target.y -= suspectSlipPadding + judge.scale.y / 2.
 
             target.x = suspect.portrait.position.x - suspect.portrait.scale.x / 4. - suspectSlipPadding / 4.
         },
         haveFrame: true,
         onClick: () => {
-            // if (judge.mesh.material.opacity === 1.)
+            // if (judge.material.opacity === 1.)
             socket.emit("confirmation", { index: suspects.indexOf(suspect)})
 
             waitingMessage.visible = true
             waitingMessage.lastClicked = frameCount
         },
     })
-    judgeMats.push(judge.mesh.material)
+    judgeMats.push(judge.material)
 
     let cross = Rectangle({
         mat: new THREE.MeshBasicMaterial({ transparent: true }),
@@ -75,23 +75,23 @@ function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPaddin
         z: suspect.portrait.position.z,
         getPosition: (target) => {
             suspect.frame.getEdgeCenter("t", target)
-            target.y -= suspectSlipPadding + cross.mesh.scale.y / 2.
+            target.y -= suspectSlipPadding + cross.scale.y / 2.
 
             target.x = suspect.portrait.position.x + suspect.portrait.scale.x / 4. + suspectSlipPadding / 4.
         },
         haveFrame: true,
         onClick: () => {
-            // if (cross.mesh.material.opacity === 1.)
+            // if (cross.material.opacity === 1.)
             socket.emit("delete", { index: suspects.indexOf(suspect) })
         },
     })
-    crossMats.push(cross.mesh.material)
+    crossMats.push(cross.material)
 
     updateFunctions.push(() => {
         let someoneHasABet = pm.getNumBoardBets(suspect) < pm.betsPerSuspect
 
-        // cross.mesh.material.opacity = someoneHasABet ? .1 : 1.
-        // judge.mesh.material.opacity = someoneHasABet ? 1. : .1
+        // cross.material.opacity = someoneHasABet ? .1 : 1.
+        // judge.material.opacity = someoneHasABet ? 1. : .1
     })
 }
 
@@ -237,7 +237,7 @@ function initJudgement() {
 
             if (playerId !== socket.playerId && finalStaticCashes[playerId] === undefined) {
                 finalStaticCashes[playerId] = Rectangle({
-                    mat: staticCash.mesh.material,
+                    mat: staticCash.material,
                     w: 999999999.,
                     z: OVERLAY_Z + 1.,
                     haveIntendedPosition: true,

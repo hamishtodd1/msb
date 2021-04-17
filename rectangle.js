@@ -1,3 +1,12 @@
+/**
+ * The colors can be a vertex attribute, everything is done at runtime
+	Exception might be the textured things
+	Could you do it with a three buffer attribute?
+	Some things have opacity
+
+    You'll have to resubmit every frame
+ */
+
 function temporarilyVisibleWarningSign(str) {
     let sign = Rectangle({
         h: 3.5,
@@ -18,7 +27,9 @@ function temporarilyVisibleWarningSign(str) {
 function initRectangles() {
     let blackMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 })
     let tblr = "tblr"
-    
+
+    // let materials = Array()
+
     Rectangle = function(params) {
         if (params === undefined)
             params = {}
@@ -80,6 +91,7 @@ function initRectangles() {
             let mat = params.mat ?
                 params.mat :
                 new THREE.MeshBasicMaterial()
+            rect.material = mat
 
             if (params.label) {
                 let labelLines = typeof params.label === "string" ? [params.label] : params.label
@@ -130,11 +142,14 @@ function initRectangles() {
                 mat.opacity = params.opacity
             }
 
-            rect.mesh = new THREE.Mesh(unitSquareGeo, mat)
-            scene.add(rect.mesh)
+            var mesh = new THREE.Mesh(unitSquareGeo, mat)
+            rect.setRotationZ = (newRotationZ) => {
+                mesh.rotation.z = newRotationZ
+            }
+            scene.add(mesh)
             {
-                rect.position = rect.mesh.position
-                rect.scale = rect.mesh.scale
+                rect.position = mesh.position
+                rect.scale = mesh.scale
                 rect.color = mat.color
 
                 rect.visible = true
@@ -142,9 +157,9 @@ function initRectangles() {
                     rect.visible = params.visible
                 updateFunctions.push(() => {
                     if (params.frameOnly || params.getScaleFromLabel)
-                        rect.mesh.visible = false
+                        mesh.visible = false
                     else
-                        rect.mesh.visible = rect.visible
+                        mesh.visible = rect.visible
 
                     if (rect.edges) {
                         rect.edges.forEach((edge) => {
@@ -199,9 +214,9 @@ function initRectangles() {
             if (params.z)
                 rect.position.z = params.z
             if (params.w)
-                rect.mesh.scale.x = params.w
+                mesh.scale.x = params.w
             if (params.h)
-                rect.mesh.scale.y = params.h
+                mesh.scale.y = params.h
 
             if (params.getPosition) {
                 updateFunctions.push(() => {
@@ -239,8 +254,8 @@ function initRectangles() {
             rect.pointInside = (p) => {
                 v0.copy(p)
 
-                rect.mesh.updateMatrixWorld()
-                rect.mesh.worldToLocal(v0)
+                mesh.updateMatrixWorld()
+                mesh.worldToLocal(v0)
                 if (-.5 < v0.x && v0.x < .5 &&
                     -.5 < v0.y && v0.y < .5)
                     return true

@@ -47,10 +47,16 @@ async function initBoard() {
             if( !showingScoresMode ) {
                 staticCash.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
                 let totalCashWidth = getTotalCash() * cashWidth
-                let looseCashWidth = pm.getLooseCash(socket.playerId, suspects) * cashWidth
                 let totalCashFarRightEnd = totalCashWidth / 2.
+                let looseCashWidth = pm.getLooseCash(socket.playerId, suspects) * cashWidth
                 staticCash.intendedPosition.x = totalCashFarRightEnd - looseCashWidth - staticCash.scale.x / 2.
             }
+
+            staticCash.scale.x = staticCash.actualValueIncludingTbs * cashWidth
+            transformedBets.forEach((tb) => {
+                if (tb.visible)
+                    staticCash.scale.x -= cashWidth
+            })
 
             staticCash.scale.y = cashHeight
         })
@@ -152,15 +158,12 @@ async function initBoard() {
 
         transformedBets.forEach((tb, i) => { tb.visible = false })
 
-        if(msg.staticCashes[socket.playerId] !== staticCash.actualValueIncludingTbs) {
+        if(msg.staticCashes[socket.playerId] !== staticCash.actualValueIncludingTbs)
             staticCash.actualValueIncludingTbs = msg.staticCashes[socket.playerId]
-            staticCash.scale.x = staticCash.actualValueIncludingTbs * cashWidth
-        }
 
         if (msg.suspectConfirmationAddOn !== null) {
             let numOwned = msg.suspectConfirmationAddOn.numOwneds[socket.playerId]
-            staticCash.scale.x = (staticCash.actualValueIncludingTbs-numOwned) * cashWidth
-            transformedBetsFreezeTime = .6
+            transformedBetsFreezeTime = 1.6
             for (let i = 0; i < numOwned; ++i) {
                 transformedBets[i].position.x = suspects[msg.suspectConfirmationAddOn.index].handFrame.position.x
                 transformedBets[i].position.y = suspects[msg.suspectConfirmationAddOn.index].handFrame.position.y + getSlotY(i)

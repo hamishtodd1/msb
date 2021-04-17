@@ -17,7 +17,7 @@ function initSuspects() {
     let crossMats = []
     new THREE.TextureLoader().load("assets/close.png", (map) => {
         crossMats.forEach((crossMat) => {
-            crossMat.color.setHex(bgColor)
+            crossMat.color.setHex(bgColor) 
             crossMat.map = map
             crossMat.needsUpdate = true
         })
@@ -297,7 +297,7 @@ function initSuspects() {
             }
         })
         updateFunctions.push(() => {
-            suspect.portrait.mesh.rotation.z = camera.rotation.z
+            suspect.portrait.setRotationZ(camera.rotation.z)
         })
         
         bestowJudgementAndCross(suspect, judgeMats, crossMats, suspectSlipPadding)
@@ -327,8 +327,8 @@ function initSuspects() {
             canvasForImage.height = image.height
             canvasForImage.getContext('2d').drawImage(image, 0, 0, image.width, image.height)
 
-            suspect.portrait.mesh.material.map = new THREE.CanvasTexture(canvasForImage)
-            suspect.portrait.mesh.material.needsUpdate = true
+            suspect.portrait.material.map = new THREE.CanvasTexture(canvasForImage)
+            suspect.portrait.material.needsUpdate = true
 
             if(!msg.asap)
                 socket.emit("portrait loaded",{index:msg.index})
