@@ -37,6 +37,8 @@ async function initBoard() {
         staticCash = Rectangle({
             mat: cashMat,
             w: 20., //stand-in
+            haveFrame: true,
+            frameZ: -4.,
             haveIntendedPosition:true,
             y: camera.getBottom() + .5,
             x: 0.,
@@ -67,6 +69,8 @@ async function initBoard() {
             let tb = Rectangle({
                 mat: cashMat,
                 w: cashWidth,
+                haveFrame: true,
+                frameZ: -4.,
                 haveIntendedPosition: true,
             })
             tb.visible = false

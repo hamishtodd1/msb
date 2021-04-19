@@ -26,8 +26,7 @@ function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPaddin
         h: 8., getScaleFromLabel: true,
         haveFrame: true,
         label: ["Waiting for another", "player to press", "confirmation button..."],
-        col: bgColor,
-        visible: false
+        col: bgColor
     })
     waitingMessage.lastClicked = 0
     updateFunctions.push(() => {
@@ -237,7 +236,7 @@ function initJudgement() {
 
             if (playerId !== socket.playerId && finalStaticCashes[playerId] === undefined) {
                 finalStaticCashes[playerId] = Rectangle({
-                    mat: staticCash.material,
+                    mat: cashMat,
                     w: 999999999.,
                     z: OVERLAY_Z + 1.,
                     haveIntendedPosition: true,

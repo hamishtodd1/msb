@@ -125,56 +125,6 @@ function initSuspects() {
                 percentageDisplay.scale.y = 1.4
             })
         }
-
-        // {
-        //     let tbDimension = .65
-
-        //     suspect.confirmed = false
-
-        //     function getTickPosition(target) {
-        //         suspect.frame.getEdgeCenter("t", target)
-        //         target.y -= suspectSlipPadding * 3. + getLittleButtonHeight() + getPortraitHeight() + tbDimension / 2.
-
-        //         target.x += suspect.frame.scale.x * .35
-        //     }
-        //     const tick = Rectangle({
-        //         mat: tickMat,
-        //         z: OVERLAY_Z + .5,
-        //         w: tbDimension, h: tbDimension,
-        //         visible: false,
-        //         getPosition: getTickPosition
-        //     })
-        //     const boxForTick = Rectangle({
-        //         onClick: () => {
-        //             socket.emit("suspect confirmation", { 
-        //                 index: suspects.indexOf(suspect),
-        //                 value: !suspect.confirmed
-        //             })
-        //         },
-        //         z: OVERLAY_Z + 1.,
-        //         haveFrame: true,
-        //         frameOnly: true,
-        //         w: tbDimension, h: tbDimension,
-        //         getPosition: getTickPosition
-        //     })
-
-        //     const labelR = Rectangle({
-        //         h: tbDimension, 
-        //         w: tbDimension * confirmMat.getAspect(),
-        //         z: OVERLAY_Z + 1.,
-        //         mat: confirmMat,
-        //         getPosition: (target) => {
-        //             target.y = boxForTick.position.y
-        //             target.x = boxForTick.position.x - labelR.scale.x / 2. - .45
-        //         }
-        //     })
-
-        //     updateFunctions.push( () => {
-        //         boxForTick.visible = showingScoresMode
-        //         tick.visible = suspect.confirmed && showingScoresMode
-        //         labelR.visible = showingScoresMode
-        //     })
-        // }
         
         {
             function getFrameScale(target) {

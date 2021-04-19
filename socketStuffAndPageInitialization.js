@@ -56,8 +56,10 @@ socket.on("serverConnected", () =>
 		init(socket, msg.gameId);
 	});
 
-	if (1)
-		newGameButton.onclick()
+	if (1) {
+		textBox.value = 0
+		enterGameButton.onclick()
+	}
 	else
 		document.addEventListener("keydown", onButtonPress)
 });

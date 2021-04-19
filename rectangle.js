@@ -28,9 +28,98 @@ function initRectangles() {
     let blackMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 })
     let tblr = "tblr"
 
-    // let materials = Array()
+    let invisibleMaterial = new THREE.MeshBasicMaterial({visible: false})
+
+    let materials = []
+    let materialRects = []
+
+    let unitCoords = [
+        -0.5, -0.5,  0.0,
+         0.5, -0.5,  0.0,
+         0.5,  0.5,  0.0,
+
+         0.5,  0.5,  0.0,
+        -0.5,  0.5,  0.0,
+        -0.5, -0.5,  0.0
+    ]
+    let unitUvs = [
+        0.,0.,
+        1.,0.,
+        1.,1.,
+
+        1.,1.,
+        0.,1.,
+        0.,0.
+    ]
+
+    roundOffRectangleCreation = () => {
+        materials.forEach((mat,i)=>{
+            if (mat === invisibleMaterial)
+                return
+
+            let rects = materialRects[i]
+            let numRects = rects.length
+
+            if(numRects === 1) {
+                var mesh = new THREE.Mesh(unitSquareGeo, mat)
+                scene.add(mesh)
+
+                updateFunctions.push(() => {
+                    mesh.position.copy(rects[0].position)
+                    mesh.scale.copy(rects[0].scale)
+                    mesh.visible = rects[0].visible
+
+                    mesh.rotation.z = rects[0].rotationZ
+                })
+            }
+            else {
+                let bufferMesh = new THREE.Mesh(new THREE.BufferGeometry(), mat)
+                let coords = new Float32Array(3 * 3 * 2 * numRects)
+                let uvs = new Float32Array(3 * 2 * 2 * numRects)
+                bufferMesh.geometry.addAttribute("position", new THREE.BufferAttribute(coords, 3))
+                bufferMesh.geometry.addAttribute("uv", new THREE.BufferAttribute(uvs, 2))
+                scene.add(bufferMesh)
+
+                rects.forEach((rect, j) => {
+                    for (let k = 0; k < 12; ++k) {
+                        uvs[(j * 6 + k) * 2 + 0] = unitUvs[k * 2 + 0]
+                        uvs[(j * 6 + k) * 2 + 1] = unitUvs[k * 2 + 1]
+                    }
+                })
+
+                updateFunctions.push(() => {
+                    rects.forEach((rect, j) => {
+                        for (let k = 0; k < 12; ++k) {
+                            if (rect.visible === false) {
+                                coords[(j * 6 + k) * 3 + 0] = 0.
+                                coords[(j * 6 + k) * 3 + 1] = 900.
+                                coords[(j * 6 + k) * 3 + 2] = -900.
+                            }
+                            else {
+                                coords[(j * 6 + k) * 3 + 0] = unitCoords[k * 3 + 0] * rect.scale.x + rect.position.x
+                                coords[(j * 6 + k) * 3 + 1] = unitCoords[k * 3 + 1] * rect.scale.y + rect.position.y
+                                coords[(j * 6 + k) * 3 + 2] = rect.position.z
+                            }
+                        }
+                    })
+
+                    bufferMesh.geometry.attributes.position.needsUpdate = true
+                })
+            }
+        })
+
+        Rectangle = () => { console.error("this isn't meant to be called after init") }
+    }
+
+    //starting out with 1700 materials, this binning takes it down to 270
+    //Rectangle only gets called 40 times so that should mean it can go down to that
+    //then some could even be merged, using vertex colors
+    //ones with textures need their own
 
     Rectangle = function(params) {
+        if(frameCount > 1)
+            log("yo")
+
         if (params === undefined)
             params = {}
 
@@ -88,10 +177,21 @@ function initRectangles() {
         }
 
         {
-            let mat = params.mat ?
-                params.mat :
-                new THREE.MeshBasicMaterial()
+            let mat = null
+            if(params.mat)
+                mat = params.mat
+            else if(params.frameOnly || params.getScaleFromLabel)
+                mat = invisibleMaterial
+            else
+                mat = new THREE.MeshBasicMaterial()
+
             rect.material = mat
+
+            if (materials.indexOf(mat) === -1) {
+                materials.push(mat)
+                materialRects.push([])
+            }
+            materialRects[materials.indexOf(mat)].push(rect)
 
             if (params.label) {
                 let labelLines = typeof params.label === "string" ? [params.label] : params.label
@@ -142,25 +242,22 @@ function initRectangles() {
                 mat.opacity = params.opacity
             }
 
-            var mesh = new THREE.Mesh(unitSquareGeo, mat)
+            rect.rotationZ = 0.
             rect.setRotationZ = (newRotationZ) => {
-                mesh.rotation.z = newRotationZ
+                rect.rotationZ = newRotationZ
+                //TODO if you want to do this with something with more than one material...
             }
-            scene.add(mesh)
+
             {
-                rect.position = mesh.position
-                rect.scale = mesh.scale
-                rect.color = mat.color
+                rect.position = new THREE.Vector3()
+                rect.scale = new THREE.Vector3(1.,1.,1.)
+                rect.color = new THREE.Color()
 
                 rect.visible = true
                 if (params.visible !== undefined)
                     rect.visible = params.visible
-                updateFunctions.push(() => {
-                    if (params.frameOnly || params.getScaleFromLabel)
-                        mesh.visible = false
-                    else
-                        mesh.visible = rect.visible
 
+                updateFunctions.push(() => {
                     if (rect.edges) {
                         rect.edges.forEach((edge) => {
                             edge.visible = rect.visible
@@ -190,7 +287,7 @@ function initRectangles() {
                 updateFunctions.push(()=>{
                     rect.getEdgeCenter(edge,frameR.position)
 
-                    frameR.position.z = rect.position.z + (params.frameZ === undefined ? 0. : params.frameZ)
+                    frameR.position.z = params.frameZ === undefined ? rect.position.z : params.frameZ
                     if (edge === "l" || edge === "r") {
                         frameR.position.x += rect.frameThickness * .5 * (edge === "l" ? -1. : 1.)
                         frameR.scale.x = rect.frameThickness
@@ -214,9 +311,9 @@ function initRectangles() {
             if (params.z)
                 rect.position.z = params.z
             if (params.w)
-                mesh.scale.x = params.w
+                rect.scale.x = params.w
             if (params.h)
-                mesh.scale.y = params.h
+                rect.scale.y = params.h
 
             if (params.getPosition) {
                 updateFunctions.push(() => {
@@ -233,8 +330,8 @@ function initRectangles() {
                 rect.intendedPosition = new THREE.Vector3().copy(rect.position)
                 let settlementRate = params.settlementRate || .1
                 updateFunctions.push(() => {
-                    rect.position.x += (rect.intendedPosition.x - rect.position.x) * settlementRate
-                    rect.position.y += (rect.intendedPosition.y - rect.position.y) * settlementRate
+                    rect.position.x += (rect.intendedPosition.x - rect.position.x) * settlementRate * (60. * frameDelta)
+                    rect.position.y += (rect.intendedPosition.y - rect.position.y) * settlementRate * (60. * frameDelta)
                 })
             }
 
@@ -254,8 +351,11 @@ function initRectangles() {
             rect.pointInside = (p) => {
                 v0.copy(p)
 
-                mesh.updateMatrixWorld()
-                mesh.worldToLocal(v0)
+                v0.x -= rect.position.x
+                v0.y -= rect.position.y
+                v0.x /= rect.scale.x
+                v0.y /= rect.scale.y
+
                 if (-.5 < v0.x && v0.x < .5 &&
                     -.5 < v0.y && v0.y < .5)
                     return true
