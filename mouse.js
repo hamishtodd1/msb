@@ -60,6 +60,8 @@ function initMouse()
 			let pos = event.changedTouches ? event.changedTouches : event
 			asynchronous.updateFromClientCoordinates(pos.clientX, pos.clientY)
 
+			debugger
+
 			let highestR = null
 			let highestZ = -Infinity
 			for (let i = 0; i < rectangles.length; ++i) {

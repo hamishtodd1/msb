@@ -38,6 +38,8 @@ As a video game, Murder She Bet is:
 
 * Permits much more fine-grained betting, i.e. each suspect gets far more bets than in the boardgame. Many players believe that one bet on a suspect is a useful thing to have (this leads to people obsessing over the first bet). I am pretty sure that this isn't true; I certainly think it shouldn't be. At least if everyone is playing with the optimal strategy (see above), it's not about how many bets you have at a given time but about how good you are at judging probabilities, which should involve exchanging a very large number of bets. Having only one or two bets on a suspect should be a pathological situation encountered rarely in optimal play, because it means that the owners of the bets are having to "round their probability to the nearest bet".
 
+* Still relies on a boardgame-like manual process to grant rewards; there's no formal way for the simulation to detect which suspects are guilty. I've done my best to clarify the rules though (if someone can be described as "guilty" then confirm them!). Real prediction markets have the same thing going on!
+
 # Other reasons I made this
 
 * Visualizing mathematics is interesting. This is especially true of statistics. Statistics, as a field, is abstract and dry - but much as I love geometry, statistics is probably the most important area of mathematics, because almost all human thought is statistical, though people foolishly pretend it isn't.
