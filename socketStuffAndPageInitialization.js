@@ -56,7 +56,7 @@ socket.on("serverConnected", () =>
 		init(socket, msg.gameId);
 	});
 
-	if (1) {
+	if (0) {
 		textBox.value = 0
 		enterGameButton.onclick()
 	}
