@@ -175,7 +175,6 @@ async function initCamera() {
         let placeToPutLeft = Math.round(videoCaptureCanvas.width / 2. - widthThatGetsCut / 2.)
         ctx.drawImage(video, placeToPutLeft, 0, widthThatGetsCut, 90)
 
-        debugger
         socket.emit("new suspect portrait", {
             portraitImageSrc: videoCaptureCanvas.toDataURL("image/png")
         })

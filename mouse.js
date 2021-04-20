@@ -62,8 +62,6 @@ function initMouse()
 
 			mouse.updateFromAsync()
 
-			debugger
-
 			let highestR = null
 			let highestZ = -Infinity
 			for (let i = 0; i < rectangles.length; ++i) {
@@ -79,8 +77,16 @@ function initMouse()
 			}
 		}
 		
-		document.addEventListener('touchstart', onMouseOrFingerDown)
-		document.addEventListener('mousedown', onMouseOrFingerDown)
+		function forTouch(event) {
+			document.removeEventListener('mousedown',forMouse)
+			onMouseOrFingerDown(event)
+		}
+		function forMouse(event) {
+			document.removeEventListener('mousedown',forTouch)
+			onMouseOrFingerDown(event)
+		}
+		document.addEventListener('touchstart', forTouch)
+		document.addEventListener('mousedown',  forMouse)
 		
 		document.addEventListener('mouseup', function (event) {
 			asynchronous.clicking = false;
