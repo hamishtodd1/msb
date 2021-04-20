@@ -11,17 +11,16 @@ socket.on("serverConnected", () =>
 		})
 	}
 
-	var textBox = document.getElementById('gameIdBox')
+	let textBox = document.getElementById('gameIdBox')
 	textBox.autofocus = true;
-	for (var i = 0, il = document.body.children.length; i < il; i++) {
+	for (let i = 0, il = document.body.children.length; i < il; i++) {
 		if (document.body.children[i].localName === "canvas" || document.body.children[i].localName === "textarea")
 			document.body.removeChild(document.body.children[i]);
 	}
 
 	function onGameIdSubmit() {
 		log("submitting")
-		var requestedGameKey = textBox.value.replace(/\s/g, "");
-		requestedGameKey.toLowerCase()
+		let requestedGameKey = textBox.value.replace(/\s/g, "").toLowerCase()
 
 		socket.emit("gameEntryRequest", {
 			requestedGameKey,

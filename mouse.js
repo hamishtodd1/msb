@@ -57,8 +57,10 @@ function initMouse()
 		function onMouseOrFingerDown(event) {
 			// event.preventDefault();
 			asynchronous.clicking = true;
-			let pos = event.changedTouches ? event.changedTouches : event
+			let pos = event.changedTouches ? event.changedTouches[0] : event
 			asynchronous.updateFromClientCoordinates(pos.clientX, pos.clientY)
+
+			mouse.updateFromAsync()
 
 			debugger
 
