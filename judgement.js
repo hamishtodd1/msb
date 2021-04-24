@@ -21,26 +21,29 @@
 		Better arrow
  */
 
-function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPadding) {
-    let waitingMessage = Rectangle({
+function initSuspectConfirmationWaitingSign() {
+    suspectConfirmationWaitingSign = Rectangle({
         h: 8., getScaleFromLabel: true,
         haveFrame: true,
         label: ["Waiting for another", "player to press", "confirmation button..."],
         col: bgColor
     })
-    waitingMessage.lastClicked = 0
-    updateFunctions.push(() => {
-        if (mouse.clicking && !mouse.oldClicking &&
-            waitingMessage.visible === true && waitingMessage.lastClicked < frameCount - 5) {
-            waitingMessage.visible = false
-            socket.emit("confirmation cancellation", { index: suspects.indexOf(suspect) })
-        }
+    suspectConfirmationWaitingSign.visible = false
+    suspectConfirmationWaitingSign.frameCountAtLastConfirmationRequest = 0
 
-        if(!suspect.onBoard) {
-            waitingMessage.visible = false
+    onMouseClickFunctions.push(() => {
+        let needToDeconfirm = 
+            suspectConfirmationWaitingSign.visible === true && 
+            suspectConfirmationWaitingSign.frameCountAtLastConfirmationRequest < frameCount + 1
+        
+        if (needToDeconfirm) {
+            suspectConfirmationWaitingSign.visible = false
+            socket.emit("confirmation cancellation",{})
         }
     })
+}
 
+function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPadding) {
     let judge = Rectangle({
         mat: new THREE.MeshBasicMaterial({ transparent: true }),
         getScale: (target) => {
@@ -59,8 +62,8 @@ function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPaddin
             // if (judge.material.opacity === 1.)
             socket.emit("confirmation", { index: suspects.indexOf(suspect)})
 
-            waitingMessage.visible = true
-            waitingMessage.lastClicked = frameCount
+            suspectConfirmationWaitingSign.visible = true
+            suspectConfirmationWaitingSign.frameCountAtLastConfirmationRequest = frameCount
         },
     })
     judgeMats.push(judge.material)
@@ -94,7 +97,28 @@ function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPaddin
     })
 }
 
-function initJudgement() {
+function initJudgement(gameId) {
+
+    let premadeStaticCashes = []
+    let lowestUnusedPremadeStaticCash = 0
+    for (let i = 0; i < 20; ++i) {
+        premadeStaticCashes[i] = Rectangle({
+            mat: cashMat,
+            w: 999999999.,
+            z: OVERLAY_Z + 1.,
+            haveIntendedPosition: true,
+        })
+        premadeStaticCashes[i].visible = false
+    }
+
+    const idBox = Rectangle({
+        label: "Game ID: " + gameId,
+        getScaleFromLabel: true,
+        haveIntendedPosition: true,
+        haveFrame: true,
+        z: OVERLAY_Z + 1.5
+    })
+    dashboard.push(idBox)
 
     let col = 0x505050
 
@@ -106,17 +130,32 @@ function initJudgement() {
         visible: false
     })
     waitingMessage.lastClicked = 0
-    updateFunctions.push(()=>{
-        if (mouse.clicking && !mouse.oldClicking && 
-            waitingMessage.visible === true && waitingMessage.lastClicked < frameCount - 5 ) {
+    onMouseClickFunctions.push(()=>{
+        if (waitingMessage.visible === true && waitingMessage.lastClicked < frameCount - 5) {
             waitingMessage.visible = false
             socket.emit("judgement mode request cancelled")
         }
     })
 
+    let title = Rectangle({
+        h: 2., getScaleFromLabel: true,
+        haveFrame: true,
+        label: ["Final Ranking"],
+        col: bgColor,
+        getPosition: (target) => {
+            target.x = 0.
+            target.y = hider.scale.y / 2. - title.scale.y / 2.
+        },
+        visible: false
+    })
+
     socket.on("judgement mode confirmed",()=>{
         showingScoresMode = true
+        staticCash.visible = false
+        endGameButton.visible = false
         waitingMessage.visible = false
+
+        idBox.visible = false
     })
 
     const staticCashesValues = {}
@@ -125,10 +164,6 @@ function initJudgement() {
             staticCashesValues[playerId] = msg.staticCashes[playerId]
         })
     })
-
-    // new THREE.TextureLoader().load("assets/judgement.png",(map)=>{
-    //     let mat = new THREE.MeshBasicMaterial({map,color:bgColor})
-    // })
 
     let endGameButton = Rectangle({
         onClick: () => {
@@ -146,6 +181,7 @@ function initJudgement() {
         haveIntendedPosition: true
     })
     dashboard.push(endGameButton)
+    GLOBAL = endGameButton
 
 
     const hider = Rectangle({
@@ -203,10 +239,10 @@ function initJudgement() {
         // closeButton.visible = showingScoresMode
         hider.visible = showingScoresMode
         youSign.visible = showingScoresMode
+        title.visible = showingScoresMode
     })
 
     finalStaticCashes = {}
-    finalStaticCashes[socket.playerId] = staticCash
     const finalAmounts = {}
     updateFunctions.push(() => {
         if (!showingScoresMode)
@@ -234,14 +270,10 @@ function initJudgement() {
             max = Math.max(max, finalAmounts[playerId])
             min = Math.min(min, finalAmounts[playerId])
 
-            if (playerId !== socket.playerId && finalStaticCashes[playerId] === undefined) {
-                finalStaticCashes[playerId] = Rectangle({
-                    mat: cashMat,
-                    w: 999999999.,
-                    z: OVERLAY_Z + 1.,
-                    haveIntendedPosition: true,
-                    x: 0.
-                })
+            if (finalStaticCashes[playerId] === undefined) {
+                finalStaticCashes[playerId] = premadeStaticCashes[lowestUnusedPremadeStaticCash]
+                finalStaticCashes[playerId].visible = true
+                ++lowestUnusedPremadeStaticCash
             }
 
             finalStaticCashes[playerId].scale.x = cashWidth * staticCashesValues[playerId]

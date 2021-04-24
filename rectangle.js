@@ -274,35 +274,6 @@ function initRectangles() {
             }
         }
 
-        if (params.frameThickness || params.haveFrame) {
-            rect.frameThickness = .05
-            rect.edges = Array(4)
-            for(let i = 0; i < 4; ++i) {
-                const edge = tblr[i]
-                let frameR = Rectangle({
-                    mat: blackMaterial
-                })
-                rect.edges[i] = frameR
-                
-                updateFunctions.push(()=>{
-                    rect.getEdgeCenter(edge,frameR.position)
-
-                    frameR.position.z = params.frameZ === undefined ? rect.position.z : params.frameZ
-                    if (edge === "l" || edge === "r") {
-                        frameR.position.x += rect.frameThickness * .5 * (edge === "l" ? -1. : 1.)
-                        frameR.scale.x = rect.frameThickness
-                        frameR.scale.y = rect.scale.y + rect.frameThickness * 2.
-                    }
-                        
-                    if (edge === "t" || edge === "b"){
-                        frameR.position.y += rect.frameThickness * .5 * (edge === "t" ? 1. : -1.)
-                        frameR.scale.y = rect.frameThickness
-                        frameR.scale.x = rect.scale.x + rect.frameThickness * 2.
-                    }
-                })
-            }
-        }
-
         {
             if (params.x)
                 rect.position.x = params.x
@@ -340,6 +311,35 @@ function initRectangles() {
                 updateFunctions.push(() => {
                     rect.scale.x += (rect.intendedScale.x - rect.scale.x) * .1
                     rect.scale.y += (rect.intendedScale.y - rect.scale.y) * .1
+                })
+            }
+        }
+
+        if (params.frameThickness || params.haveFrame) {
+            rect.frameThickness = .05
+            rect.edges = Array(4)
+            for (let i = 0; i < 4; ++i) {
+                const edge = tblr[i]
+                let frameR = Rectangle({
+                    mat: blackMaterial
+                })
+                rect.edges[i] = frameR
+
+                updateFunctions.push(() => {
+                    rect.getEdgeCenter(edge, frameR.position)
+
+                    frameR.position.z = params.frameZ === undefined ? rect.position.z : params.frameZ
+                    if (edge === "l" || edge === "r") {
+                        frameR.position.x += rect.frameThickness * .5 * (edge === "l" ? -1. : 1.)
+                        frameR.scale.x = rect.frameThickness
+                        frameR.scale.y = rect.scale.y + rect.frameThickness * 2.
+                    }
+
+                    if (edge === "t" || edge === "b") {
+                        frameR.position.y += rect.frameThickness * .5 * (edge === "t" ? 1. : -1.)
+                        frameR.scale.y = rect.frameThickness
+                        frameR.scale.x = rect.scale.x + rect.frameThickness * 2.
+                    }
                 })
             }
         }

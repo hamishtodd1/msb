@@ -180,7 +180,7 @@ io.on("connection", (socket) => {
 				betOwners: Array(pm.betsPerSuspect),
 				portraitImageSrc: "",
 				onBoard: false,
-				atLeastOneConfirmation: false
+				playerAttemptingConfirmation: null
 			}
 
 			suspects.push(suspect)
@@ -205,8 +205,8 @@ io.on("connection", (socket) => {
 		self.on("confirmation", (msg) => {
 			let suspect = suspects[msg.index]
 			
-			if(!suspect.atLeastOneConfirmation) 
-				suspect.atLeastOneConfirmation = true
+			if( suspect.playerAttemptingConfirmation === null) 
+				suspect.playerAttemptingConfirmation = self.playerId
 			else {
 				game.sockets.forEach((sock)=>{
 					mergeCashBitsIntoStaticCash(suspect, sock)
@@ -229,7 +229,7 @@ io.on("connection", (socket) => {
 				suspect.onBoard = false
 				for (let i = 0; i < pm.betsPerSuspect; ++i)
 					suspect.betOwners[i] = pm.BOARD_OWNERSHIP
-				suspect.atLeastOneConfirmation = false
+				suspect.playerAttemptingConfirmation = null
 
 				game.broadcastState({
 					index: suspects.indexOf(suspect),
@@ -238,7 +238,10 @@ io.on("connection", (socket) => {
 			}
 		})
 		self.on("confirmation cancellation", (msg) => {
-			suspects[msg.index].atLeastOneConfirmation = false
+			game.suspects.forEach((sus)=>{
+				if(sus.playerAttemptingConfirmation === self.playerId)
+					sus.playerAttemptingConfirmation = null
+			})
 		})
 
 		self.on("delete",(msg)=>{

@@ -43,18 +43,20 @@ function bestowCashBits(suspect) {
     let previousOwners = Array(pm.betsPerSuspect)
     updateFunctions.push(() => {
         let tail = v0
-        staticCash.getEdgeCenter("r", v0)
+        staticCash.getEdgeCenter("r", tail)
 
-        cashBits.forEach((cashBit, i) => {
+        for (let i = cashBits.length - 1; i > -1; --i) {
+            const cashBit = cashBits[i]
+
             let owner = pm.getCashBitOwnership(suspect, cashBit)
-            if(owner !== previousOwners[i]) {
-                if(owner === socket.playerId) {
+            if (owner !== previousOwners[i]) {
+                if (owner === socket.playerId) {
                     let sound = sounds["gotMoney"]
                     sound.currentTime = 0.
                     let soundPromise = sound.play()
                     soundPromise.then(function () { }).catch(function () { })
                 }
-                else if(owner !== pm.NO_OWNERSHIP) {
+                else if (owner !== pm.NO_OWNERSHIP) {
                     let sound = sounds["someoneElseGotMoney"]
                     sound.currentTime = 0.
                     let soundPromise = sound.play()
@@ -79,6 +81,6 @@ function bestowCashBits(suspect) {
             }
 
             cashBit.visible = !(owner === pm.NO_OWNERSHIP && cashBit.associatedPlayer === pm.NO_OWNERSHIP)
-        })
+        }
     })
 }

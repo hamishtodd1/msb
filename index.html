@@ -1,18 +1,16 @@
 <!--
-	Make the cashbits more noticeable
 	Organize a game with the folks
 		Record it
+		Set up blue yeti
 	Bugs
-		Something weird after buy
-	The start button playes a sound and that makes it so you can play sounds
-	probably best not to scale up cash width because think about initial cash
+		Something weird after buy?
+		Cash not centered still?
+		Fucking rotating the fucking camera feed
+			Might it be that when you turn it sideways it gives you height and width reversed?
+		LOL you get the cash for bets you paid for when the bets pay out!
 	Could make it so ctrl+v puts a pasted image in the camera feed
-	Fucking rotating the fucking camera feed
-		Might it be that when you turn it sideways it gives you height and width reversed?
+	probably best not to scale up cash width because think about initial cash
 
-	
-
-	//need to do camera rotation for camera feed rect
 	
 	Could have an automated thing: when you buy a bet, however much extra probability this puts into the suspect, that much is sold, equally, from the other suspects
 	Lobbyist mode
@@ -40,32 +38,7 @@
 		-When the suspect appears, a 25-second timer starts. If the suspect's bets are trading at 1:1 when it's done, the manipulator gets N dollars.
 	Another fun thing would be a bot mode where you see that wealth gets reallocated pretty quickly
 
-	"World's shortest mrder mystery"
-	Script for "murder mystery", sock puppets:
-        Ahh help I'm being murdered
-            BUT WHO COULD HAVE DONE THIS??
-        Hello, I'm his estranged wife, and I must admit I really grew to dislike him
-        I'm his Butler. I really liked him but it must be said that I had motive to 
-        pause
-        Didn't he say something about readjusting his will tomorrow?
-
-        Hello. Well, I'm a Butler. But I certainly didn't do it
-        AND I... AM... a random passer by, I don't know who that is at all
-        Really? I could swear I've seen you around
-        Nope, honestly never been here before. Are you sure you didn't do it?
-        Well, ok, to be honest I did do it, I just couldn't stand him any more
-        Alright I guess that clears that up
-        OR DOES IT?
-        No, yes, it's cleared up, it was definitely me
-        THE END
-
-        Oh alright, it was me actually
-
-        Me: This man has been killed! But who was it?
-        A: Well, I never liked him anyway
-        B: I liked him a lot, although I do wish he would keep away from my poisonous frog collection
-        Hmm, there is also his ex wife, who appears to have absconded to the bahamas
-        Oh, it turns out it was me
+	
 
 	Manipulator  will get 1 googol dollars from the market price being above 1
 	So they're willing to lose .9999 = 1 googol dollars
@@ -100,6 +73,8 @@
 			Other people on those panels on youtube
 			that chinese harvard lady
 		Publicity
+			Jessica Hullman who visualizes uncertainty
+			Philip Tetlock
 			Vitalik Buterin
 			Sunil Suri (wrote about futarchy, london based)
 			Lex Friedman
@@ -198,8 +173,6 @@ and putting your money where you'd usually only put your mouth</h3></center>
 		<li>Bets you just bought will become overpriced so you can sell some, and pick up other bets cheaply</li>
 	</ol>
 
-	<!-- can also suggest sharing theories -->
-
 	<br></br>
 	
 	<center><h3>Recommended shows:</h3></center>
@@ -209,8 +182,8 @@ and putting your money where you'd usually only put your mouth</h3></center>
 	<a href='https://www.youtube.com/playlist?list=PLJfhxUKC_TVoOHuKo-HEYPpkzmtHWSA8c'>The Adventures of Sherlock Holmes</a> (50 minutes)</center>
 
 	<br></br>
-
-	<center>This game is an adaptation by <a href='https://twitter.com/hamish_todd'>@hamish_todd</a> of a design belonging to <a href='http://overcomingbias.com/'>Robin Hanson</a></center>
+	<center><a href='https://www.reddit.com/r/MurderSheBet/'>Subreddit</a>, <a href='https://discord.gg/pBvKrNFwbh'>Discord</a></center>
+	<center>This game is an adaptation by <a href='https://twitter.com/hamish_todd'>@hamish_todd</a> of a design/discovery by <a href='http://overcomingbias.com/'>Robin Hanson</a></center>
 	<center>More information on the game and its philosophy can be found <a href= 'https://github.com/hamishtodd1/msb/blob/main/README.md'>here</a>.</center>
 
 	<body>
@@ -250,12 +223,12 @@ and putting your money where you'd usually only put your mouth</h3></center>
 
 		<script>
 			async function init(socket, gameId) {
-				initSound()
-
 				initRectangles()
 
 				renderer = new THREE.WebGLRenderer({ antialias: true });
 				renderer.setClearColor(bgColor)
+
+				initSuspectConfirmationWaitingSign()
 
 				initButtons()
 
@@ -266,17 +239,7 @@ and putting your money where you'd usually only put your mouth</h3></center>
 				//could move this up to get rid of some initial movement
 				initWindowResize()
 
-				let idBoxDimension = 1.
-				const idBox = Rectangle({
-					label: "Game ID: " + gameId,
-					getScaleFromLabel: true,
-					haveIntendedPosition: true,
-					haveFrame: true,
-					z: OVERLAY_Z + 1.5
-				})
-				dashboard.push(idBox)
-
-				initJudgement()
+				initJudgement(gameId)
 
 				{
 					const connectionLostBox = Rectangle({
@@ -287,6 +250,7 @@ and putting your money where you'd usually only put your mouth</h3></center>
 						z: 4.9
 					})
 					connectionLostBox.visible = false
+
 					socket.onclose = () => {
 						connectionLostBox.visible = true
 						location.reload()

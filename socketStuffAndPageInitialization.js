@@ -4,8 +4,15 @@ socket.on("serverConnected", () =>
 {
 	log("connected")
 
+	initSound()
+
 	let newGameButton = document.getElementById('newGameButton')
 	newGameButton.onclick = () => {
+		let sound = sounds["newSuspect"]
+		sound.currentTime = 0.
+		let soundPromise = sound.play()
+		soundPromise.then(function () { }).catch(function () { })
+
 		socket.emit("gameInitializationRequest", {
 			playerId: window.localStorage.playerId ? window.localStorage.playerId : null
 		})
@@ -29,11 +36,23 @@ socket.on("serverConnected", () =>
 	}
 
 	let enterGameButton = document.getElementById('enterGameButton')
-	enterGameButton.onclick = onGameIdSubmit
+	enterGameButton.onclick = () =>{
+		let sound = sounds["newSuspect"]
+		sound.currentTime = 0.
+		let soundPromise = sound.play()
+		soundPromise.then(function () { }).catch(function () { })
+
+		onGameIdSubmit()
+	}
 
 	function onButtonPress(event) {
 		if(event.keyCode !== 13)
 			return;
+
+		let sound = sounds["newSuspect"]
+		sound.currentTime = 0.
+		let soundPromise = sound.play()
+		soundPromise.then(function () { }).catch(function () { })
 
 		onGameIdSubmit()
 	}

@@ -46,19 +46,19 @@ async function initBoard() {
         })
         staticCash.actualValueIncludingTbs = 20. //stand-in
         updateFunctions.push(()=>{
-            if( !showingScoresMode ) {
-                staticCash.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
-                let totalCashWidth = getTotalCash() * cashWidth
-                let totalCashFarRightEnd = totalCashWidth / 2.
-                let looseCashWidth = pm.getLooseCash(socket.playerId, suspects) * cashWidth
-                staticCash.intendedPosition.x = totalCashFarRightEnd - looseCashWidth - staticCash.scale.x / 2.
-            }
-
             staticCash.scale.x = staticCash.actualValueIncludingTbs * cashWidth
             transformedBets.forEach((tb) => {
                 if (tb.visible)
                     staticCash.scale.x -= cashWidth
             })
+
+            //maybe check on the visibility of the thingies
+            
+            staticCash.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
+            let totalCashWidth = getTotalCash() * cashWidth
+            let totalCashFarRightEnd = totalCashWidth / 2.
+            let looseCashWidth = pm.getLooseCash(socket.playerId, suspects) * cashWidth
+            staticCash.intendedPosition.x = totalCashFarRightEnd - looseCashWidth - staticCash.scale.x / 2.
 
             staticCash.scale.y = cashHeight
         })
@@ -112,11 +112,11 @@ async function initBoard() {
     updateFunctions.push(() => {
         let frst = dashboard[0]
         let last = dashboard[dashboard.length - 1]
-        frst.position.x = camera.getLeft() + frst.scale.x / 2. + .5
-        last.position.x = camera.getRight() - last.scale.x / 2. - .5
+        frst.intendedPosition.x = camera.getLeft() + frst.scale.x / 2. + .5
+        last.intendedPosition.x = camera.getRight() - last.scale.x / 2. - .5
 
         dashboard.forEach((btn) => {
-            btn.position.y = camera.getBottom() + dashboardGap / 2.
+            btn.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
         })
 
         //maybe derive cashwidth from how much space there is between these two?
@@ -175,6 +175,8 @@ async function initBoard() {
                 transformedBets[i].intendedPosition.y = transformedBets[i].position.y
                 transformedBets[i].visible = true
             }
+
+            suspectConfirmationWaitingSign.visible = false
             
             {
                 let sound = sounds["gotMoney"]

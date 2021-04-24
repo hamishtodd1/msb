@@ -16,6 +16,9 @@ function initMouse()
 		mouse.oldClicking = mouse.clicking;
 		mouse.clicking = asynchronous.clicking;
 
+		if(mouse.clicking && !mouse.oldClicking)
+			onMouseClickFunctions.forEach(f => f())
+
 		mouse.oldPosition.copy(mouse.position);
 		mouse.position.copy(asynchronous.position);
 		mouse.delta.subVectors(mouse.position, mouse.oldPosition)
@@ -72,6 +75,7 @@ function initMouse()
 				}
 			}
 
+
 			if (highestR !== null && highestR.onClick !== undefined) {
 				let nameOfSoundToPlay = highestR.onClick()
 			}
@@ -82,7 +86,7 @@ function initMouse()
 			onMouseOrFingerDown(event)
 		}
 		function forMouse(event) {
-			document.removeEventListener('mousedown',forTouch)
+			document.removeEventListener('touchstart',forTouch)
 			onMouseOrFingerDown(event)
 		}
 		document.addEventListener('touchstart', forTouch)
