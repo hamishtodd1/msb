@@ -139,6 +139,7 @@ function initJudgement(gameId) {
 
     let title = Rectangle({
         h: 2., getScaleFromLabel: true,
+        z: OVERLAY_Z + .5,
         haveFrame: true,
         label: ["Final Ranking"],
         col: bgColor,

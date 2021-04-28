@@ -212,6 +212,10 @@ io.on("connection", (socket) => {
 					mergeCashBitsIntoStaticCash(suspect, sock)
 				})
 
+				suspect.cashBits.forEach((cb)=>{
+					cb.associatedPlayer = pm.NO_OWNERSHIP
+				})
+
 				suspect.betOwners.forEach((betOwner)=>{
 					if(betOwner !== pm.BOARD_OWNERSHIP)
 						game.staticCashes[betOwner] += 1.
@@ -235,6 +239,7 @@ io.on("connection", (socket) => {
 					index: suspects.indexOf(suspect),
 					numOwneds
 				})
+
 			}
 		})
 		self.on("confirmation cancellation", (msg) => {
@@ -337,6 +342,7 @@ io.on("connection", (socket) => {
 
 				if (currentOwner !== pm.NO_OWNERSHIP)
 					game.staticCashes[currentOwner.playerId] += pm.betPrices[slotIndex]
+					
 
 				cb.associatedPlayer = self.playerId
 

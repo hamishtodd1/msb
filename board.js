@@ -12,6 +12,17 @@
 //     return instancedMesh
 // }
 
+function testIt() {
+    let timeGoing = 0.
+    updateFunctions.push(()=>{
+        timeGoing += frameDelta
+        if(timeGoing < 21.) {
+            suspects[0].boardFrame.onClick()
+            suspects[1].boardFrame.onClick()
+        }
+    })
+}
+
 async function initBoard() {
     //globals
     {
@@ -45,7 +56,10 @@ async function initBoard() {
             z: OVERLAY_Z + 1.
         })
         staticCash.actualValueIncludingTbs = 20. //stand-in
+        staticCash.tail = new THREE.Vector3()
         updateFunctions.push(()=>{
+            staticCash.getEdgeCenter("r", staticCash.tail)
+
             staticCash.scale.x = staticCash.actualValueIncludingTbs * cashWidth
             transformedBets.forEach((tb) => {
                 if (tb.visible)
@@ -164,6 +178,8 @@ async function initBoard() {
 
         if(msg.staticCashes[socket.playerId] !== staticCash.actualValueIncludingTbs)
             staticCash.actualValueIncludingTbs = msg.staticCashes[socket.playerId]
+        
+        log(staticCash.actualValueIncludingTbs)
 
         if (msg.suspectConfirmationAddOn !== null) {
             let numOwned = msg.suspectConfirmationAddOn.numOwneds[socket.playerId]

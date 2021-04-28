@@ -40,11 +40,9 @@ function bestowCashBits(suspect) {
         cashBits.push(cashBit)
     }
 
+    
     let previousOwners = Array(pm.betsPerSuspect)
     updateFunctions.push(() => {
-        let tail = v0
-        staticCash.getEdgeCenter("r", tail)
-
         for (let i = cashBits.length - 1; i > -1; --i) {
             const cashBit = cashBits[i]
 
@@ -70,10 +68,10 @@ function bestowCashBits(suspect) {
                 cashBit.intendedPosition.y = cashBit.slot.position.y
             }
             else if (owner === socket.playerId) {
-                cashBit.intendedPosition.x = tail.x + cashBit.scale.x / 2.
-                cashBit.intendedPosition.y = tail.y
+                cashBit.intendedPosition.x = staticCash.tail.x + cashBit.scale.x / 2.
+                cashBit.intendedPosition.y = staticCash.tail.y
 
-                tail.x += cashBit.scale.x
+                staticCash.tail.x += cashBit.scale.x
             }
             else {
                 cashBit.intendedPosition.x = cashBit.slot.position.x
