@@ -47,12 +47,12 @@ pm.getCashBitOwnership = (suspect,cashBit) => {
         return cashBit.associatedPlayer
 }
 
-pm.getLooseCash = (socketId, susArray) => {
+pm.getLooseCash = (playerId, susArray) => {
     let ret = 0.
 
     susArray.forEach((suspect) => {
         suspect.cashBits.forEach((cashBit, i) => {
-            if (pm.getCashBitOwnership(suspect, cashBit) === socketId)
+            if (pm.getCashBitOwnership(suspect, cashBit) === playerId)
                 ret += pm.betPrices[i]
         })
     })

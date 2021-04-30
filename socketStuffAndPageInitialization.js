@@ -8,10 +8,12 @@ socket.on("serverConnected", () =>
 
 	let newGameButton = document.getElementById('newGameButton')
 	newGameButton.onclick = () => {
-		let sound = sounds["newSuspect"]
-		sound.currentTime = 0.
-		let soundPromise = sound.play()
-		soundPromise.then(function () { }).catch(function () { })
+
+		//would be nice to have this but it has to be IN this function but what if the id is rejected?
+		// let sound = sounds["newSuspect"]
+		// sound.currentTime = 0.
+		// let soundPromise = sound.play()
+		// soundPromise.then(function () { }).catch(function () { })
 
 		socket.emit("gameInitializationRequest", {
 			playerId: window.localStorage.playerId ? window.localStorage.playerId : null
@@ -37,10 +39,10 @@ socket.on("serverConnected", () =>
 
 	let enterGameButton = document.getElementById('enterGameButton')
 	enterGameButton.onclick = () =>{
-		let sound = sounds["newSuspect"]
-		sound.currentTime = 0.
-		let soundPromise = sound.play()
-		soundPromise.then(function () { }).catch(function () { })
+		// let sound = sounds["newSuspect"]
+		// sound.currentTime = 0.
+		// let soundPromise = sound.play()
+		// soundPromise.then(function () { }).catch(function () { })
 
 		onGameIdSubmit()
 	}
@@ -49,10 +51,10 @@ socket.on("serverConnected", () =>
 		if(event.keyCode !== 13)
 			return;
 
-		let sound = sounds["newSuspect"]
-		sound.currentTime = 0.
-		let soundPromise = sound.play()
-		soundPromise.then(function () { }).catch(function () { })
+		// let sound = sounds["newSuspect"]
+		// sound.currentTime = 0.
+		// let soundPromise = sound.play()
+		// soundPromise.then(function () { }).catch(function () { })
 
 		onGameIdSubmit()
 	}

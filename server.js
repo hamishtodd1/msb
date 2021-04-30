@@ -96,7 +96,7 @@ function beginGame(id) {
 beginGame(0);
 
 function generateGameId() {
-	return (Math.random() + 1).toString(36).substr(2, 4)
+	return (Math.random() + 1).toString(36).substr(2, 3)
 }
 
 io.on("connection", (socket) => {
@@ -112,7 +112,9 @@ io.on("connection", (socket) => {
 		socket.playerId = msg.playerId ? msg.playerId : socket.id
 
 		let gameId = generateGameId()
-		while(games[gameId] !== undefined)
+		while (games[gameId] !== undefined || 
+			gameId.indexOf("l") !== -1 || 
+			gameId.indexOf("1") !== -1 )
 			gameId = generateGameId()
 		
 		beginGame( gameId )
@@ -326,34 +328,6 @@ io.on("connection", (socket) => {
 		})
 		//you do "portrait message received" and "portrait loaded". 
 
-		self.on("sell", (msg) => {
-			let suspect = suspects[msg.suspect]
-			log("total cash", getTotalCash(self))
-
-			let betToSellIndex = suspect.betOwners.indexOf( self.playerId )
-			if (betToSellIndex === -1)
-				self.emit("unsuccessful sell")
-			else {
-				let numInBoard = pm.getNumBoardBets(suspect)
-				let slotIndex = pm.betsPerSuspect - numInBoard - 1
-
-				let cb = suspect.cashBits[slotIndex]
-				let currentOwner = pm.getCashBitOwnership(suspect, cb)
-
-				if (currentOwner !== pm.NO_OWNERSHIP)
-					game.staticCashes[currentOwner.playerId] += pm.betPrices[slotIndex]
-					
-
-				cb.associatedPlayer = self.playerId
-
-				suspect.betOwners[betToSellIndex] = pm.BOARD_OWNERSHIP
-				
-				log("total cash", getTotalCash(self))
-
-				game.broadcastState()
-			}
-		})
-
 		function potentiallyStartJudgementMode() {
 			let numRequests = 0
 			game.sockets.forEach((sock, i) => {
@@ -379,7 +353,33 @@ io.on("connection", (socket) => {
 		self.on("judgement mode request cancelled",()=>{
 			self.jugementModeBeingRequested = false
 		})
-		//another easy thing is showing the game id
+
+		self.on("sell", (msg) => {
+			let suspect = suspects[msg.suspect]
+			log("total cash", getTotalCash(self))
+
+			let betToSellIndex = suspect.betOwners.indexOf(self.playerId)
+			if (betToSellIndex === -1)
+				self.emit("unsuccessful sell")
+			else {
+				let numInBoard = pm.getNumBoardBets(suspect)
+				let slotIndex = pm.betsPerSuspect - numInBoard - 1
+
+				let cb = suspect.cashBits[slotIndex]
+				let currentOwnerId = pm.getCashBitOwnership(suspect, cb)
+
+				if (currentOwnerId !== pm.NO_OWNERSHIP)
+					game.staticCashes[currentOwnerId] += pm.betPrices[slotIndex]
+
+				cb.associatedPlayer = self.playerId
+
+				suspect.betOwners[betToSellIndex] = pm.BOARD_OWNERSHIP
+
+				game.broadcastState()
+			}
+		})
+
+		//just buy then sell with one player, then buy then sell with other
 
 		self.on("buy", (msg) => {
 			let suspect = suspects[msg.suspect]
@@ -398,11 +398,11 @@ io.on("connection", (socket) => {
 					self.emit("unsuccessful buy") //too expensive
 				else {
 					let cb = suspect.cashBits[slotIndex]
-					let currentOwner = pm.getCashBitOwnership(suspect, cb)
+					let currentOwnerId = pm.getCashBitOwnership(suspect, cb)
 
-					if (currentOwner !== self.playerId) { //you were the last to sell to this slot
-						if (currentOwner !== pm.NO_OWNERSHIP )
-							game.staticCashes[currentOwner.playerId] += pm.betPrices[slotIndex]
+					if (currentOwnerId !== self.playerId) { //you were the last to sell to this slot
+						if (currentOwnerId !== pm.NO_OWNERSHIP )
+							game.staticCashes[currentOwnerId] += pm.betPrices[slotIndex]
 
 						cb.associatedPlayer = self.playerId
 						game.staticCashes[self.playerId] -= pm.betPrices[slotIndex]

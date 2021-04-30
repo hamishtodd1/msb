@@ -79,15 +79,17 @@ async function initBoard() {
 
         var transformedBetsFreezeTime = 0.
         var transformedBets = Array(pm.betsPerSuspect)
+        var tbsMat = cashMat.clone() //new THREE.MeshBasicMaterial({color: cashMat.color})
+        tbsMat.colorToFlash = new THREE.Color()
         for(let i = 0; i < pm.betsPerSuspect; ++i) {
             let tb = Rectangle({
-                mat: cashMat,
+                mat: tbsMat,
                 w: cashWidth,
                 haveFrame: true,
                 frameZ: -4.,
-                haveIntendedPosition: true,
+                haveIntendedPosition: true
+                //bit disturbing that there's no guarantee they'll not be on screen
             })
-            tb.visible = false
             transformedBets[i] = tb
         }
         updateFunctions.push(()=>{
@@ -96,7 +98,11 @@ async function initBoard() {
                 if (transformedBetsFreezeTime <= 0.) {
                     tb.intendedPosition.y = staticCash.intendedPosition.y
                     tb.intendedPosition.x = staticCash.intendedPosition.x - staticCash.scale.x / 2. - cashWidth * (i + .5)
+
+                    tbsMat.color.copy(cashMat.color)
                 }
+                else
+                    tbsMat.color.copy( (frameCount % 30) < 15 ? cashMat.color : tbsMat.colorToFlash)
 
                 tb.scale.y = cashHeight
             })
@@ -178,18 +184,24 @@ async function initBoard() {
 
         if(msg.staticCashes[socket.playerId] !== staticCash.actualValueIncludingTbs)
             staticCash.actualValueIncludingTbs = msg.staticCashes[socket.playerId]
-        
-        log(staticCash.actualValueIncludingTbs)
 
         if (msg.suspectConfirmationAddOn !== null) {
+            let suspect = suspects[msg.suspectConfirmationAddOn.index]
+
             let numOwned = msg.suspectConfirmationAddOn.numOwneds[socket.playerId]
             transformedBetsFreezeTime = 1.6
+            tbsMat.colorToFlash.copy(suspect.color)
+            tbsMat.needsUpdate = true
+
             for (let i = 0; i < numOwned; ++i) {
-                transformedBets[i].position.x = suspects[msg.suspectConfirmationAddOn.index].handFrame.position.x
-                transformedBets[i].position.y = suspects[msg.suspectConfirmationAddOn.index].handFrame.position.y + getSlotY(i)
+                transformedBets[i].position.x = suspect.handFrame.position.x
+                transformedBets[i].position.y = suspect.handFrame.position.y + getSlotY(i)
                 transformedBets[i].intendedPosition.x = transformedBets[i].position.x
                 transformedBets[i].intendedPosition.y = transformedBets[i].position.y
                 transformedBets[i].visible = true
+            }
+            for(let i = numOwned; i < pm.betsPerSuspect; ++i) {
+                transformedBets[i].visible = false
             }
 
             suspectConfirmationWaitingSign.visible = false
@@ -255,6 +267,8 @@ async function initBoard() {
                 }
             })
         })
+
+        log(pm.getLooseCash(socket.playerId,suspects) + staticCash.actualValueIncludingTbs)
     })
 
     initSuspects()

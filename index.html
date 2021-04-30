@@ -1,17 +1,25 @@
 <!--
-	Organize a game with the folks
-		Record it
-		Set up blue yeti
+
+	FAQ video too
+		Making a profit
+		Waiting for the rectangle to expand
+		How you know when a character is guilty
+		Why bets get more expensive
+		To have a "games master" or not?
+		Other shows you can watch
+
+	
 	Bugs
-		FUCKING LOSING MONEY
 		CRASH
-		Something weird after buy?
 		Fucking rotating the fucking camera feed
 			Might it be that when you turn it sideways it gives you height and width reversed?
 		LOL you get the cash for bets you paid for when the bets pay out!
 		Judgement mode needs a warning, you can't finish till all is resolved
+	a little flash when you get a pile of bets paying out
+	Quite awful bug if you... hit the new suspect button twice at the start?
 	"No room of that name" response
 	"Not enough money" indication
+	
 
 	Could make it so ctrl+v puts a pasted image in the camera feed
 	probably best not to scale up cash width because think about initial cash
@@ -73,6 +81,7 @@
 			Other people on those panels on youtube
 			that chinese harvard lady
 		Publicity
+			Nassim Taleb
 			Jessica Hullman who visualizes uncertainty
 			Philip Tetlock
 			Vitalik Buterin
@@ -125,6 +134,18 @@
 and putting your money where you'd usually only put your mouth</h3></center>
 
 	<br></br>
+	
+	<center>
+		<h3>The controls:</h3>
+	</center>
+	
+	<center>
+		<iframe width="100%" height="51.1%" src="https://www.youtube.com/embed/wlERXS77fr0" frameborder="0"
+		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+		allowfullscreen="false"></iframe>
+	</center>
+			
+	<br></br>
 
 	<center><h3>The rules:</h3></center>
 	<ol>
@@ -139,18 +160,10 @@ and putting your money where you'd usually only put your mouth</h3></center>
 	</ol>
 
 	<br></br>
-	
-	<center><h3>This is what a game looks like:</h3></center>
-
-	<center><iframe width="100%" height="56.25%" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0"
-		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-		allowfullscreen="false"></iframe></center>
-
-	<br></br>
 
 	<center><h3>For practice: The World's Shortest Murder Mystery!</h3></center>
 
-	<center><iframe width="100%" height="56.25%" src="https://www.youtube.com/watch?v=z-VuX2kcaCY" frameborder="0"
+	<center><iframe width="100%" height="51.1%" src="https://www.youtube.com/embed/z-VuX2kcaCY" frameborder="0"
 		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 		allowfullscreen="false"></iframe></center>
 
@@ -254,13 +267,17 @@ and putting your money where you'd usually only put your mouth</h3></center>
 
 					socket.onclose = () => {
 						connectionLostBox.visible = true
-						location.reload()
+						if(reloadAttempted === false) {
+							location.reload()
+							reloadAttempted = true
+						}
 					}
 
 					let timeSinceLastPongReception = 0.
 					socket.on("pongAA",()=>{
 						timeSinceLastPongReception = 0.
 					})
+					let reloadAttempted = false
 					updateFunctions.push(()=>{
 						let justAboutToPass2 = timeSinceLastPongReception < 2. &&
 							timeSinceLastPongReception + frameDelta >= 2.
@@ -271,8 +288,10 @@ and putting your money where you'd usually only put your mouth</h3></center>
 							socket.close()
 							connectionLostBox.visible = true
 						}
-						if(timeSinceLastPongReception > 8.)
+						if (timeSinceLastPongReception > 8. && reloadAttempted === false) {
 							location.reload()
+							reloadAttempted = true
+						}
 
 						timeSinceLastPongReception += frameDelta
 					})

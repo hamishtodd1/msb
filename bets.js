@@ -1,6 +1,7 @@
 function bestowBets(suspect) {
     let betMat = new THREE.MeshBasicMaterial({ color: new THREE.Color() })
     getViridis(suspects.indexOf(suspect), betMat.color)
+    suspect.color = betMat.color
 
     const bets = Array(pm.betsPerSuspect)
     suspect.bets = bets
