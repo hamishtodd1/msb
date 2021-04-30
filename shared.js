@@ -1,8 +1,8 @@
 const pm = {}
 
 pm.maxSuspects = 8
-pm.betsPerSuspect = 24
-let cheapestBet = .046 //probably the lowest percentage people think about is 5%
+pm.betsPerSuspect = 32
+let cheapestBet = .04501 //probably the lowest percentage people think about is 5%
 
 pm.betPrices = Array(pm.betsPerSuspect)
 for (let i = 0.; i < pm.betsPerSuspect; ++i)

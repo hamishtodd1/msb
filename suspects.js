@@ -114,9 +114,6 @@ function initSuspects() {
                 // percentageDisplay.position.x = v1.x - percentageDisplay.scale.x / 2.
                 // percentageDisplay.position.y = cheapestAvailableBetSlot.position.y
 
-                //FUCK DUDE YOU'RE REPLACING THEIR CASH WHEN THEY REFRESH
-                //probably the game has players, not sockets, and those have sockets
-
                 cheapestAvailableBetSlot.getEdgeCenter("r", percentageDisplay.position)
                 percentageDisplay.position.x += percentageDisplay.scale.x / 2. + .05
                 percentageDisplay.position.y -= .2
