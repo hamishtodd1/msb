@@ -25,11 +25,13 @@ function bestowBets(suspect) {
 
     function sendUnusedBetClosestToY(y) {
         let closestBet = getMax(bets, (bet, j) => {
-            if (betsAccountedFor[j] === true)
+            if( betsAccountedFor[j] )
                 return -Infinity
             else
                 return -Math.abs(bet.position.y - y)
         })
+        if(closestBet === null)
+            debugger
 
         closestBet.intendedPosition.y = y
         betsAccountedFor[bets.indexOf(closestBet)] = true

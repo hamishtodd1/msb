@@ -110,9 +110,10 @@ async function initCamera() {
         map: videoTexture,
         x: 0., y: 0., z: 8.5,
         getScale: (target) => {
-            let tallNotWide = camera.rotation.z !== 0.
-            if(!tallNotWide) {
-                if (video.videoWidth / video.videoHeight > 1.) {
+            let windowTall = camera.rotation.z !== 0.
+            let videoTall = video.videoWidth / video.videoHeight < 1.
+            if (!windowTall) {
+                if (!videoTall) {
                     target.y = camera.getTop() * 2.
                     target.x = target.y * (video.videoWidth / video.videoHeight)
                     cameraFeedRect.setRotationZ(0.)
@@ -124,7 +125,7 @@ async function initCamera() {
                 }
             }
             else {
-                if (video.videoWidth / video.videoHeight > 1.) {
+                if (!videoTall) {
                     target.x = camera.getTop() * 2.
                     target.y = target.x / (video.videoWidth / video.videoHeight)
                     cameraFeedRect.setRotationZ(TAU / 4.)
@@ -132,7 +133,7 @@ async function initCamera() {
                 else {
                     target.x = camera.getTop() * 2.
                     target.y = target.x / (video.videoWidth / video.videoHeight)
-                    cameraFeedRect.setRotationZ(0.)
+                    cameraFeedRect.setRotationZ(TAU / 4.)
                 }
             }
         }
@@ -199,31 +200,9 @@ async function initCamera() {
         z: cameraFeedRect.position.z + .2
     })
 
-    let cbMat = new THREE.MeshBasicMaterial()
-    let cbDimension = 2.
-    let closeButton = Rectangle({
-        w: cbDimension, h: cbDimension, z: cameraFeedRect.position.z + .2,
-        mat: cbMat,
-        getPosition: (target) => {
-            cameraFeedRect.getCorner("tr", target)
-            target.y -= cbDimension / 2.
-            target.x -= cbDimension / 2.
-
-            target.x = Math.min(target.x, camera.getRight() - cbDimension / 2.)
-        },
-        onClick: () => {
-            setCameraStuffVisibility(false)
-        }
-    })
-    new THREE.TextureLoader().load("assets/close.png", (map) => {
-        cbMat.map = map
-        cbMat.needsUpdate = true
-    })
-
     setCameraStuffVisibility = (val) => {
         cameraFeedRect.visible = val
         takePictureButton.visible = val
-        closeButton.visible = val
         clickOutCatcher.visible = val
         square.visible = val
 

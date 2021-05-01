@@ -57,6 +57,11 @@ async function initBoard() {
         })
         staticCash.actualValueIncludingTbs = 20. //stand-in
         staticCash.tail = new THREE.Vector3()
+        let reverberation = 0.
+        let reverberationDuration = 2.9
+        socket.on("insufficient funds", () => {
+            reverberation = 1.
+        })
         updateFunctions.push(()=>{
             staticCash.getEdgeCenter("r", staticCash.tail)
 
@@ -66,9 +71,10 @@ async function initBoard() {
                     staticCash.scale.x -= cashWidth
             })
 
-            //maybe check on the visibility of the thingies
-            
             staticCash.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
+            reverberation = Math.max(0., reverberation - frameDelta / reverberationDuration)
+            staticCash.intendedPosition.y += Math.pow(Math.max(reverberation, 0.), 8.) * Math.sin(frameCount * .7) * 2.9
+
             let totalCashWidth = getTotalCash() * cashWidth
             let totalCashFarRightEnd = totalCashWidth / 2.
             let looseCashWidth = pm.getLooseCash(socket.playerId, suspects) * cashWidth
@@ -268,7 +274,7 @@ async function initBoard() {
             })
         })
 
-        log(pm.getLooseCash(socket.playerId,suspects) + staticCash.actualValueIncludingTbs)
+        // log(pm.getLooseCash(socket.playerId,suspects) + staticCash.actualValueIncludingTbs)
     })
 
     initSuspects()

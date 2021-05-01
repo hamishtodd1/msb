@@ -182,7 +182,6 @@ function initJudgement(gameId) {
         haveIntendedPosition: true
     })
     dashboard.push(endGameButton)
-    GLOBAL = endGameButton
 
 
     const hider = Rectangle({

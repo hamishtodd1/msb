@@ -59,6 +59,11 @@ socket.on("serverConnected", () =>
 		onGameIdSubmit()
 	}
 
+	socket.on("game not found",()=>{
+		alert("Game ID not found")
+		textBox.value = ""
+	})
+
 	socket.on("gameInvitation", function (msg) {
 		log("invited")
 		document.removeEventListener("keydown", onButtonPress);

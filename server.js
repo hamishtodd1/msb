@@ -95,8 +95,16 @@ function beginGame(id) {
 //Default game
 beginGame(0);
 
+let unambiguousAlphanumerics = "abcdefghijkmnpqrstuvwxyz23456789"
+
 function generateGameId() {
-	return (Math.random() + 1).toString(36).substr(2, 3)
+	let ret = ""
+	for(let i = 0; i < 4; ++i) {
+		let index = Math.floor(Math.random() * unambiguousAlphanumerics.length)
+		ret += unambiguousAlphanumerics[index]
+	}
+
+	return ret
 }
 
 io.on("connection", (socket) => {
@@ -112,9 +120,7 @@ io.on("connection", (socket) => {
 		socket.playerId = msg.playerId ? msg.playerId : socket.id
 
 		let gameId = generateGameId()
-		while (games[gameId] !== undefined || 
-			gameId.indexOf("l") !== -1 || 
-			gameId.indexOf("1") !== -1 )
+		while (games[gameId] !== undefined )
 			gameId = generateGameId()
 		
 		beginGame( gameId )
@@ -125,12 +131,10 @@ io.on("connection", (socket) => {
 	socket.on("gameEntryRequest", (msg) => {
 		socket.playerId = msg.playerId ? msg.playerId : socket.id
 
-		if( games[msg.requestedGameKey] === undefined ) {
-			log( "didn't find game ", msg.requestedGameKey, ", all we have is ", games)
-			socket.emit("logThisMessage", "game not found");
-		}
+		if( games[msg.requestedGameKey] === undefined )
+			socket.emit("game not found")
 		else {
-			gameId = msg.requestedGameKey;
+			gameId = msg.requestedGameKey
 			bringIntoGame(gameId)
 		}
 	});
@@ -394,8 +398,9 @@ io.on("connection", (socket) => {
 				let numInBoard = pm.getNumBoardBets(suspect)
 				let slotIndex = pm.betsPerSuspect - numInBoard
 
-				if (pm.betPrices[slotIndex] > getTotalCash(self))
-					self.emit("unsuccessful buy") //too expensive
+				if (pm.betPrices[slotIndex] > getTotalCash(self)) {
+					self.emit("insufficient funds")
+				}
 				else {
 					let cb = suspect.cashBits[slotIndex]
 					let currentOwnerId = pm.getCashBitOwnership(suspect, cb)
