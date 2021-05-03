@@ -85,30 +85,34 @@ async function initBoard() {
 
         var transformedBetsFreezeTime = 0.
         var transformedBets = Array(pm.betsPerSuspect)
-        var tbsMat = cashMat.clone() //new THREE.MeshBasicMaterial({color: cashMat.color})
-        tbsMat.colorToFlash = new THREE.Color()
+        tbsMat = new THREE.MeshBasicMaterial({color: cashMat.color})
+        Rectangle({mat:tbsMat,y:100.}) //no idea why you need this but the tbs are transparent if it's not there!
+        tbsMat.colorToFlash = new THREE.Color(0.,0.,0.)
         for(let i = 0; i < pm.betsPerSuspect; ++i) {
             let tb = Rectangle({
                 mat: tbsMat,
                 w: cashWidth,
                 haveFrame: true,
                 frameZ: -4.,
-                haveIntendedPosition: true
-                //bit disturbing that there's no guarantee they'll not be on screen
+                haveIntendedPosition: true,
+                visible: false
             })
             transformedBets[i] = tb
         }
         updateFunctions.push(()=>{
             transformedBetsFreezeTime -= frameDelta
+
+            if (transformedBetsFreezeTime <= 0.) {
+                tbsMat.color.copy(cashMat.color)
+            }
+            else
+                tbsMat.color.copy((frameCount % 30) < 15 ? cashMat.color : tbsMat.colorToFlash)
+
             transformedBets.forEach((tb,i)=>{
                 if (transformedBetsFreezeTime <= 0.) {
                     tb.intendedPosition.y = staticCash.intendedPosition.y
                     tb.intendedPosition.x = staticCash.intendedPosition.x - staticCash.scale.x / 2. - cashWidth * (i + .5)
-
-                    tbsMat.color.copy(cashMat.color)
                 }
-                else
-                    tbsMat.color.copy( (frameCount % 30) < 15 ? cashMat.color : tbsMat.colorToFlash)
 
                 tb.scale.y = cashHeight
             })
@@ -196,6 +200,7 @@ async function initBoard() {
 
             let numOwned = msg.suspectConfirmationAddOn.numOwneds[socket.playerId]
             transformedBetsFreezeTime = 1.6
+            tbsMat.needsUpdate = true
             tbsMat.colorToFlash.copy(suspect.color)
             tbsMat.needsUpdate = true
 
