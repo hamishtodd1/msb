@@ -427,6 +427,7 @@ io.on("connection", (socket) => {
 		}
 
 		self.on("buy", (msg)=>{
+			log(msg.suspectIndex)
 			attemptBuy(self,msg.suspectIndex)
 		})
 
