@@ -169,6 +169,7 @@ function initSuspects() {
                         return
 
                     if(coolDown <= 0.) {
+                        log(suspects.indexOf(suspect))
                         socket.emit("buy", { suspectIndex: suspects.indexOf(suspect) })
                         coolDown = 1.
                     }
