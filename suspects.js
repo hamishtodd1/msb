@@ -169,7 +169,7 @@ function initSuspects() {
                         return
 
                     if(coolDown <= 0.) {
-                        socket.emit("buy", { suspect: suspects.indexOf(suspect) })
+                        socket.emit("buy", { suspectIndex: suspects.indexOf(suspect) })
                         coolDown = 1.
                     }
                     else {

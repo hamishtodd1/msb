@@ -166,12 +166,19 @@ function initJudgement(gameId) {
         })
     })
 
+    const warningSign = temporarilyVisibleWarningSign(["Cannot end game until","all suspects have been","deleted or confirmed!"])
     let endGameButton = Rectangle({
         onClick: () => {
-            socket.emit("judgement mode requested")
+            let suspectOnBoard = false
+            suspects.forEach(sus=>{if(sus.onBoard)suspectOnBoard = true})
+            if(!suspectOnBoard) {
+                socket.emit("judgement mode requested")
 
-            waitingMessage.visible = true
-            waitingMessage.lastClicked = frameCount
+                waitingMessage.visible = true
+                waitingMessage.lastClicked = frameCount
+            }
+            else
+                warningSign.timeVisible = 2.5
         },
         label: "End game!",
         haveFrame: true,

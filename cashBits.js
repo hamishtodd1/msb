@@ -19,9 +19,6 @@ function bestowCashBits(suspect) {
             haveFrame:true,
             frameOnly: true,
         })
-        updateFunctions.push(()=>{
-            slot.frameThickness = slotFrameThickness
-        })
 
         let cashBit = Rectangle({
             getScale: (target) => {
@@ -38,6 +35,11 @@ function bestowCashBits(suspect) {
         cashBit.slot = slot
         cashBit.associatedPlayer = pm.NO_OWNERSHIP
         cashBits.push(cashBit)
+
+        updateFunctions.push(() => {
+            slot.frameThickness = slotFrameThickness
+            cashBit.frameThickness = slotFrameThickness
+        })
     }
 
     

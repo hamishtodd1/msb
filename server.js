@@ -74,8 +74,7 @@ function beginGame(id) {
 				msg.suspects[i] = {
 					cashBits: Array(pm.betsPerSuspect),
 					betOwners: game.suspects[i].betOwners,
-					onBoard: game.suspects[i].onBoard,
-					socketsWithPortraitLoaded: {}
+					onBoard: game.suspects[i].onBoard
 				}
 				for(let j = 0; j < pm.betsPerSuspect; ++j)
 					msg.suspects[i].cashBits[j] = { associatedPlayer: pm.NO_OWNERSHIP }
@@ -186,7 +185,8 @@ io.on("connection", (socket) => {
 				betOwners: Array(pm.betsPerSuspect),
 				portraitImageSrc: "",
 				onBoard: false,
-				playerAttemptingConfirmation: null
+				playerAttemptingConfirmation: null,
+				portraitSenderSocket: null
 			}
 
 			suspects.push(suspect)
@@ -268,69 +268,72 @@ io.on("connection", (socket) => {
 			game.broadcastState()
 		})
 
-
-		self.on("new suspect portrait", (msg) =>{
-			let timeSinceLastPortrait = (Date.now() - game.timeAtLastPortrait) / 1000.
-			
-			if(timeSinceLastPortrait > 4.) {
-				game.timeAtLastPortrait = Date.now()
-
-				let suspect = game.suspects.find((suspect) => suspect.onBoard === false)
-				suspect.portraitImageSrc = msg.portraitImageSrc
-				
-				game.sockets.forEach((sock) => {
-					emitPortrait(suspect, sock,false)
-				})
-				game.broadcastState()	
-			}
-			else
-				self.emit("portrait rejected")
-		} )
-
-		function emitPortrait(suspect,particularSocket,asap) {
-			log("sending suspect " + suspects.indexOf(suspect))
-			suspect.socketsWithPortraitLoaded = {}
-			particularSocket.emit("suspect portrait", {
-				index: suspects.indexOf(suspect),
-				portraitImageSrc: suspect.portraitImageSrc,
-				asap
-			})
-		}
-
 		socket.on("pingAA", () => {
 			socket.timeOfLastPing = Date.now()
 			socket.emit("pongAA")
 		})
-		socket.on( "ready for suspect portraits", ()=>{
-			game.suspects.forEach((suspect, i) => {
-				if (suspect.portraitImageSrc !== "" && suspect.onBoard)
-					emitPortrait(suspect,socket,true)
-			})
-			game.broadcastState()
 
-			//note: you might not get all of them if one is added just as you arrive
-		})
-
-		socket.on("portrait received", (msg)=>{
-			let suspect = suspects[msg.index]
-			suspect.socketsWithPortraitLoaded[socket.id] = false
-		})
-		socket.on("portrait loaded", (msg) => {
-			let suspect = suspects[msg.index]
-			suspect.socketsWithPortraitLoaded[socket.id] = true
-
-			let loadedForAllPlayersThatReceived = true
-			Object.keys(suspect.socketsWithPortraitLoaded).forEach((sockIdLoadedness)=>{
-				if(sockIdLoadedness === false)
-					loadedForAllPlayersThatReceived = false
-			})
-
-			if(loadedForAllPlayersThatReceived) {
-				suspect.onBoard = true
+		//portraits
+		{
+			socket.on("ready for suspect portraits", () => {
+				game.suspects.forEach((suspect, i) => {
+					if (suspect.portraitImageSrc !== "" && suspect.onBoard)
+						emitPortrait(suspect, socket, true)
+				})
 				game.broadcastState()
+
+				//note: you might not get all of them if one is added just as you arrive
+			})
+
+			self.on("new suspect portrait", (msg) => {
+				let timeSinceLastPortrait = (Date.now() - game.timeAtLastPortrait) / 1000.
+
+				if (timeSinceLastPortrait > 4.) {
+					game.timeAtLastPortrait = Date.now()
+
+					let suspect = game.suspects.find((suspect) => suspect.onBoard === false)
+					suspect.portraitSenderSocket = self
+					suspect.portraitImageSrc = msg.portraitImageSrc
+
+					suspect.stillPingingSocketsPortraitLoadededness = {}
+					game.sockets.forEach((sock) => {
+						if(sock.timeOfLastPing - Date.now() < 5000)
+							suspect.stillPingingSocketsPortraitLoadededness[sock.playerId] = false
+						emitPortrait(suspect, sock, false)
+					})
+					game.broadcastState()
+				}
+				else
+					self.emit("portrait rejected")
+			})
+
+			function emitPortrait(suspect, particularSocket, asap) {
+				log("sending suspect " + suspects.indexOf(suspect))
+				particularSocket.emit("suspect portrait", {
+					index: suspects.indexOf(suspect),
+					portraitImageSrc: suspect.portraitImageSrc,
+					asap
+				})
 			}
-		})
-		//you do "portrait message received" and "portrait loaded". 
+
+			socket.on("portrait loaded", (msg) => {
+				let suspect = suspects[msg.index]
+				suspect.stillPingingSocketsPortraitLoadededness[socket.playerId] = true
+
+				let loadedForAllPlayers = true
+				Object.keys(suspect.stillPingingSocketsPortraitLoadededness).forEach( (sockId) => {
+					if (suspect.stillPingingSocketsPortraitLoadededness[sockId] === false)
+						loadedForAllPlayers = false
+				})
+
+				if (loadedForAllPlayers) {
+					suspect.onBoard = true
+					attemptBuy(suspect.portraitSenderSocket, msg.index)
+
+					game.broadcastState()
+				}
+			})
+		}
 
 		function potentiallyStartJudgementMode() {
 			let numRequests = 0
@@ -385,42 +388,46 @@ io.on("connection", (socket) => {
 
 		//just buy then sell with one player, then buy then sell with other
 
-		self.on("buy", (msg) => {
-			let suspect = suspects[msg.suspect]
+		function attemptBuy(socketToBuy,suspectIndex) {
+			let suspect = suspects[suspectIndex]
 			
 			if(suspect.onBoard === false)
-				self.emit("unsuccessful buy")
+				socketToBuy.emit("unsuccessful buy")
 
 			let betToBuyIndex = suspect.betOwners.indexOf( pm.BOARD_OWNERSHIP )
 			if (betToBuyIndex === -1)
-				self.emit("unsuccessful buy") //no bets left
+				socketToBuy.emit("unsuccessful buy") //no bets left
 			else {
 				let numInBoard = pm.getNumBoardBets(suspect)
 				let slotIndex = pm.betsPerSuspect - numInBoard
 
-				if (pm.betPrices[slotIndex] > getTotalCash(self)) {
-					self.emit("insufficient funds")
+				if (pm.betPrices[slotIndex] > getTotalCash(socketToBuy)) {
+					socketToBuy.emit("insufficient funds")
 				}
 				else {
 					let cb = suspect.cashBits[slotIndex]
 					let currentOwnerId = pm.getCashBitOwnership(suspect, cb)
 
-					if (currentOwnerId !== self.playerId) { //you were the last to sell to this slot
+					if (currentOwnerId !== socketToBuy.playerId) { //you were the last to sell to this slot
 						if (currentOwnerId !== pm.NO_OWNERSHIP )
 							game.staticCashes[currentOwnerId] += pm.betPrices[slotIndex]
 
-						cb.associatedPlayer = self.playerId
-						game.staticCashes[self.playerId] -= pm.betPrices[slotIndex]
+						cb.associatedPlayer = socketToBuy.playerId
+						game.staticCashes[socketToBuy.playerId] -= pm.betPrices[slotIndex]
 					}
 
-					suspect.betOwners[betToBuyIndex] = self.playerId
+					suspect.betOwners[betToBuyIndex] = socketToBuy.playerId
 
-					if (game.staticCashes[self.playerId] < 0.)
-						mergeSocketOwnedCashBitsIntoStaticCash(self)
+					if (game.staticCashes[socketToBuy.playerId] < 0.)
+						mergeSocketOwnedCashBitsIntoStaticCash(socketToBuy)
 					
 					game.broadcastState()
 				}
 			}
+		}
+
+		self.on("buy", (msg)=>{
+			attemptBuy(self,msg.suspectIndex)
 		})
 
 		function mergeSocketOwnedCashBitsIntoStaticCash(sock) {
