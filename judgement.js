@@ -1,26 +1,3 @@
-/*
-    You press the button
-    It appears for everyone I guess
-
-    We see all the players' piles
-
-    a checkbox beneath each pic
-    Maybe everyone has their rectangles stuck in a line
-    Maybe they tween between them
-    Scaled down? Squashed, area preservingly?
-    Their colors go duller
-    Well, you only need to see the important ones
-
-
-    Judgement mode
-		Not centered
-		Just cover the market half, your bets are visible below
-		Your bets (not others') are visible in the background
-		They zoom into place. Your cash too
-		When you change which suspects are confirmed, the scaling takes a little time to respond
-		Better arrow
- */
-
 function initSuspectConfirmationWaitingSign() {
     suspectConfirmationWaitingSign = Rectangle({
         h: 8., getScaleFromLabel: true,
@@ -89,12 +66,12 @@ function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPaddin
     })
     crossMats.push(cross.material)
 
-    updateFunctions.push(() => {
-        let someoneHasABet = pm.getNumBoardBets(suspect) < pm.betsPerSuspect
+    // updateFunctions.push(() => {
+        // let someoneHasABet = pm.getNumBoardBets(suspect) < pm.betsPerSuspect
 
         // cross.material.opacity = someoneHasABet ? .1 : 1.
         // judge.material.opacity = someoneHasABet ? 1. : .1
-    })
+    // })
 }
 
 async function initJudgement(gameId) {
