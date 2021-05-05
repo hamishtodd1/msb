@@ -165,11 +165,7 @@ function initSuspects() {
             })
             suspect.boardFrame = Rectangle({
                 onClick: () => {
-                    if(showingScoresMode)
-                        return
-
                     if(coolDown <= 0.) {
-                        log(suspects.indexOf(suspect))
                         socket.emit("buy", { suspectIndex: suspects.indexOf(suspect) })
                         coolDown = 1.
                     }
@@ -210,9 +206,6 @@ function initSuspects() {
             })
             suspect.handFrame = Rectangle({
                 onClick: () => {
-                    if(showingScoresMode)
-                        return
-
                     socket.emit("sell", { suspect: suspects.indexOf(suspect) })
                     sellCooldown = 1.
                 },

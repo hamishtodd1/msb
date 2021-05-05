@@ -335,32 +335,6 @@ io.on("connection", (socket) => {
 			})
 		}
 
-		function potentiallyStartJudgementMode() {
-			let numRequests = 0
-			game.sockets.forEach((sock, i) => {
-				if (sock.jugementModeBeingRequested )
-					++numRequests
-			})
-
-			if (numRequests >= 2) {
-				//it is time!
-				mergeSocketOwnedCashBitsIntoStaticCash(self)
-				game.sockets.forEach((sock) => {
-					sock.emit("judgement mode confirmed")
-				})
-			}
-		}
-
-		self.jugementModeBeingRequested = false
-		self.on("judgement mode requested",()=>{
-			self.jugementModeBeingRequested = true
-
-			potentiallyStartJudgementMode()
-		})
-		self.on("judgement mode request cancelled",()=>{
-			self.jugementModeBeingRequested = false
-		})
-
 		self.on("sell", (msg) => {
 			let suspect = suspects[msg.suspect]
 			log("total cash", getTotalCash(self))
@@ -427,7 +401,6 @@ io.on("connection", (socket) => {
 		}
 
 		self.on("buy", (msg)=>{
-			log(msg.suspectIndex)
 			attemptBuy(self,msg.suspectIndex)
 		})
 

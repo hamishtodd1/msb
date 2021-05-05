@@ -40,8 +40,6 @@ const socket = io();
 
 const OVERLAY_Z = 7.
 
-let showingScoresMode = false
-
 const dashboard = []
 
 const VISIBLE_AREA_HEIGHT = 20.

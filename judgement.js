@@ -97,7 +97,8 @@ function bestowJudgementAndCross(suspect, judgeMats, crossMats,suspectSlipPaddin
     })
 }
 
-function initJudgement(gameId) {
+async function initJudgement(gameId) {
+    let showingScoresMode = false
 
     let premadeStaticCashes = []
     let lowestUnusedPremadeStaticCash = 0
@@ -105,8 +106,10 @@ function initJudgement(gameId) {
         premadeStaticCashes[i] = Rectangle({
             mat: cashMat,
             w: 999999999.,
-            z: OVERLAY_Z + 1.,
             haveIntendedPosition: true,
+            haveFrame: true,
+            frameZ: OVERLAY_Z + .5,
+            z: OVERLAY_Z + 1.,
         })
         premadeStaticCashes[i].visible = false
     }
@@ -120,43 +123,17 @@ function initJudgement(gameId) {
     })
     dashboard.push(idBox)
 
-    let col = 0x505050
-
-    let waitingMessage = Rectangle({
-        h: 8., getScaleFromLabel: true,
-        haveFrame: true,
-        label: ["Waiting for another", "player to press", "end game button..."],
-        col: bgColor,
-        visible: false
-    })
-    waitingMessage.lastClicked = 0
-    onMouseClickFunctions.push(()=>{
-        if (waitingMessage.visible === true && waitingMessage.lastClicked < frameCount - 5) {
-            waitingMessage.visible = false
-            socket.emit("judgement mode request cancelled")
-        }
-    })
-
+    let titleHeight = 4.
     let title = Rectangle({
-        h: 2., getScaleFromLabel: true,
+        h: titleHeight, getScaleFromLabel: true,
         z: OVERLAY_Z + .5,
-        haveFrame: true,
-        label: ["Final Ranking"],
+        label: ["Player Ranking", "(don't forget to confirm bets on","guilty suspects if you're finishing!)"],
         col: bgColor,
         getPosition: (target) => {
             target.x = 0.
             target.y = hider.scale.y / 2. - title.scale.y / 2.
         },
         visible: false
-    })
-
-    socket.on("judgement mode confirmed",()=>{
-        showingScoresMode = true
-        staticCash.visible = false
-        endGameButton.visible = false
-        waitingMessage.visible = false
-
-        idBox.visible = false
     })
 
     const staticCashesValues = {}
@@ -166,21 +143,11 @@ function initJudgement(gameId) {
         })
     })
 
-    const warningSign = temporarilyVisibleWarningSign(["Cannot end game until","all suspects have been","deleted or confirmed!"])
     let endGameButton = Rectangle({
         onClick: () => {
-            let suspectOnBoard = false
-            suspects.forEach(sus=>{if(sus.onBoard)suspectOnBoard = true})
-            if(!suspectOnBoard) {
-                socket.emit("judgement mode requested")
-
-                waitingMessage.visible = true
-                waitingMessage.lastClicked = frameCount
-            }
-            else
-                warningSign.timeVisible = 2.5
+            showingScoresMode = true
         },
-        label: "End game!",
+        label: "View ranking",
         haveFrame: true,
         h: 1.,
         getScaleFromLabel: true,
@@ -190,9 +157,8 @@ function initJudgement(gameId) {
     })
     dashboard.push(endGameButton)
 
-
     const hider = Rectangle({
-        col,
+        col: 0x505050,
         w: 4., h: 4.,
         z: OVERLAY_Z,
         haveFrame: true,
@@ -203,33 +169,38 @@ function initJudgement(gameId) {
         }
     })
 
-    // let closeButton = null
-    // let cbDimension = 2.
-    // new THREE.TextureLoader().load("assets/close.png", (map) => {
-    //     closeButton = Rectangle({
-    //         w: cbDimension, h: cbDimension, z: OVERLAY_Z + 1.,
-    //         map, visible: false,
-    //         getPosition: (target) => {
-    //             hider.getCorner("tr", target)
-    //             target.x -= cbDimension / 2.
-    //             target.y -= cbDimension / 2.
-    //         },
-    //         onClick: () => {
-    //             showingScoresMode = false
-    //         }
-    //     })
-    // })
+    let cbDimension = 2.
+    let cbMat = new THREE.MeshBasicMaterial({ color: bgColor })
+    new THREE.TextureLoader().load("assets/close.png", (map) => {
+        cbMat.map = map
+        cbMat.needsUpdate = true
+    })
+    const closeButton = Rectangle({
+        w: cbDimension, h: cbDimension, z: OVERLAY_Z + 1.,
+        mat: cbMat,visible: false,
+        getPosition: (target) => {
+            hider.getCorner("tr", target)
+            target.x -= cbDimension / 2.
+            target.y -= cbDimension / 2.
+        },
+        onClick: () => {
+            showingScoresMode = false
+        }
+    })
 
     let dividingLine = 0.
-    updateFunctions.push(()=>{
+    updateFunctions.push(() => {
         dividingLine = camera.getRight() - 6.
     })
 
-    const youSign = Rectangle({
-        label: "← You",
-        h: 1.5,
-        getScaleFromLabel: true,
-        z: OVERLAY_Z + 2.,
+    let arrowMat = new THREE.MeshBasicMaterial({ color: bgColor })
+    new THREE.TextureLoader().load("assets/arrow.png", (map) => {
+        arrowMat.map = map
+        arrowMat.needsUpdate = true
+    })
+    const arrow = Rectangle({
+        w: 1.5, h: 1.5, z: OVERLAY_Z + 2.,
+        mat: arrowMat,
         getPosition: (target) => {
             if (finalStaticCashes[socket.playerId] === undefined) {
                 target.x = 0.
@@ -237,49 +208,59 @@ function initJudgement(gameId) {
             }
             else {
                 target.y = finalStaticCashes[socket.playerId].position.y
-                target.x = dividingLine + youSign.scale.x / 2.
+                target.x = dividingLine + arrow.scale.x / 2. + .1
             }
         }
     })
 
-    updateFunctions.push( () => {
-        // closeButton.visible = showingScoresMode
-        hider.visible = showingScoresMode
-        youSign.visible = showingScoresMode
-        title.visible = showingScoresMode
+    const youSign = Rectangle({
+        label: "You",
+        h: 1.5,
+        getScaleFromLabel: true,
+        z: OVERLAY_Z + 2.,
+        getPosition: (target) => {
+            arrow.getEdgeCenter("r", target)
+            target.x += arrow.scale.x / 2.
+        }
     })
 
-    finalStaticCashes = {}
-    const finalAmounts = {}
+    const finalStaticCashes = {}
     updateFunctions.push(() => {
+        closeButton.visible = showingScoresMode
+        hider.visible = showingScoresMode
+        youSign.visible = showingScoresMode
+        arrow.visible = showingScoresMode
+        title.visible = showingScoresMode
+        
+        endGameButton.visible = !showingScoresMode
+        idBox.visible = !showingScoresMode
+        staticCash.visible = !showingScoresMode
+        
+        const playerIds = Object.keys(staticCashesValues)
+        playerIds.forEach((playerId) => {
+            if (finalStaticCashes[playerId] !== undefined)
+                finalStaticCashes[playerId].visible = showingScoresMode
+        })
+        
         if (!showingScoresMode)
             return
-
-        const playerIds = Object.keys(staticCashesValues)
 
         let max = -Infinity
         let min = Infinity
 
-        let topPosition = hider.getEdgeCenter("t", v0).y - 3.
-        let bottomPosition = hider.getEdgeCenter("b", v0).y + 2.
+        let topPosition = hider.getEdgeCenter("t", v0).y - titleHeight - youSign.scale.y / 2. - 1.5
+        let bottomPosition = hider.getEdgeCenter("b", v0).y + 1.5
+
+        const finalAmounts = {}
 
         playerIds.forEach((playerId) => {
-            finalAmounts[playerId] = staticCashesValues[playerId]
-            suspects.forEach((sus) => {
-                if (!sus.confirmed)
-                    return
-                sus.betOwners.forEach((betOwner) => {
-                    if (betOwner === playerId)
-                        finalAmounts[playerId] += 1.
-                })
-            })
+            finalAmounts[playerId] = staticCashesValues[playerId] + pm.getLooseCash(playerId,suspects)
 
             max = Math.max(max, finalAmounts[playerId])
             min = Math.min(min, finalAmounts[playerId])
 
             if (finalStaticCashes[playerId] === undefined) {
                 finalStaticCashes[playerId] = premadeStaticCashes[lowestUnusedPremadeStaticCash]
-                finalStaticCashes[playerId].visible = true
                 ++lowestUnusedPremadeStaticCash
             }
 
@@ -287,14 +268,15 @@ function initJudgement(gameId) {
         })
 
         playerIds.forEach((playerId) => {
-            let ranking = (finalAmounts[playerId] - min) / (max - min)
+            let range = (max - min) === 0. ? 1. : (max - min)
+            let ranking = (finalAmounts[playerId] - min) / range
             finalStaticCashes[playerId].intendedPosition.y = bottomPosition + (topPosition - bottomPosition) * ranking
 
             finalStaticCashes[playerId].intendedPosition.x = dividingLine - finalStaticCashes[playerId].scale.x / 2.
 
             finalStaticCashes[playerId].scale.y = cashHeight
         })
+
+        delete finalAmounts
     })
 }
-
-//need confirmation boxes to be bigger

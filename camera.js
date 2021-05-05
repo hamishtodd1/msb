@@ -23,9 +23,6 @@ async function initCamera() {
         },
         onClick: () => {
             if(cameraSetUpAttemptMade) {
-                if (showingScoresMode)
-                    return
-
                 setCameraStuffVisibility(true)
             }
             else {
