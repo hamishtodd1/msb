@@ -241,7 +241,7 @@ async function initJudgement(gameId) {
                 ++lowestUnusedPremadeStaticCash
             }
 
-            finalStaticCashes[playerId].scale.x = cashWidth * staticCashesValues[playerId]
+            finalStaticCashes[playerId].scale.x = cashWidth * finalAmounts[playerId]
         })
 
         playerIds.forEach((playerId) => {

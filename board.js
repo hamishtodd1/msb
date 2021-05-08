@@ -45,10 +45,25 @@ async function initBoard() {
             return totalCash
         }
 
+        const highlightOutlineSize = cashHeight * 2.
+        const staticCashHighlightMat = new THREE.MeshBasicMaterial({ color: 0x000000})
+        staticCashHighlightedness = 0.
+        const staticCashHighlight = Rectangle({
+            mat: staticCashHighlightMat,
+            x: 0.,
+            y: camera.getBottom() + .5,
+            z: -4.,
+            getScale: (target) =>{
+                target.x = getTotalCash() * cashWidth + 2. * highlightOutlineSize
+                target.y = cashHeight + 2. * highlightOutlineSize
+            },
+        })
+
+        // let cashMarkers = new THREE.Line(new )
+
         staticCash = Rectangle({
             mat: cashMat,
             w: 20., //stand-in
-            haveFrame: true,
             frameZ: -4.,
             haveIntendedPosition:true,
             y: camera.getBottom() + .5,
@@ -61,8 +76,12 @@ async function initBoard() {
         let reverberationDuration = 2.9
         socket.on("insufficient funds", () => {
             reverberation = 1.
+            staticCashHighlightedness = 1.
         })
         updateFunctions.push(()=>{
+            staticCashHighlightedness = Math.max(staticCashHighlightedness - frameDelta * 2.,0.)
+            staticCashHighlightMat.color.setRGB(staticCashHighlightedness, staticCashHighlightedness, staticCashHighlightedness)
+
             staticCash.getEdgeCenter("r", staticCash.tail)
 
             staticCash.scale.x = staticCash.actualValueIncludingTbs * cashWidth
@@ -72,8 +91,10 @@ async function initBoard() {
             })
 
             staticCash.intendedPosition.y = camera.getBottom() + dashboardGap / 2.
+
             reverberation = Math.max(0., reverberation - frameDelta / reverberationDuration)
-            staticCash.intendedPosition.y += Math.pow(Math.max(reverberation, 0.), 8.) * Math.sin(frameCount * .7) * 2.9
+            staticCashHighlight.position.y = staticCash.position.y +
+                Math.pow(Math.max(reverberation, 0.), 8.) * Math.sin(frameCount * .4) * 1.4
 
             let totalCashWidth = getTotalCash() * cashWidth
             let totalCashFarRightEnd = totalCashWidth / 2.
@@ -192,8 +213,7 @@ async function initBoard() {
 
         transformedBets.forEach((tb, i) => { tb.visible = false })
 
-        if(msg.staticCashes[socket.playerId] !== staticCash.actualValueIncludingTbs)
-            staticCash.actualValueIncludingTbs = msg.staticCashes[socket.playerId]
+        staticCash.actualValueIncludingTbs = msg.staticCashes[socket.playerId]
 
         if (msg.suspectConfirmationAddOn !== null) {
             let suspect = suspects[msg.suspectConfirmationAddOn.index]

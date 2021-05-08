@@ -101,6 +101,10 @@ function initSuspects() {
                     (percentage > 9 ? "" : " ")
                     + percentage + "%")
 
+                // let odds = Math.round(10. / price)
+                // percentageDisplay.textMeshes[0].material.setText( 
+                //     "10:" + (odds > 9 ? "" : " ") + odds)
+
                 suspect.boardFrame.getEdgeCenter("l", v0)
                 cheapestAvailableBetSlot.getEdgeCenter("l", v1)
 
@@ -168,6 +172,7 @@ function initSuspects() {
                     if(coolDown <= 0.) {
                         socket.emit("buy", { suspectIndex: suspects.indexOf(suspect) })
                         coolDown = 1.
+                        staticCashHighlightedness = 1.
                     }
                     else {
                         coolDownIndicatorMat.color.g = 0.
@@ -208,6 +213,7 @@ function initSuspects() {
                 onClick: () => {
                     socket.emit("sell", { suspect: suspects.indexOf(suspect) })
                     sellCooldown = 1.
+                    staticCashHighlightedness = 1.
                 },
                 z: -4.,
                 haveFrame: true,
