@@ -1,6 +1,7 @@
 <!--
-	Google analytics
 	Auto-refresh also puts in the game id
+	Going into debt
+	Starting with 0
 	Quite awful bug if you... hit the new suspect button twice at the start? On mobile?
 	Refund when suspect is deleted?
 		That's more for "unresolved" rather than "resolved in the negative"
@@ -78,6 +79,19 @@ and putting your money where you'd usually only put your mouth</h3></center>
 	<br></br>
 	
 	<center>
+		<h3>The rules:</h3>
+	</center>
+	<ol>
+		<li>Players will watch a Murder Mystery, with multiple <em>suspects</em> that may be <em>guilty</em></li>
+		<li>Suspect characters will be added to the board as they appear</li>
+		<li>Players may buy and sell bets on suspects until the credits roll</li>
+		<li>If a suspect turns out to be <em>guilty</em> their bets turn into money</li>
+		<li>If not guilty, that suspect's bets are worthless</li>
+	</ol>
+	
+	<br></br>
+	
+	<center>
 		<h3>The controls:</h3>
 	</center>
 	
@@ -87,57 +101,25 @@ and putting your money where you'd usually only put your mouth</h3></center>
 		allowfullscreen="false"></iframe>
 	</center>
 			
-	<br></br>
-
-	<center><h3>The rules:</h3></center>
-	<ol>
-		<li>Players will watch a Murder Mystery, with multiple <em>suspects</em> that may be <em>guilty</em></li>
-		<li>Suspect characters will be added to the board as they appear</li>
-		<li>If a suspect is accidentally added twice, their later (rightmost) copy must be deleted</li>
-		<li>Bets can be bought AND sold all the way up to when the credits roll</li>
-		<li><b>When and only when</b> the credits roll, the guilt of suspects will be settled</li>
-		<li>If a suspect is <em>guilty</em> their bets turn into money</li>
-		<li>If not guilty, their bets are worthless</li>
-		<li>The same rules apply if <em>all</em> suspects are guilty, or if <em>none</em> are</li>
-	</ol>
-
-	<br></br>
-
-	<center><h3>For practice: The World's Shortest Murder Mystery!</h3></center>
-
+	<center>
+		<h3>For practice: The World's Shortest Murder Mystery!</h3>
+	</center>
+	
 	<center><iframe width="100%" height="51.1%" src="https://www.youtube.com/embed/z-VuX2kcaCY" frameborder="0"
-		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-		allowfullscreen="false"></iframe></center>
-
-	<br></br>
-
-	<center><h3>A good strategy:</h3></center>
-	<ol>
-		<li>Closely monitor the current percentages that each suspect's bets are at</li>
-		<li>If you'd say their price is too low, eg a suspicious one is at only 8%, buy on them!</li>
-		<li>If you think it's too high, and you have bets on them, sell</li>
-		<li>Keep doing that! Though don't forget to look up and watch the show sometimes!</li>
-		<li>(It's a mistake to think about what's currently in your hand too much!)</li>
-	</ol>
-
-	<center><h3>An advanced strategy:</h3></center>
-	<ol>
-		<li>Try to think up original, but credible, theories about the true answer</li>
-		<li>If you hit on one very different from the market guesses, buy bets appropriately...</li>
-		<li>...then tell all the other players your theory!</li>
-		<li>If persuaded, they'll frantically sell and buy, and almost certainly overcompensate</li>
-		<li>Bets you just bought will become overpriced so you can sell some, and pick up other bets cheaply</li>
-	</ol>
-
+			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+			allowfullscreen="false"></iframe></center>
+	
+	<center>
+		<h3>Rule clarifications and FAQ (optional!)</h3>
+	</center>
+	<center>
+		<iframe width="100%" height="51.1%" src="https://www.youtube.com/embed/4YoF3TZk7C4" frameborder="0"
+			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+			allowfullscreen="false"></iframe>
+	</center>
+	
 	<br></br>
 	
-	<center><h3>Recommended shows:</h3></center>
-	<center><a href='https://www.youtube.com/watch?v=ozqWHckfWuA&list=ELDjq4Joh7KgQZjOsCkR3L5w&index=8&ab_channel=WhatsNewScooby-Doo%3F'>Scooby Doo</a> (21 minutes),
-	<a href='https://www.youtube.com/watch?v=gEgjkqUk87Y'>Peter Gunn</a> (24 minutes),
-	<a href='https://www.youtube.com/playlist?list=PL8-N29J_E9krdoL8tticMKKTTnCmQTdgi'>Poirot,</a> (50 minutes),
-	<a href='https://www.youtube.com/playlist?list=PLJfhxUKC_TVoOHuKo-HEYPpkzmtHWSA8c'>The Adventures of Sherlock Holmes</a> (50 minutes)</center>
-
-	<br></br>
 	<center><a href='https://www.reddit.com/r/MurderSheBet/'>Subreddit</a>, <a href='https://discord.gg/pBvKrNFwbh'>Discord</a></center>
 	<center>This game is an adaptation by <a href='https://twitter.com/hamish_todd'>@hamish_todd</a> of a design/discovery by <a href='http://overcomingbias.com/'>Robin Hanson</a></center>
 	<center>More information on the game and its philosophy can be found <a href= 'https://github.com/hamishtodd1/msb/blob/main/README.md'>here</a>.</center>
@@ -267,6 +249,16 @@ and putting your money where you'd usually only put your mouth</h3></center>
 
 				loop()
 			}
+		</script>
+
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-G8Q1WDCR2B"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() { dataLayer.push(arguments); }
+			gtag('js', new Date());
+
+			gtag('config', 'G-G8Q1WDCR2B');
 		</script>
 		
 	</body>
