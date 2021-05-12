@@ -12,7 +12,7 @@ async function initCamera() {
     let cameraSetUpAttemptMade = false
 
     newSuspectButton = Rectangle({
-        // label: ["new", "bets"],
+        label: ["add", "suspect"],
         haveIntendedPosition: true,
         haveFrame: true,
         frameOnly: true,
@@ -31,28 +31,7 @@ async function initCamera() {
             }
         }
     })
-    
-    let newSuspectMat = new THREE.MeshBasicMaterial({ color: bgColor })
-    new THREE.TextureLoader().load("assets/add.png", (map) => {
-        newSuspectMat.map = map
-        newSuspectMat.needsUpdate = true
-    })
-    let newSuspectPic = Rectangle({
-        mat: newSuspectMat,
-        getScale: (target) => {
-            target.x = suspectPanelDimensions.x
-            target.y = suspectPanelDimensions.x
-        },
-        getPosition: (target) => {
-            target.x = newSuspectButton.position.x
-            target.y = newSuspectButton.position.y
-        },
-        z: newSuspectButton.position.z - 3.
-    })
-
     updateFunctions.push(() => {
-        newSuspectPic.visible = newSuspectButton.visible
-
         newSuspectButton.intendedPosition.x = getPanelPositionX(suspects.length)
 
         newSuspectButton.intendedPosition.y = suspectPositionY
@@ -60,6 +39,24 @@ async function initCamera() {
         if (frameCount === 0)
             newSuspectButton.goToIntendedPosition()
     })
+    
+    // let newSuspectMat = new THREE.MeshBasicMaterial({ color: bgColor })
+    // new THREE.TextureLoader().load("assets/add.png", (map) => {
+    //     newSuspectMat.map = map
+    //     newSuspectMat.needsUpdate = true
+    // })
+    // let newSuspectPic = Rectangle({
+    //     mat: newSuspectMat,
+    //     getScale: (target) => {
+    //         target.x = suspectPanelDimensions.x
+    //         target.y = suspectPanelDimensions.x
+    //     },
+    //     getPosition: (target) => {
+    //         target.x = newSuspectButton.position.x
+    //         target.y = newSuspectButton.position.y
+    //     },
+    //     z: newSuspectButton.position.z - 3.
+    // })
 
     const video = document.createElement('video');
     video.setAttribute('autoplay', '')
@@ -71,7 +68,7 @@ async function initCamera() {
         const mediaConfig = { video: { facingMode: "environment" } };
         const disallowOrImpossibilityFunc = function (e) {
             newSuspectButton.visible = false
-            newSuspectPic.visible = false
+            // newSuspectPic.visible = false
 
             noCameraSign.timeVisible = 3.
         };

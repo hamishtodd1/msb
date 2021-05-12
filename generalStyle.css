@@ -21,3 +21,9 @@ textarea {
   resize: none;
   overflow: hidden;
 }
+
+div {
+  background-color: rgb(184, 184, 184);
+  border: 15px solid rgb(113, 113, 113);
+  margin: 20px;
+}

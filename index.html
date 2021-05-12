@@ -93,19 +93,17 @@
 	</header>
 
 	<br></br>
-	
-	<center><button type="button" id="newGameButton">Start a new game!</button></center>
-	
-	<p>
-		<center>Or enter the ID of a game started by a friend:</center>
-		<center><textarea id="gameIdBox" name="gameIdBox" rows="1" cols="42"></textarea></center>
-		<center><button type="button" id="enterGameButton">Submit</button></center>
-	</p>
-	
-	<br></br>
 
-	<center><h3>A game about educated guesses,<br>
-and putting your money where you'd usually only put your mouth</h3></center>
+	<div>
+		<p></p>
+		<center><button type="button" id="newGameButton">Start a new game!</button></center>
+		<p></p>
+		
+			<center>Or enter the ID of a game started by a friend:</center>
+			<center><textarea id="gameIdBox" name="gameIdBox" rows="1" cols="42"></textarea></center>
+			<center><button type="button" id="enterGameButton">Submit</button></center>
+		<p></p>
+	</div>
 
 	<br></br>
 	
@@ -113,46 +111,47 @@ and putting your money where you'd usually only put your mouth</h3></center>
 		<h3>Rules:</h3>
 	</center>
 	<ol>
-		<li>Players will watch a Murder Mystery, with multiple <em>suspects</em> that may be <em>guilty</em></li>
-		<li>Suspicious characters will be added to the board, using your camera, as they appear</li>
-		<li>Players may buy and sell <em>bets</em> on the suspects as the show goes on</li>
-		<li>When the credits roll, if a suspect is guilty, their bets turn into money</li>
+		<li>2-8 players will <b>sign into a game using the box above</b>, each on a different device</li>
+		<li>The players will watch a <b>murder mystery</b> TV show such as Poirot or Scooby Doo</li>
+		<li>The show must have multiple <b>suspects</b> who may turn out to be <b>guilty</b> at the end</li>
+		<li>Players will add suspects to the board, with their phone's camera</li>
+		<li>Players buy and sell <b>bets</b> on the suspects' guilt</li>
+		<li>When the credits roll, if a suspect is guilty, <b>their bets will be turned into money</b></li>
 		<li>Try to have as much money as possible at the end!</li>
 	</ol>
 	
 	<br></br>
 	
 	<center>
-		<h3>Controls:</h3>
+		<h3>How to play, using a <a href='https://www.youtube.com/watch?v=z-VuX2kcaCY'>practice murder mystery video</a>:</h3>
 	</center>
 	<center>
 		<iframe width="100%" height="51.1%" src="https://www.youtube.com/embed/wlERXS77fr0" frameborder="0"
 			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 			allowfullscreen="false"></iframe>
 	</center>
-			
-	<center>
-		<h3>Practice: <em>The World's Shortest Murder Mystery!</em></h3>
-	</center>
-	<center>
-		<iframe width="100%" height="51.1%" src="https://www.youtube.com/embed/z-VuX2kcaCY" frameborder="0"
-			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-			allowfullscreen="false"></iframe></center>
+
+	<br></br>
 	
 	<center>
-		<h3>Rule Clarifications and FAQ</h3>
+		<h3>Advanced: Rule Clarifications and FAQ</h3>
 	</center>
 	<center>
 		<iframe width="100%" height="51.1%" src="https://www.youtube.com/embed/8IHBtfEX8iU" frameborder="0"
 			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 			allowfullscreen="false"></iframe>
 	</center>
-	
+
 	<br></br>
 	
-	<center><a href='https://www.reddit.com/r/MurderSheBet/'>Subreddit</a>, <a href='https://discord.gg/pBvKrNFwbh'>Discord</a>, <a href='https://github.com/hamishtodd1/msb/'>Github</a></center>
-	<center>This game is an adaptation by <a href='https://twitter.com/hamish_todd'>@hamish_todd</a> of a design/discovery by <a href='http://overcomingbias.com/'>Robin Hanson</a></center>
-	<center>More information on the game and its philosophy can be found <a href= 'https://github.com/hamishtodd1/msb/blob/main/README.md'>here</a>.</center>
+	<center><a href='https://www.reddit.com/r/MurderSheBet/'>Subreddit</a>, <a
+			href='https://discord.gg/pBvKrNFwbh'>Discord</a>, <a href='https://github.com/hamishtodd1/msb/'>Github</a>
+	</center>
+	<center>This game is an adaptation by <a href='https://twitter.com/hamish_todd'>@hamish_todd</a> of a design/discovery
+		by <a href='http://overcomingbias.com/'>Robin Hanson</a></center>
+	<center>More information on the game and its philosophy can be found <a
+			href='https://github.com/hamishtodd1/msb/blob/main/README.md'>here</a>.</center>
+	
 
 	<body>
 		<script src="/socket.io/socket.io.js"></script>
