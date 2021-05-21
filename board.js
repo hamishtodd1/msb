@@ -144,6 +144,12 @@ async function initBoard() {
         return (cashHeight + slotFrameThickness) * (index - (pm.betsPerSuspect - 1.) / 2.)
     }
 
+    let buySign = temporarilyVisibleWarningSign(["tap to", "buy bets"])
+    let sellSign = temporarilyVisibleWarningSign(["tap to", "sell bets"])
+    buySign.scale.multiplyScalar(.5)
+    sellSign.scale.multiplyScalar(.5)
+    let hadASuspectAtSomePoint = false
+
     //TODO rename this, it's not that hard
     let gapBetweenPanels = .5
     suspectPanelDimensions = { 
@@ -256,7 +262,26 @@ async function initBoard() {
                 let soundPromise = sound.play()
                 soundPromise.then(function () { }).catch(function () { })
             }
+
             suspect.onBoard = msg.suspects[i].onBoard
+            
+            if (suspect.onBoard && !hadASuspectAtSomePoint) {
+                hadASuspectAtSomePoint = true
+                let countdown = 2.
+                updateFunctions.push(() => {
+                    if(countdown > 0. && countdown - frameDelta <= 0.) {
+                        buySign.timeVisible = 3.
+                        sellSign.timeVisible = 3.
+                    }
+
+                    countdown -= frameDelta
+
+                    suspect.boardFrame.getEdgeCenter("r",buySign.position)
+                    buySign.position.x += buySign.scale.x / 2.
+                    suspect.handFrame.getEdgeCenter("r",sellSign.position)
+                    sellSign.position.x += sellSign.scale.x / 2.
+                })
+            }
 
             //can just have "waiting for another player to confirm suspect"
 
