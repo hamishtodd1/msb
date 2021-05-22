@@ -86,12 +86,10 @@ function initSuspects() {
 
                 let numInBoard = pm.getNumBoardBets(suspect)
                 let cheapestAvailableBetSlotIndex = pm.betsPerSuspect - numInBoard - 1
-                if (cheapestAvailableBetSlotIndex < 0) {
-                    percentageDisplay.visible = false
+                percentageDisplay.visible = suspect.onBoard
+                
+                if (cheapestAvailableBetSlotIndex < 0)
                     return
-                }
-                percentageDisplay.visible = true
-
 
                 let cheapestAvailableBetSlot = suspect.cashBits[cheapestAvailableBetSlotIndex].slot
 

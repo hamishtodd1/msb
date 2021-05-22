@@ -1,4 +1,10 @@
 <!--
+
+	Lengthen kick out time
+	Fuck it, number on your hand
+	Bugs
+		Lots of text boxes have their background behind other things
+		ghost fucking suspect with black square and loads of bests on them?????
 	
 	For sure you want a "just give your probabilities" controller
 	This can also let you purchase half-bets
@@ -113,7 +119,7 @@
 		<p></p>
 		
 			<center>Or enter the ID of a game started by a friend:</center>
-			<center><textarea id="gameIdBox" name="gameIdBox" rows="1" cols="42"></textarea></center>
+			<center><textarea id="gameIdBox" name="gameIdBox" rows="1" cols="26"></textarea></center>
 			<center><button type="button" id="enterGameButton">Submit</button></center>
 		<p></p>
 	</div>
@@ -202,7 +208,12 @@
 		<script src="socketStuffAndPageInitialization.js"></script>
 
 		<script>
+			let initted = false
 			async function init(socket, gameId) {
+				if(initted)
+					return
+				initted = true
+
 				initRectangles()
 
 				renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -231,14 +242,14 @@
 					})
 					connectionLostBox.visible = false
 
-					// socket.onclose = () => {
-					// 	connectionLostBox.visible = true
-					// 	if(reloadAttempted === false) {
-					// 		location.reload()
-					// 		reloadAttempted = true
-					// 	}
-					// 	//could check, from the server, if this is being called
-					// }
+					socket.onclose = () => {
+						connectionLostBox.visible = true
+						if(reloadAttempted === false) {
+							location.reload()
+							reloadAttempted = true
+						}
+						//could check, from the server, if this is being called
+					}
 
 					//could zoom with camera?
 
@@ -255,11 +266,11 @@
 						if( justAboutToPass2 )
 							socket.emit("pingAA")
 
-						if(timeSinceLastPongReception > 5.5) {
+						if(timeSinceLastPongReception > 10.5) {
 							socket.close()
 							connectionLostBox.visible = true
 						}
-						if (timeSinceLastPongReception > 8. && reloadAttempted === false) {
+						if (timeSinceLastPongReception > 13. && reloadAttempted === false) {
 							location.reload()
 							reloadAttempted = true
 						}
