@@ -102,6 +102,7 @@ function generateGameId() {
 		let index = Math.floor(Math.random() * unambiguousAlphanumerics.length)
 		ret += unambiguousAlphanumerics[index]
 	}
+	
 
 	return ret
 }

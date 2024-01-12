@@ -4,7 +4,7 @@
 	Fuck it, number on your hand
 	Bugs
 		Lots of text boxes have their background behind other things
-		ghost fucking suspect with black square and loads of bests on them?????
+		ghost suspect with black square and loads of bests on them?????
 	
 	For sure you want a "just give your probabilities" controller
 	This can also let you purchase half-bets
@@ -163,8 +163,7 @@
 
 	<br></br>
 	
-	<center><a href='https://www.reddit.com/r/MurderSheBet/'>Subreddit</a>, <a
-			href='https://discord.gg/pBvKrNFwbh'>Discord</a>, <a href='https://github.com/hamishtodd1/msb/'>Github</a>
+	<center><a href='https://github.com/hamishtodd1/msb/'>Github</a>
 	</center>
 	<center>This game is an adaptation by <a href='https://twitter.com/hamish_todd'>@hamish_todd</a> of a design/discovery
 		by <a href='http://overcomingbias.com/'>Robin Hanson</a></center>
@@ -234,7 +233,7 @@
 
 				{
 					const connectionLostBox = Rectangle({
-						label: "Connection lost",
+						label: "Connection shaky...",
 						h: 2.,
 						getScaleFromLabel: true,
 						haveFrame: true,
@@ -266,14 +265,15 @@
 						if( justAboutToPass2 )
 							socket.emit("pingAA")
 
-						if(timeSinceLastPongReception > 10.5) {
-							socket.close()
-							connectionLostBox.visible = true
-						}
-						if (timeSinceLastPongReception > 13. && reloadAttempted === false) {
-							location.reload()
-							reloadAttempted = true
-						}
+                        connectionLostBox.visible = timeSinceLastPongReception > 10.5
+						// if(timeSinceLastPongReception > 10.5) {
+						// 	socket.close()
+						// 	connectionLostBox.visible = true
+						// }
+						// if (timeSinceLastPongReception > 13. && reloadAttempted === false) {
+						// 	location.reload()
+						// 	reloadAttempted = true
+						// }
 
 						timeSinceLastPongReception += frameDelta
 					})
